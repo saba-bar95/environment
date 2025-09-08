@@ -4,12 +4,15 @@
   display: flex;
   gap: 30px;
   align-items: center;
-}
 
-// @media only screen and (min-width: $mobile) and (max-width: calc($tablet - 1px)) {
-//   .icons {
-//   }
-// }
+  svg {
+    transition: transform 0.3s ease; /* Smooth transition for 0.3s */
+  }
+
+  svg:hover {
+    transform: scale(1.2);
+  }
+}
 
 @media only screen and (min-width: 0) and (max-width: calc($mobile - 1px)) {
   .icons {
