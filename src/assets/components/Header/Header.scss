@@ -1,0 +1,265 @@
+@use "/src/assets/styles/_breakpoints.scss" as *;
+
+header {
+  background-color: #ffffff;
+  color: #1e1e1e;
+  position: sticky;
+  z-index: 99;
+  top: 0;
+  box-shadow: 0 4px 8px #0003;
+
+  .header-container {
+    padding: 20px 120px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: auto;
+
+    .right {
+      display: flex;
+      gap: 15px;
+      align-items: center;
+
+      .text {
+        margin-top: 12px;
+      }
+
+      h1 {
+        font-feature-settings: "case" on;
+        font-size: 13px;
+        color: #132447;
+        text-transform: uppercase;
+        width: 40%;
+        font-family: FiraGOMedium;
+      }
+    }
+
+    .left {
+      display: flex;
+      gap: 100px;
+      align-items: center;
+
+      .texts {
+        display: flex;
+        gap: 15px;
+
+        .bold {
+          font-weight: 600;
+        }
+
+        a {
+          text-decoration: none;
+          border: 1px solid transparent;
+          color: inherit;
+        }
+
+        a:visited {
+          color: inherit;
+        }
+
+        h1 {
+          font-size: 14px;
+          font-weight: 500;
+          padding: 10px;
+        }
+
+        .choose-section {
+          display: flex;
+          gap: 5px;
+          align-items: center;
+          cursor: pointer;
+        }
+
+        .sections-container {
+          width: max-content;
+          position: absolute;
+          top: 100%;
+          background-color: #ffffff;
+          padding: 20px;
+          font-size: 14px;
+          z-index: 1;
+
+          ul {
+            list-style-type: none;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+
+            li {
+              cursor: pointer;
+            }
+
+            li:not(:last-child) {
+              border-bottom: 1px solid #efefef;
+              padding-bottom: 10px;
+            }
+          }
+          p {
+            padding: 15px;
+            border: 1px solid transparent;
+          }
+        }
+
+        .sections-container p:hover {
+          background-color: #f2f6ff;
+          border: 1px solid #a0bfff;
+          border-radius: 6px;
+        }
+      }
+
+      .socials {
+        display: flex;
+        gap: 30px;
+
+        button {
+          display: flex;
+          font-size: 14px;
+          align-items: center;
+          gap: 12px;
+          padding: 12px;
+          background-color: #ffffff;
+          border: 0.5px solid #a0a0a0;
+          border-radius: 14px;
+          cursor: pointer;
+        }
+      }
+    }
+  }
+}
+
+@media only screen and (min-width: $desktop) and (max-width: $ultrawide) {
+  header {
+    .header-container {
+      max-width: 2000px;
+      margin: auto;
+    }
+  }
+}
+
+@media only screen and (min-width: $tablet) and (max-width: $mid) {
+  header {
+    .header-container {
+      padding: 20px 100px;
+
+      .left {
+        gap: 90px;
+      }
+    }
+  }
+}
+
+@media only screen and (min-width: $mobile) and (max-width: calc($tablet - 1px)) {
+  header {
+    .header-container {
+      padding: 20px 50px;
+      gap: 20px;
+
+      .right {
+        gap: 10px;
+
+        h1 {
+          font-size: 11px;
+        }
+        img {
+          width: 70px;
+        }
+
+        .english-img {
+          width: 100px;
+        }
+
+        svg {
+          width: 150px;
+        }
+      }
+
+      .left {
+        gap: 30px;
+
+        .texts {
+          gap: 5px;
+
+          .sections-container {
+            padding: 10px;
+            font-size: 12px;
+
+            ul li:not(:last-child) {
+              padding-bottom: 5px;
+            }
+
+            p {
+              padding: 8px;
+            }
+          }
+
+          h1 {
+            font-size: 12px;
+          }
+        }
+
+        .socials {
+          gap: 15px;
+
+          .icons {
+            gap: 20px;
+          }
+        }
+      }
+    }
+  }
+}
+
+@media only screen and (min-width: 0) and (max-width: calc($mobile - 1px)) {
+  header {
+    .header-container {
+      padding: 30px;
+      gap: 15px;
+      display: flex;
+      flex-direction: column;
+
+      .right {
+        justify-content: center;
+        gap: 15px;
+        width: 100%;
+
+        .english-img {
+          width: 110px;
+        }
+
+        h1 {
+          font-size: 12px;
+          width: 150px;
+        }
+
+        img {
+          width: 80px;
+        }
+      }
+
+      .left {
+        gap: 20px;
+        flex-direction: column;
+
+        .texts {
+          gap: 5px;
+          .sections-container {
+            padding: 12px;
+            font-size: 13px;
+
+            ul li:not(:last-child) {
+              padding-bottom: 7px;
+            }
+
+            p {
+              padding: 10px;
+            }
+          }
+
+          h1 {
+            font-size: 13px;
+          }
+        }
+      }
+    }
+  }
+}

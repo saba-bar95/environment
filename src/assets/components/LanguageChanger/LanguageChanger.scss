@@ -1,0 +1,67 @@
+@use "/src/assets/styles/_breakpoints.scss" as *;
+
+.language-changer-container {
+  position: relative;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+
+  .language-changer {
+    border: 0.5px solid #a0a0a0;
+    border-radius: 14px;
+    position: absolute;
+    top: -50%;
+    display: flex;
+    flex-direction: column;
+    background-color: #fff;
+
+    .wrapper {
+      display: flex;
+      gap: 10px;
+      font-size: 14px;
+      align-items: center;
+      padding: 10px 12px;
+
+      .flag-img {
+        width: 18px;
+        height: 18px;
+      }
+    }
+
+    .wrapper:not(:last-child) {
+      border-bottom: 1px solid #a0a0a0;
+    }
+
+    .hovered {
+      &:hover {
+        background-color: lightgrey;
+        border-bottom-left-radius: 14px;
+        border-bottom-right-radius: 14px;
+      }
+    }
+  }
+}
+
+@media only screen and (min-width: $mobile) and (max-width: calc($tablet - 1px)) {
+  .language-changer-container {
+    .language-changer {
+      .wrapper {
+        padding: 5px 6px;
+        font-size: 11px;
+        gap: 8px;
+      }
+    }
+  }
+}
+
+@media only screen and (min-width: 0) and (max-width: calc($mobile - 1px)) {
+  .language-changer-container {
+    .language-changer {
+      .wrapper {
+        padding: 6px 8px;
+        font-size: 12px;
+        gap: 5px;
+      }
+    }
+  }
+}
