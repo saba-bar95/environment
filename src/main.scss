@@ -1,0 +1,15 @@
+@use "/src/assets/styles/_breakpoints.scss" as *;
+@use "/src/assets/styles/fonts.scss" as *;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: FiraGOLight;
+  font-weight: 500;
+  background-color: #f4f4f7;
+  overflow-x: hidden;
+}
