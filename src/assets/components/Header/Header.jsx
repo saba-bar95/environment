@@ -1,11 +1,10 @@
 import { useParams } from "react-router-dom";
 import { Link } from "react-router-dom";
 import SakstatLogoGeo from "./Svgs/SakstatLogoGeo";
-// import sakstatLogoEn from "/src/assets/images/sakstat-logo-en.png";
+import sakstatLogoEn from "/src/assets/images/sakstat-logo-en.png";
 import Socials from "../Socials/Socials";
 import LanguageChanger from "../LanguageChanger/LanguageChanger";
 import "./Header.scss";
-// import sections from "../../../../sections";
 
 const Header = () => {
   const { language } = useParams();
@@ -19,16 +18,15 @@ const Header = () => {
     },
   };
 
-  // const handleHeaderClick = () => {
-  //   window.scrollTo({
-  //     top: 0,
-  //     behavior: "smooth",
-  //     easing: "ease-in-out",
-  //   });
-  // };
+  const handleHeaderClick = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+      easing: "ease-in-out",
+    });
+  };
 
   const isEnglish = language === "en";
-  // const englishIMG = isEnglish ? "english-img" : "";
 
   return (
     <>
@@ -36,14 +34,17 @@ const Header = () => {
         <div className="header-container">
           <div className="right">
             <Link to={`/${language}`}>
-              <SakstatLogoGeo />
-              {/* <img
-                src={language === "ge" ? SakstatLogoGeo : SakstatLogoGeo}
-                alt="sakstat-logo"
-                onClick={handleHeaderClick}
-                style={{ cursor: "pointer", maxWidth: "120px" }}
-                className={englishIMG}
-              /> */}
+              {!isEnglish ? (
+                <SakstatLogoGeo />
+              ) : (
+                <img
+                  src={sakstatLogoEn}
+                  alt="sakstat-logo"
+                  onClick={handleHeaderClick}
+                  style={{ cursor: "pointer", maxWidth: "110px" }}
+                  className="english-img"
+                />
+              )}
             </Link>
 
             {isEnglish ? (
