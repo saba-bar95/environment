@@ -11,7 +11,6 @@ export default function FacebookSvg() {
       } // Attach onClick directly
       style={{ cursor: "pointer" }} // Add pointer cursor for better UX
       role="button" // Improve accessibility
-      tabIndex={0} // Make it focusable for keyboard navigation
       aria-label="Open Facebook" // Accessibility for screen readers
     >
       <path

@@ -9,7 +9,6 @@ export default function XSvg() {
       onClick={() => window.open("https://x.com/Geostat100", "_blank")} // Attach onClick directly
       style={{ cursor: "pointer" }} // Add pointer cursor for better UX
       role="button" // Improve accessibility
-      tabIndex={0} // Make it focusable for keyboard navigation
       aria-label="Open X" // Accessibility for screen readers
     >
       <path
