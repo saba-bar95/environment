@@ -1,8 +1,6 @@
 import { useEffect, useState, useRef } from "react";
-import GeorgianFlag from "./Svgs/GeorgianFlag";
 import UpVectorGray from "./Svgs/UpVectorGray";
 import DownVectorGray from "./Svgs/DownVectorGray";
-import britishFlag from "/src/assets/images/british-flag.svg";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
 import "./LanguageChanger.scss";
 
@@ -55,12 +53,14 @@ const LanguageChanger = () => {
       className="language-changer-container"
       onClick={handleLanguageChange}
       style={{ marginRight: width }}>
-      <div className="language-changer">
+      <div
+        className="language-changer"
+        style={{ top: isLanguageOpen ? "-50%" : "" }}>
         <div className="wrapper" ref={wrapperRef}>
           {language === "ge" ? (
-            <GeorgianFlag />
+            <span className="fi fi-ge"></span>
           ) : (
-            <img src={britishFlag} className="flag-img" alt="flag" />
+            <span className="fi fi-gb"></span>
           )}
           <p>{text[language].language}</p>
           {isLanguageOpen ? <DownVectorGray /> : <UpVectorGray />}
@@ -69,9 +69,9 @@ const LanguageChanger = () => {
           <div className="language-options">
             <div className="wrapper hovered" onClick={toggleLanguage}>
               {language === "en" ? (
-                <GeorgianFlag />
+                <span className="fi fi-ge"></span>
               ) : (
-                <img src={britishFlag} className="flag-img" alt="flag" />
+                <span className="fi fi-gb"></span>
               )}
               <p>
                 {language === "ge" ? text["en"].language : text["ge"].language}
