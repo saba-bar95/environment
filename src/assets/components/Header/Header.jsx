@@ -5,6 +5,7 @@ import sakstatLogoEn from "/src/assets/images/sakstat-logo-en.png";
 import Socials from "../Socials/Socials";
 import LanguageChanger from "../LanguageChanger/LanguageChanger";
 import "./Header.scss";
+import Navigation from "./Navigaton/Navigation";
 
 const Header = () => {
   const { language } = useParams();
@@ -72,6 +73,7 @@ const Header = () => {
             </div>
           </div>
         </div>
+        <Navigation />
       </header>
     </>
   );
