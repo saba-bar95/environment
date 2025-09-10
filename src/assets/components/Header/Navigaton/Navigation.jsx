@@ -34,13 +34,22 @@ const Navigation = () => {
               onMouseLeave={handleMouseLeave}>
               <div className="nav-item-wrapper">
                 {!section.links ? (
-                  <Link to={`/${language}/${section.href}`}>
+                  <Link to={`/${language}/${section.href}`} className="link">
                     {section[`name_${language}`]}
                   </Link>
                 ) : (
                   <div className="nav-item-content">
-                    <span>{section[`name_${language}`]}</span>
-                    {hoveredSectionId === section.id ? <Close /> : <Open />}
+                    <span className="link-span">
+                      {section[`name_${language}`]}
+                    </span>
+                    <span
+                      className={`icon-wrapper ${
+                        hoveredSectionId === section.id
+                          ? "close-icon"
+                          : "open-icon"
+                      }`}>
+                      {hoveredSectionId === section.id ? <Close /> : <Open />}
+                    </span>
                   </div>
                 )}
                 {section.links && hoveredSectionId === section.id && (

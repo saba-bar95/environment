@@ -16,8 +16,27 @@
       position: relative;
       font-size: 14px;
       color: inherit;
-      padding: 25px 10px;
       cursor: pointer;
+
+      .link-span {
+        padding: 25px 0;
+        padding-right: 10px;
+      }
+
+      .icon-wrapper {
+        display: inline-block;
+        animation-duration: 0.4s;
+        animation-fill-mode: both;
+        padding-right: 10px;
+
+        &.open-icon {
+          animation-name: fadeInScale;
+        }
+
+        &.close-icon {
+          animation-name: rotateFade;
+        }
+      }
 
       a {
         text-decoration: none;
@@ -25,6 +44,9 @@
         transition: font-weight 0.3s ease, transform 2s ease;
         display: block;
         width: max-content;
+      }
+      a.link {
+        padding: 25px 10px;
       }
 
       &.no-sub-links {
@@ -37,8 +59,8 @@
       .nav-item-content {
         display: flex;
         align-items: center;
-        gap: 8px;
         width: max-content;
+        justify-content: center;
 
         svg {
           flex-shrink: 0;
@@ -64,13 +86,17 @@
         border-bottom-right-radius: 20px;
         font-family: FiraGORegular;
         font-feature-settings: "case" on;
-        transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s ease;
         z-index: 10; /* Ensure dropdown is above other elements */
+
+        /* Apply slideUp animation by default when hidden */
+        animation: slideUp 0.7s ease forwards;
 
         &.visible {
           opacity: 1;
           visibility: visible;
           transform: translateX(-50%) translateY(0);
+          /* Apply slideDown animation when visible */
+          animation: slideDown 0.7s ease forwards;
         }
 
         .up-vector {
@@ -101,7 +127,7 @@
             border-radius: 15px;
             padding: 20px;
             gap: 30px;
-            transition: transform 0.4s ease;
+            transition: transform 0.7s ease;
             cursor: pointer;
 
             svg {
@@ -122,16 +148,16 @@
 @keyframes slideDown {
   0% {
     opacity: 0;
-    transform: translateX(-50%) translateY(-20px);
+    // transform: translateX(-50%) translateY(-20px);
     visibility: hidden;
   }
   80% {
     opacity: 1;
-    transform: translateX(-50%) translateY(5px);
+    // transform: translateX(-50%) translateY(5px);
   }
   100% {
     opacity: 1;
-    transform: translateX(-50%) translateY(0);
+    // transform: translateX(-50%) translateY(0);
     visibility: visible;
   }
 }
@@ -147,5 +173,27 @@
     opacity: 0;
     transform: translateX(-50%) translateY(-20px);
     visibility: hidden;
+  }
+}
+
+@keyframes fadeInScale {
+  0% {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes rotateFade {
+  0% {
+    opacity: 0;
+    transform: rotate(-90deg) scale(0.5);
+  }
+  100% {
+    opacity: 1;
+    transform: rotate(0deg) scale(1);
   }
 }
