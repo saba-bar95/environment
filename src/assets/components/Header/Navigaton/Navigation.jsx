@@ -4,6 +4,7 @@ import { useState } from "react";
 import Open from "./Svgs/Open";
 import Close from "./Svgs/Close";
 import sections from "./sections/sections";
+import UpVector from "./Svgs/UpVector";
 
 const Navigation = () => {
   const { language } = useParams();
@@ -43,16 +44,19 @@ const Navigation = () => {
                     className={`dropdown-container ${
                       hoveredSectionId === section.id ? "visible" : ""
                     }`}>
-                    {section.links.map((subLink, index) => (
-                      <Link
-                        to={`/${language}/${section.href}/${subLink.link}`}
-                        key={index}>
-                        <div className="links-wrapper">
-                          {subLink.svg && <subLink.svg />}
-                          {subLink[`header_${language}`]}
-                        </div>
-                      </Link>
-                    ))}
+                    <UpVector />
+                    <div className="dropdown-content">
+                      {section.links.map((subLink, index) => (
+                        <Link
+                          to={`/${language}/${section.href}/${subLink.link}`}
+                          key={index}>
+                          <div className="links-wrapper">
+                            {subLink.svg && <subLink.svg />}
+                            {subLink[`header_${language}`]}
+                          </div>
+                        </Link>
+                      ))}
+                    </div>
                   </div>
                 )}
               </div>

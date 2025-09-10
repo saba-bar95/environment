@@ -37,43 +37,56 @@
       .nav-item-content {
         display: flex;
         align-items: center;
-        gap: 8px; /* Space between text and SVG */
+        gap: 8px;
         width: max-content;
 
         svg {
-          flex-shrink: 0; /* Prevent SVG from shrinking */
-          transition: transform 0.3s ease; /* Smooth SVG transition */
+          flex-shrink: 0;
+          transition: transform 0.3s ease;
         }
 
         &:hover svg {
-          transform: rotate(0deg); /* Ensure no unintended rotation */
+          transform: rotate(0deg);
         }
       }
 
       .dropdown-container {
         position: absolute;
-        top: 100%; /* Remove 20px gap */
+        top: 100%; /* Aligns with the bottom of the li */
         left: 50%;
-        transform: translateX(-50%) translateY(-20px); /* Start higher for slide-down */
+        transform: translateX(-50%) translateY(-20px); /* Start higher for animation */
         opacity: 0;
         visibility: hidden;
         background-color: #ffffff;
         color: #1e1e1e;
-        padding: 40px 50px;
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 20px;
         box-shadow: 0 4px 8px #0003;
         border-bottom-left-radius: 20px;
         border-bottom-right-radius: 20px;
         font-family: FiraGORegular;
         font-feature-settings: "case" on;
-        transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s ease; /* Smooth transition */
+        transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s ease;
+        z-index: 10; /* Ensure dropdown is above other elements */
 
         &.visible {
           opacity: 1;
           visibility: visible;
           transform: translateX(-50%) translateY(0);
+        }
+
+        .up-vector {
+          position: absolute;
+          top: -7px; /* Adjust based on UpVector height to align with li bottom */
+          left: 50%;
+          transform: translateX(-50%);
+          z-index: 11; /* Ensure UpVector is above dropdown content */
+          vector-effect: non-scaling-stroke; /* Prevent stroke scaling issues */
+        }
+
+        .dropdown-content {
+          padding: 40px 50px;
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 20px;
         }
 
         a {
@@ -114,7 +127,7 @@
   }
   80% {
     opacity: 1;
-    transform: translateX(-50%) translateY(5px); /* Slight overshoot for bounce */
+    transform: translateX(-50%) translateY(5px);
   }
   100% {
     opacity: 1;
