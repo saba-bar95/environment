@@ -18,6 +18,10 @@ const Navigation = () => {
     setHoveredSectionId(null);
   };
 
+  const handleLinkClick = () => {
+    setHoveredSectionId(null); // Hide dropdown on link click
+  };
+
   return (
     <div className="navigation-container">
       <nav>
@@ -49,7 +53,9 @@ const Navigation = () => {
                       {section.links.map((subLink, index) => (
                         <Link
                           to={`/${language}/${section.href}/${subLink.link}`}
-                          key={index}>
+                          key={index}
+                          onClick={handleLinkClick} // Add onClick handler
+                        >
                           <div className="links-wrapper">
                             {subLink.svg && <subLink.svg />}
                             {subLink[`header_${language}`]}
