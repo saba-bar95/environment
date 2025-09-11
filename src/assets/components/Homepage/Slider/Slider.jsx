@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./Slider.scss";
 import { useParams } from "react-router-dom";
 import Slides from "./Slides/Slides";
@@ -14,9 +14,59 @@ const Slider = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [currentSlide, setCurrentSlide] = useState(Slides[0]);
   const [slideDirection, setSlideDirection] = useState(""); // Track slide direction
+  const [isForward, setIsForward] = useState(true); // Track forward/backward direction
+
+  // Auto-slide every 2 seconds
+  useEffect(() => {
+    const timer = setInterval(() => {
+      if (isForward) {
+        // Move forward (right)
+        if (currentIndex === Slides.length - 1) {
+          setIsForward(false); // Reverse at last slide
+          setSlideDirection("left");
+          setCurrentIndex((prevIndex) => {
+            const newIndex =
+              prevIndex === 0 ? Slides.length - 1 : prevIndex - 1;
+            setCurrentSlide(Slides[newIndex]);
+            return newIndex;
+          });
+        } else {
+          setSlideDirection("right");
+          setCurrentIndex((prevIndex) => {
+            const newIndex = (prevIndex + 1) % Slides.length;
+            setCurrentSlide(Slides[newIndex]);
+            return newIndex;
+          });
+        }
+      } else {
+        // Move backward (left)
+        if (currentIndex === 0) {
+          setIsForward(true); // Reverse at first slide
+          setSlideDirection("right");
+          setCurrentIndex((prevIndex) => {
+            const newIndex = (prevIndex + 1) % Slides.length;
+            setCurrentSlide(Slides[newIndex]);
+            return newIndex;
+          });
+        } else {
+          setSlideDirection("left");
+          setCurrentIndex((prevIndex) => {
+            const newIndex =
+              prevIndex === 0 ? Slides.length - 1 : prevIndex - 1;
+            setCurrentSlide(Slides[newIndex]);
+            return newIndex;
+          });
+        }
+      }
+    }, 3000); // 2-second interval
+
+    // Cleanup interval on component unmount
+    return () => clearInterval(timer);
+  }, [currentIndex, isForward]);
 
   const nextSlide = () => {
-    setSlideDirection("right"); // Set direction for next slide
+    setSlideDirection("right");
+    setIsForward(true); // Set direction to forward on manual next
     setCurrentIndex((prevIndex) => {
       const newIndex = (prevIndex + 1) % Slides.length;
       setCurrentSlide(Slides[newIndex]);
@@ -25,7 +75,8 @@ const Slider = () => {
   };
 
   const prevSlide = () => {
-    setSlideDirection("left"); // Set direction for previous slide
+    setSlideDirection("left");
+    setIsForward(false); // Set direction to backward on manual prev
     setCurrentIndex((prevIndex) => {
       const newIndex = prevIndex === 0 ? Slides.length - 1 : prevIndex - 1;
       setCurrentSlide(Slides[newIndex]);
@@ -34,8 +85,8 @@ const Slider = () => {
   };
 
   const handleDotClick = (index) => {
-    // Determine direction based on whether index is higher or lower
     setSlideDirection(index > currentIndex ? "right" : "left");
+    setIsForward(index >= currentIndex); // Update direction based on index
     setCurrentIndex(index);
     setCurrentSlide(Slides[index]);
   };
@@ -79,7 +130,7 @@ const Slider = () => {
       <div
         className={`slider-container ${
           currentIndex === 3 ? "third-slide" : ""
-        }`}
+        } slide-${slideDirection}`}
         style={{ "--background-image": `url(${currentSlide.background1})` }}>
         <div className="dark-layer" />
         <div className="content-container" key={currentIndex}>
