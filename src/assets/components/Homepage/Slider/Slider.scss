@@ -1,0 +1,850 @@
+@use "/src/assets/styles/_breakpoints.scss" as *;
+
+.slider {
+  font-feature-settings: "case" on;
+  gap: 50px;
+  position: relative;
+  overflow: hidden; // Prevent animation from overflowing outside the container
+
+  .slider-container {
+    border-radius: 30px;
+    max-width: 1800px;
+    padding: 30px 50px;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+    position: relative;
+
+    // Background image via ::before
+    &::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: var(--background-image);
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: center;
+      opacity: 0.6; // Background image opacity
+      z-index: 0;
+      border-radius: 30px;
+    }
+
+    &.third-slide::before {
+      background-position: center 80%; // Conditional positioning for third slide
+    }
+
+    .dark-layer {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.6); // Dark overlay
+      z-index: 1;
+      border-radius: 30px;
+    }
+
+    .content-container,
+    .bot-side {
+      position: relative;
+      z-index: 2; // Above both background and dark layer
+    }
+
+    .content-container {
+      position: relative;
+      width: 100%;
+      min-height: 200px; // Ensure space for content
+
+      .slide-content {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        gap: 80px;
+        align-items: center;
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none; // Prevent interaction with non-active slides
+        transform: translateX(0); // Default position
+
+        &.active {
+          opacity: 1;
+          visibility: visible;
+          pointer-events: auto; // Allow interaction with active slide
+        }
+
+        &.slide-right {
+          &.active {
+            animation: slideInFromRight 0.8s ease-in-out forwards;
+          }
+          &:not(.active) {
+            animation: slideOutLeft 0.8s ease-in-out forwards;
+          }
+        }
+
+        &.slide-left {
+          &.active {
+            animation: slideInFromLeft 0.8s ease-in-out forwards;
+          }
+          &:not(.active) {
+            animation: slideOutRight 0.8s ease-in-out forwards;
+          }
+        }
+
+        h2 {
+          color: #ffffff;
+          font-size: 48px;
+          font-family: FiraGORegular;
+          text-transform: capitalize;
+          letter-spacing: 0;
+          width: 100%;
+          flex: 1;
+        }
+
+        .stats {
+          flex: 1.5;
+          background-color: #ffffff;
+          border-radius: 15px;
+          padding: 30px;
+          display: flex;
+          gap: 50px;
+
+          .left {
+            height: 128px;
+            flex: 1;
+            border-radius: 15px;
+            background-position: center;
+            background-size: cover;
+            background-repeat: no-repeat;
+          }
+
+          .right {
+            flex: 2;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+
+            .top {
+              display: flex;
+              gap: 20px;
+              align-items: center;
+
+              .number-1 {
+                font-size: 70px;
+                color: #1e1e1e;
+                font-family: FiraGOBold;
+              }
+
+              .unit {
+                font-family: FiraGORegular;
+                font-size: 16px;
+                font-weight: 900;
+              }
+            }
+            .bot {
+              display: flex;
+              gap: 10px;
+              align-items: center;
+
+              .number {
+                color: #1dbf73;
+                font-family: FiraGORegular;
+                font-weight: 900;
+                margin-left: 5px;
+              }
+
+              .para {
+                font-feature-settings: "case" off;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    .bot-side {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 80px;
+
+      .right {
+        flex: 1;
+
+        .slide {
+          a {
+            text-decoration: none;
+
+            button {
+              background-color: #ffffff;
+              color: #003d2f;
+              border: 0px solid transparent;
+              outline: none;
+              padding: 20px 30px;
+              border-radius: 15px;
+              font-family: FiraGORegular;
+              font-weight: 900;
+              font-size: 14px;
+              display: flex;
+              align-items: center;
+              gap: 10px;
+              cursor: pointer;
+              transition: transform 0.3s ease;
+
+              &:hover {
+                transform: translateX(10px);
+              }
+            }
+          }
+        }
+      }
+
+      .left {
+        flex: 1.5;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        .navigation {
+          display: flex;
+          gap: 10px;
+
+          button {
+            display: flex;
+            padding: 15px;
+            border-radius: 25px;
+            outline: none;
+            border: none;
+            background-color: #ffffff;
+            cursor: pointer;
+
+            &.disabled {
+              background-color: #afadad;
+              cursor: not-allowed;
+            }
+          }
+        }
+      }
+
+      .dots {
+        display: flex;
+        gap: 10px;
+
+        .dot {
+          width: 14px;
+          height: 14px;
+          border-radius: 14px;
+          border: 2px solid #ffffff;
+          cursor: pointer;
+          transition: width 0.5s ease, background-color 0.5s ease;
+
+          &.active {
+            background-color: #ffffff;
+            width: 58px;
+          }
+        }
+      }
+    }
+  }
+
+  // Animations for background
+  .slider-container {
+    &.slide-right::before {
+      animation: slideOutLeft 0.8s ease-in-out forwards;
+    }
+    &.slide-left::before {
+      animation: slideOutRight 0.8s ease-in-out forwards;
+    }
+  }
+
+  // Animations for sliding
+  @keyframes slideInFromRight {
+    from {
+      transform: translateX(50%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
+  @keyframes slideInFromLeft {
+    from {
+      transform: translateX(-50%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
+  @keyframes slideOutLeft {
+    from {
+      transform: translateX(0);
+      opacity: 1;
+    }
+    to {
+      transform: translateX(-50%);
+      opacity: 0;
+    }
+  }
+
+  @keyframes slideOutRight {
+    from {
+      transform: translateX(0);
+      opacity: 1;
+    }
+    to {
+      transform: translateX(50%);
+      opacity: 0;
+    }
+  }
+}
+
+// Ultrawide screens (1920px and above, up to 15000px)
+@media only screen and (min-width: $desktop) and (max-width: $ultrawide) {
+  .slider {
+    max-width: 1800px;
+    margin: auto;
+
+    .slider-container {
+      padding: 30px 50px;
+      gap: 40px;
+
+      .content-container {
+        .slide-content {
+          gap: 80px;
+
+          h2 {
+            font-size: 48px;
+          }
+
+          .stats {
+            padding: 30px;
+            gap: 50px;
+
+            .left {
+              height: 128px;
+            }
+
+            .right {
+              .top {
+                .number-1 {
+                  font-size: 70px;
+                }
+                .unit {
+                  font-size: 16px;
+                }
+              }
+            }
+          }
+        }
+      }
+
+      .bot-side {
+        gap: 80px;
+
+        .right {
+          button {
+            padding: 20px 30px;
+            font-size: 14px;
+          }
+        }
+
+        .left {
+          .navigation {
+            button {
+              padding: 15px;
+            }
+          }
+
+          .dots {
+            .dot {
+              width: 14px;
+              height: 14px;
+
+              &.active {
+                width: 58px;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+// Mid-size screens (1200px–1600px)
+@media only screen and (min-width: $tablet) and (max-width: $mid) {
+  .slider {
+    max-width: 1100px;
+    margin: auto;
+
+    .slider-container {
+      padding: 20px 30px;
+      gap: 30px;
+
+      &.slide-right::before {
+        animation: slideOutLeft 0.7s ease-in-out forwards;
+      }
+      &.slide-left::before {
+        animation: slideOutRight 0.7s ease-in-out forwards;
+      }
+
+      .content-container {
+        .slide-content {
+          gap: 50px;
+
+          &.slide-right {
+            &.active {
+              animation: slideInFromRight 0.7s ease-in-out forwards;
+            }
+            &:not(.active) {
+              animation: slideOutLeft 0.7s ease-in-out forwards;
+            }
+          }
+
+          &.slide-left {
+            &.active {
+              animation: slideInFromLeft 0.7s ease-in-out forwards;
+            }
+            &:not(.active) {
+              animation: slideOutRight 0.7s ease-in-out forwards;
+            }
+          }
+
+          h2 {
+            font-size: 36px;
+          }
+
+          .stats {
+            padding: 20px;
+            gap: 30px;
+
+            .left {
+              height: 100px;
+            }
+
+            .right {
+              .top {
+                .number-1 {
+                  font-size: 50px;
+                }
+                .unit {
+                  font-size: 14px;
+                }
+              }
+            }
+          }
+        }
+      }
+
+      .bot-side {
+        gap: 50px;
+
+        .right {
+          button {
+            padding: 15px 20px;
+            font-size: 12px;
+          }
+        }
+
+        .left {
+          .navigation {
+            button {
+              padding: 10px;
+            }
+          }
+
+          .dots {
+            .dot {
+              width: 12px;
+              height: 12px;
+
+              &.active {
+                width: 48px;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    // Animations for mid-size screens
+    @keyframes slideInFromRight {
+      from {
+        transform: translateX(40%);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    @keyframes slideInFromLeft {
+      from {
+        transform: translateX(-40%);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    @keyframes slideOutLeft {
+      from {
+        transform: translateX(0);
+        opacity: 1;
+      }
+      to {
+        transform: translateX(-40%);
+        opacity: 0;
+      }
+    }
+
+    @keyframes slideOutRight {
+      from {
+        transform: translateX(0);
+        opacity: 1;
+      }
+      to {
+        transform: translateX(40%);
+        opacity: 0;
+      }
+    }
+  }
+}
+
+// Tablet screens (768px–1200px)
+@media only screen and (min-width: $mobile) and (max-width: calc($tablet - 1px)) {
+  .slider {
+    max-width: 700px;
+    margin: auto;
+
+    .slider-container {
+      padding: 15px 20px;
+      gap: 20px;
+
+      &.slide-right::before {
+        animation: slideOutLeft 0.6s ease-in-out forwards;
+      }
+      &.slide-left::before {
+        animation: slideOutRight 0.6s ease-in-out forwards;
+      }
+
+      .content-container {
+        .slide-content {
+          flex-direction: column;
+          gap: 30px;
+          align-items: flex-start;
+
+          &.slide-right {
+            &.active {
+              animation: slideInFromRight 0.6s ease-in-out forwards;
+            }
+            &:not(.active) {
+              animation: slideOutLeft 0.6s ease-in-out forwards;
+            }
+          }
+
+          &.slide-left {
+            &.active {
+              animation: slideInFromLeft 0.6s ease-in-out forwards;
+            }
+            &:not(.active) {
+              animation: slideOutRight 0.6s ease-in-out forwards;
+            }
+          }
+
+          h2 {
+            font-size: 28px;
+          }
+
+          .stats {
+            flex: 1;
+            padding: 15px;
+            gap: 20px;
+            flex-direction: column;
+
+            .left {
+              height: 80px;
+              width: 100%;
+            }
+
+            .right {
+              .top {
+                .number-1 {
+                  font-size: 40px;
+                }
+                .unit {
+                  font-size: 12px;
+                }
+              }
+            }
+          }
+        }
+      }
+
+      .bot-side {
+        flex-direction: column;
+        gap: 20px;
+        align-items: flex-start;
+
+        .right {
+          button {
+            padding: 10px 15px;
+            font-size: 12px;
+          }
+        }
+
+        .left {
+          width: 100%;
+          justify-content: space-between;
+
+          .navigation {
+            button {
+              padding: 8px;
+
+              svg {
+                width: 12px;
+                height: 12px;
+              }
+            }
+          }
+
+          .dots {
+            .dot {
+              width: 10px;
+              height: 10px;
+
+              &.active {
+                width: 36px;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    // Animations for tablet screens
+    @keyframes slideInFromRight {
+      from {
+        transform: translateX(30%);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    @keyframes slideInFromLeft {
+      from {
+        transform: translateX(-30%);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    @keyframes slideOutLeft {
+      from {
+        transform: translateX(0);
+        opacity: 1;
+      }
+      to {
+        transform: translateX(-30%);
+        opacity: 0;
+      }
+    }
+
+    @keyframes slideOutRight {
+      from {
+        transform: translateX(0);
+        opacity: 1;
+      }
+      to {
+        transform: translateX(30%);
+        opacity: 0;
+      }
+    }
+  }
+}
+
+// Mobile screens (0–767px)
+@media only screen and (min-width: 0) and (max-width: calc($mobile - 1px)) {
+  .slider {
+    max-width: 100%;
+    margin: 0 10px;
+
+    .slider-container {
+      padding: 10px 15px;
+      gap: 15px;
+      border-radius: 15px;
+
+      &.slide-right::before {
+        animation: slideOutLeft 0.5s ease-in-out forwards;
+      }
+      &.slide-left::before {
+        animation: slideOutRight 0.5s ease-in-out forwards;
+      }
+
+      &::before {
+        border-radius: 15px;
+      }
+
+      .dark-layer {
+        border-radius: 15px;
+      }
+
+      .content-container {
+        .slide-content {
+          flex-direction: column;
+          gap: 20px;
+          align-items: flex-start;
+
+          &.slide-right {
+            &.active {
+              animation: slideInFromRight 0.5s ease-in-out forwards;
+            }
+            &:not(.active) {
+              animation: slideOutLeft 0.5s ease-in-out forwards;
+            }
+          }
+
+          &.slide-left {
+            &.active {
+              animation: slideInFromLeft 0.5s ease-in-out forwards;
+            }
+            &:not(.active) {
+              animation: slideOutRight 0.5s ease-in-out forwards;
+            }
+          }
+
+          h2 {
+            font-size: 20px;
+          }
+
+          .stats {
+            padding: 10px;
+            gap: 15px;
+            flex-direction: column;
+
+            .left {
+              height: 60px;
+              width: 100%;
+            }
+
+            .right {
+              .top {
+                .number-1 {
+                  font-size: 30px;
+                }
+                .unit {
+                  font-size: 10px;
+                }
+              }
+              .bot {
+                .number {
+                  font-size: 12px;
+                }
+                .para {
+                  font-size: 12px;
+                }
+              }
+            }
+          }
+        }
+      }
+
+      .bot-side {
+        flex-direction: column;
+        gap: 15px;
+        align-items: flex-start;
+
+        .right {
+          button {
+            padding: 8px 12px;
+            font-size: 10px;
+          }
+        }
+
+        .left {
+          width: 100%;
+          justify-content: space-between;
+
+          .navigation {
+            button {
+              padding: 6px;
+
+              svg {
+                width: 10px;
+                height: 10px;
+              }
+            }
+          }
+
+          .dots {
+            display: none;
+          }
+        }
+      }
+    }
+
+    // Animations for mobile screens
+    @keyframes slideInFromRight {
+      from {
+        transform: translateX(20%);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    @keyframes slideInFromLeft {
+      from {
+        transform: translateX(-20%);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    @keyframes slideOutLeft {
+      from {
+        transform: translateX(0);
+        opacity: 1;
+      }
+      to {
+        transform: translateX(-20%);
+        opacity: 0;
+      }
+    }
+
+    @keyframes slideOutRight {
+      from {
+        transform: translateX(0);
+        opacity: 1;
+      }
+      to {
+        transform: translateX(20%);
+        opacity: 0;
+      }
+    }
+  }
+}
