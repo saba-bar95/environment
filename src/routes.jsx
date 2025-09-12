@@ -13,6 +13,7 @@ import Reports from "./assets/components/Pages/Reports/Reports";
 import waterRoutes from "./assets/components/Pages/Water/waterRoutes";
 import climateRoutes from "./assets/components/Pages/Climate/climateRoutes";
 import natureRoutes from "./assets/components/Pages/Nature/natureRoutes";
+import TransportAndEnergy from "./assets/components/Pages/TransportAndEnergy/TransportAndEnergy";
 
 const routes = [
   {
@@ -33,6 +34,7 @@ const routes = [
       { path: "transport", element: <Transport /> },
       { path: "waste", element: <Waste /> },
       { path: "other", element: <Other /> },
+      { path: "transportandenergy", element: <TransportAndEnergy /> },
     ],
   },
 ];
