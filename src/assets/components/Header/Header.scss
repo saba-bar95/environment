@@ -144,6 +144,7 @@ header {
   header {
     .header-container {
       padding: 20px 100px;
+      height: 80px;
 
       .left {
         gap: 90px;
@@ -217,7 +218,7 @@ header {
 @media only screen and (min-width: 0) and (max-width: calc($mobile - 1px)) {
   header {
     .header-container {
-      padding: 30px;
+      padding: 20px 0;
       gap: 15px;
       display: flex;
       flex-direction: column;
