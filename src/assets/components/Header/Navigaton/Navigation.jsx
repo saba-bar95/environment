@@ -11,14 +11,18 @@ const Navigation = () => {
   const [hoveredSectionId, setHoveredSectionId] = useState(null);
   const ulRef = useRef(null);
   const [width, setWidth] = useState(window.innerWidth);
+
   const handleMouseEnter = (id) => {
     setHoveredSectionId(id);
+    if (ulRef.current && width < 769 && id) {
+      ulRef.current.style.overflowX = "clip"; // Only clip on mobile when hovering section with links
+    }
   };
 
   const handleMouseLeave = () => {
     setHoveredSectionId(null);
     if (ulRef.current && width < 769) {
-      ulRef.current.style.overflowX = "scroll";
+      ulRef.current.style.overflowX = "scroll"; // Only scroll on mobile
     }
   };
 
@@ -28,22 +32,24 @@ const Navigation = () => {
 
   useEffect(() => {
     const handleResize = () => {
-      setWidth(window.innerWidth);
+      const newWidth = window.innerWidth;
+      setWidth(newWidth);
+      // Reset overflow-x based on width
+      if (ulRef.current) {
+        ulRef.current.style.overflowX = newWidth < 769 ? "scroll" : "visible";
+      }
     };
 
     window.addEventListener("resize", handleResize);
+    // Set initial overflow-x based on current width
+    if (ulRef.current) {
+      ulRef.current.style.overflowX = width < 769 ? "scroll" : "visible";
+    }
 
-    // Cleanup on unmount
     return () => {
       window.removeEventListener("resize", handleResize);
     };
-  }, []);
-
-  const handleNoLinksHover = () => {
-    if (ulRef.current && width < 769) {
-      ulRef.current.style.overflowX = "clip";
-    }
-  };
+  }, [width]);
 
   return (
     <div className="navigation-container">
@@ -53,10 +59,7 @@ const Navigation = () => {
             <li
               key={section.id}
               className={!section.links ? "no-sub-links" : ""}
-              onMouseEnter={() => {
-                handleMouseEnter(section.id);
-                if (section.links) handleNoLinksHover(section);
-              }}
+              onMouseEnter={() => handleMouseEnter(section.id)}
               onMouseLeave={handleMouseLeave}>
               <div className="nav-item-wrapper">
                 {!section.links ? (
@@ -89,8 +92,7 @@ const Navigation = () => {
                         <Link
                           to={`/${language}/${section.href}/${subLink.link}`}
                           key={index}
-                          onClick={handleLinkClick} // Add onClick handler
-                        >
+                          onClick={handleLinkClick}>
                           <div className="links-wrapper">
                             {subLink.svg && <subLink.svg />}
                             {subLink[`header_${language}`]}
