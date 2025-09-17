@@ -3,8 +3,8 @@
 .section {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 30px;
-  margin-top: 60px;
+  gap: calc(20px + 1vw); // Reduced gap with viewport scaling
+  margin-top: calc(40px + 1.5vw); // Reduced margin-top
   font-feature-settings: "case" on;
 
   a {
@@ -14,30 +14,30 @@
       display: flex;
       align-items: center;
       background-color: #f3f5f7;
-      padding: 20px 30px;
+      padding: calc(15px + 0.8vw) calc(20px + 1vw); // Reduced padding
       border-radius: 15px;
-      gap: 10px;
+      gap: calc(8px + 0.5vw); // Reduced gap
       cursor: pointer;
       transition: background-color 0.4s ease, box-shadow 0.4s ease,
         transform 0.4s ease;
-      min-height: 180px;
+      min-height: calc(140px + 2vw); // Reduced min-height
       box-sizing: border-box;
 
       .left {
         display: flex;
         flex-direction: column;
-        gap: 20px;
+        gap: calc(15px + 0.5vw); // Reduced gap
         flex: 2;
         color: #1e1e1e;
 
         h1 {
-          font-size: 16px;
+          font-size: calc(14px + 0.2vw); // Reduced font size
           text-transform: capitalize;
           font-family: FiraGORegular;
         }
 
         p {
-          font-size: 12px;
+          font-size: calc(10px + 0.2vw); // Reduced font size
           text-transform: capitalize;
           font-weight: 900;
         }
@@ -45,7 +45,7 @@
         .arrow-wrapper {
           display: flex;
           align-items: center;
-          gap: 8px;
+          gap: calc(6px + 0.2vw); // Reduced gap
           color: #003d2f;
           font-weight: 900;
 
@@ -74,9 +74,9 @@
 
       .right {
         flex: 1;
-        height: 126px;
+        height: calc(100px + 2vw); // Reduced height
         border-radius: 15px;
-        width: 100px;
+        width: calc(80px + 2vw); // Reduced width
         overflow: hidden;
         position: relative;
 
@@ -110,31 +110,32 @@
   /* Mobile: max-width 768px */
   @media (max-width: $mobile) {
     grid-template-columns: 1fr; /* Single column for mobile */
-    gap: 20px;
-    margin-top: 40px;
+    gap: calc(15px + 0.8vw); // Reduced gap
+    margin-top: calc(30px + 1vw); // Reduced margin-top
 
     .section-wrapper {
-      flex-direction: column; /* Stack content vertically */
-      padding: 15px;
-      min-height: 250px; /* Adjusted for mobile content stacking */
-      gap: 15px;
+      padding: calc(10px + 0.5vw) calc(12px + 0.7vw); // Reduced padding
+      min-height: calc(200px + 2vw); // Adjusted for mobile stacking
+      max-width: 400px;
+      margin: auto;
+      gap: calc(10px + 0.5vw); // Reduced gap
 
       .left {
-        gap: 15px;
+        gap: calc(10px + 0.5vw); // Reduced gap
         flex: none;
 
         h1 {
-          font-size: 14px;
+          font-size: calc(12px + 0.3vw); // Reduced font size
         }
 
         p {
-          font-size: 11px;
+          font-size: calc(9px + 0.2vw); // Reduced font size
         }
       }
 
       .right {
         width: 100%; /* Full width for image */
-        height: 150px; /* Increased height for better visibility */
+        height: calc(120px + 2vw); // Reduced height
       }
     }
   }
@@ -142,27 +143,27 @@
   /* Tablet: max-width 1200px */
   @media (max-width: $tablet) and (min-width: ($mobile + 1)) {
     grid-template-columns: repeat(2, 1fr); /* Two columns for tablet */
-    gap: 25px;
+    gap: calc(18px + 0.8vw); // Reduced gap
 
     .section-wrapper {
-      padding: 15px 20px;
-      min-height: 160px;
+      padding: calc(12px + 0.6vw) calc(15px + 0.8vw); // Reduced padding
+      min-height: calc(130px + 2vw); // Reduced min-height
 
       .left {
-        gap: 15px;
+        gap: calc(12px + 0.5vw); // Reduced gap
 
         h1 {
-          font-size: 15px;
+          font-size: calc(13px + 0.3vw); // Reduced font size
         }
 
         p {
-          font-size: 11px;
+          font-size: calc(9px + 0.2vw); // Reduced font size
         }
       }
 
       .right {
-        width: 80px;
-        height: 100px;
+        width: calc(70px + 2vw); // Reduced width
+        height: calc(90px + 2vw); // Reduced height
       }
     }
   }
@@ -170,24 +171,24 @@
   /* Mid: max-width 1600px */
   @media (max-width: $mid) and (min-width: ($tablet + 1)) {
     grid-template-columns: repeat(3, 1fr); /* Three columns for mid */
-    gap: 25px;
+    gap: calc(20px + 0.8vw); // Reduced gap
 
     .section-wrapper {
-      min-height: 170px;
+      min-height: calc(135px + 2vw); // Reduced min-height
 
       .left {
         h1 {
-          font-size: 15px;
+          font-size: calc(13px + 0.3vw); // Reduced font size
         }
 
         p {
-          font-size: 11px;
+          font-size: calc(10px + 0.2vw); // Reduced font size
         }
       }
 
       .right {
-        width: 90px;
-        height: 110px;
+        width: calc(75px + 2vw); // Reduced width
+        height: calc(95px + 2vw); // Reduced height
       }
     }
   }
@@ -195,24 +196,24 @@
   /* Desktop: max-width 1920px */
   @media (max-width: $desktop) and (min-width: ($mid + 1)) {
     grid-template-columns: repeat(4, 1fr); /* Default four columns */
-    gap: 30px;
+    gap: calc(20px + 1vw); // Reduced gap
 
     .section-wrapper {
-      min-height: 180px;
+      min-height: calc(140px + 2vw); // Reduced min-height
 
       .left {
         h1 {
-          font-size: 16px;
+          font-size: calc(14px + 0.3vw); // Reduced font size
         }
 
         p {
-          font-size: 12px;
+          font-size: calc(10px + 0.2vw); // Reduced font size
         }
       }
 
       .right {
-        width: 100px;
-        height: 126px;
+        width: calc(80px + 2vw); // Reduced width
+        height: calc(100px + 2vw); // Reduced height
       }
     }
   }
@@ -220,28 +221,28 @@
   /* Ultrawide: above 1920px */
   @media (min-width: ($desktop + 1)) {
     grid-template-columns: repeat(4, 1fr);
-    gap: 35px;
-    margin-top: 80px;
+    gap: calc(25px + 1.2vw); // Reduced gap
+    margin-top: calc(50px + 1.5vw); // Reduced margin-top
 
     .section-wrapper {
-      padding: 25px 35px;
-      min-height: 200px;
+      padding: calc(18px + 1vw) calc(25px + 1.2vw); // Reduced padding
+      min-height: calc(160px + 2vw); // Reduced min-height
 
       .left {
-        gap: 25px;
+        gap: calc(18px + 0.5vw); // Reduced gap
 
         h1 {
-          font-size: 18px;
+          font-size: calc(16px + 0.4vw); // Reduced font size
         }
 
         p {
-          font-size: 13px;
+          font-size: calc(11px + 0.3vw); // Reduced font size
         }
       }
 
       .right {
-        width: 120px;
-        height: 140px;
+        width: calc(100px + 2vw); // Reduced width
+        height: calc(120px + 2vw); // Reduced height
       }
     }
   }
