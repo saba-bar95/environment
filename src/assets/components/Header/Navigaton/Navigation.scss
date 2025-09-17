@@ -1,3 +1,5 @@
+@use "/src/assets/styles/_breakpoints.scss" as *;
+
 .navigation-container {
   position: relative;
   background-color: #003d2f;
@@ -74,9 +76,9 @@
 
       .dropdown-container {
         position: absolute;
-        top: 100%; /* Aligns with the bottom of the li */
+        top: 100%;
         left: 50%;
-        transform: translateX(-50%) translateY(-20px); /* Start higher for animation */
+        transform: translateX(-50%) translateY(-20px);
         opacity: 0;
         visibility: hidden;
         background-color: #ffffff;
@@ -86,26 +88,24 @@
         border-bottom-right-radius: 20px;
         font-family: FiraGORegular;
         font-feature-settings: "case" on;
-        z-index: 10; /* Ensure dropdown is above other elements */
+        z-index: 10000;
 
-        /* Apply slideUp animation by default when hidden */
         animation: slideUp 0.7s ease forwards;
 
         &.visible {
           opacity: 1;
           visibility: visible;
           transform: translateX(-50%) translateY(0);
-          /* Apply slideDown animation when visible */
-          animation: slideDown 0.7s ease forwards;
+          animation: slideDownn 0.7s ease forwards;
         }
 
         .up-vector {
           position: absolute;
-          top: -7px; /* Adjust based on UpVector height to align with li bottom */
+          top: -7px;
           left: 50%;
           transform: translateX(-50%);
-          z-index: 11; /* Ensure UpVector is above dropdown content */
-          vector-effect: non-scaling-stroke; /* Prevent stroke scaling issues */
+          z-index: 11;
+          vector-effect: non-scaling-stroke;
         }
 
         .dropdown-content {
@@ -144,20 +144,163 @@
   }
 }
 
-/* Keyframe animation for dropdown opening (slide-down with slight bounce) */
-@keyframes slideDown {
+// Ultrawide screens (1920px and above, up to 15000px)
+
+// Mid-size screens (1200px–1600px)
+@media only screen and (min-width: $tablet) and (max-width: $mid) {
+  .navigation-container {
+    ul {
+      gap: 10px;
+
+      li {
+        font-size: 13px;
+
+        .link-span {
+          padding: 15px 0;
+          padding-right: 5px;
+        }
+        a.link {
+          padding: 15px 10px;
+        }
+
+        .dropdown-container {
+          .dropdown-content {
+            padding: 20px 40px;
+
+            a {
+              .links-wrapper {
+                min-width: 300px;
+                font-size: 14px;
+                padding: 15px;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+// // Tablet screens (768px–1200px)
+@media only screen and (min-width: $mobile) and (max-width: calc($tablet - 1px)) {
+  .navigation-container {
+    ul {
+      gap: 5px;
+
+      li {
+        font-size: 11px;
+
+        .link-span {
+          padding: 12px 0;
+          padding-right: 5px;
+        }
+        a.link {
+          padding: 12px 5px;
+        }
+
+        .dropdown-container {
+          .dropdown-content {
+            padding: 10px;
+            grid-template-columns: 1fr;
+
+            a {
+              .links-wrapper {
+                min-width: 200px;
+                font-size: 13px;
+                padding: 5px 10px;
+                gap: 15px;
+
+                svg {
+                  width: 35px;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+// Mobile screens (0–767px)
+@media only screen and (min-width: 0) and (max-width: calc($mobile - 1px)) {
+  .navigation-container {
+    ul {
+      gap: 5px;
+      overflow-x: scroll;
+      justify-content: initial;
+      max-width: 90%;
+      margin: auto;
+      padding-bottom: 5px;
+
+      &::-webkit-scrollbar {
+        height: 6px; // Horizontal scrollbar thickness
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background: #084e99;
+        border-radius: 10px;
+        cursor: pointer;
+      }
+
+      &::-webkit-scrollbar-track {
+        background: #b9c3c9; // Track color
+        border-radius: 10px;
+        cursor: pointer;
+      }
+
+      li {
+        font-size: 11px;
+
+        .icon-wrapper {
+          padding-right: 3px;
+        }
+
+        .link-span {
+          padding: 12px 0;
+          padding-right: 5px;
+        }
+        a.link {
+          padding: 12px 5px;
+        }
+
+        .dropdown-container {
+          .dropdown-content {
+            padding: 10px;
+            grid-template-columns: 1fr;
+
+            a {
+              .links-wrapper {
+                min-width: 140px;
+                font-size: 11px;
+                padding: 3px 6px;
+                gap: 8px;
+
+                svg {
+                  width: 25px;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+@keyframes slideDownn {
   0% {
     opacity: 0;
-    // transform: translateX(-50%) translateY(-20px);
+    transform: translateX(-50%) translateY(-20px);
     visibility: hidden;
   }
   80% {
     opacity: 1;
-    // transform: translateX(-50%) translateY(5px);
+    transform: translateX(-50%) translateY(5px);
   }
   100% {
     opacity: 1;
-    // transform: translateX(-50%) translateY(0);
+    transform: translateX(-50%) translateY(0);
     visibility: visible;
   }
 }

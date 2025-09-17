@@ -1,6 +1,6 @@
 import { Link, useParams } from "react-router-dom";
 import "./Navigation.scss";
-import { useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Open from "./Svgs/Open";
 import Close from "./Svgs/Close";
 import sections from "./sections/sections";
@@ -9,28 +9,54 @@ import UpVector from "./Svgs/UpVector";
 const Navigation = () => {
   const { language } = useParams();
   const [hoveredSectionId, setHoveredSectionId] = useState(null);
-
+  const ulRef = useRef(null);
+  const [width, setWidth] = useState(window.innerWidth);
   const handleMouseEnter = (id) => {
     setHoveredSectionId(id);
   };
 
   const handleMouseLeave = () => {
     setHoveredSectionId(null);
+    if (ulRef.current && width < 769) {
+      ulRef.current.style.overflowX = "scroll";
+    }
   };
 
   const handleLinkClick = () => {
     setHoveredSectionId(null); // Hide dropdown on link click
   };
 
+  useEffect(() => {
+    const handleResize = () => {
+      setWidth(window.innerWidth);
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    // Cleanup on unmount
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
+  const handleNoLinksHover = () => {
+    if (ulRef.current && width < 769) {
+      ulRef.current.style.overflowX = "clip";
+    }
+  };
+
   return (
     <div className="navigation-container">
       <nav>
-        <ul>
+        <ul ref={ulRef}>
           {sections.map((section) => (
             <li
               key={section.id}
               className={!section.links ? "no-sub-links" : ""}
-              onMouseEnter={() => handleMouseEnter(section.id)}
+              onMouseEnter={() => {
+                handleMouseEnter(section.id);
+                if (section.links) handleNoLinksHover(section);
+              }}
               onMouseLeave={handleMouseLeave}>
               <div className="nav-item-wrapper">
                 {!section.links ? (
