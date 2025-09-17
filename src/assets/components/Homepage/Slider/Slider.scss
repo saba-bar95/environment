@@ -384,7 +384,6 @@
 // Mid-size screens (1200px–1600px)
 @media only screen and (min-width: $tablet) and (max-width: $mid) {
   .slider {
-    max-width: 1100px;
     margin: auto;
 
     .slider-container {
@@ -399,6 +398,8 @@
       }
 
       .content-container {
+        min-height: 150px;
+
         .slide-content {
           gap: 50px;
 
@@ -421,24 +422,35 @@
           }
 
           h2 {
-            font-size: 36px;
+            font-size: 33px;
           }
 
           .stats {
-            padding: 20px;
-            gap: 30px;
+            padding: 15px;
+            gap: 25px;
 
             .left {
-              height: 100px;
+              height: 90px;
             }
 
             .right {
               .top {
+                gap: 15px;
+
                 .number-1 {
-                  font-size: 50px;
+                  font-size: 43px;
                 }
                 .unit {
-                  font-size: 14px;
+                  font-size: 12px;
+                }
+              }
+              .bot {
+                .para {
+                  font-size: 13px;
+                }
+
+                .number {
+                  font-size: 13px;
                 }
               }
             }
@@ -470,6 +482,16 @@
 
               &.active {
                 width: 48px;
+              }
+            }
+          }
+        }
+        .right {
+          .slide {
+            a {
+              button {
+                padding: 15px 25px;
+                font-size: 13px;
               }
             }
           }
@@ -527,7 +549,7 @@
 // Tablet screens (768px–1200px)
 @media only screen and (min-width: $mobile) and (max-width: calc($tablet - 1px)) {
   .slider {
-    max-width: 700px;
+    max-width: 800px;
     margin: auto;
 
     .slider-container {
@@ -542,10 +564,12 @@
       }
 
       .content-container {
+        min-height: 150px;
+
         .slide-content {
           flex-direction: column;
-          gap: 30px;
-          align-items: flex-start;
+          gap: 20px;
+          justify-content: center;
 
           &.slide-right {
             &.active {
@@ -566,27 +590,45 @@
           }
 
           h2 {
-            font-size: 28px;
+            font-size: 25px;
+            width: max-content;
           }
 
           .stats {
-            flex: 1;
-            padding: 15px;
-            gap: 20px;
-            flex-direction: column;
+            flex: auto;
+            padding: 10px;
+            width: min-content;
+            gap: 30px;
 
             .left {
-              height: 80px;
-              width: 100%;
+              width: 180px;
+              height: auto;
             }
 
             .right {
+              gap: 10px;
+
               .top {
+                gap: 10px;
+
                 .number-1 {
-                  font-size: 40px;
+                  font-size: 35px;
                 }
                 .unit {
-                  font-size: 12px;
+                  font-size: 11px;
+                }
+              }
+
+              .bot {
+                gap: 5px;
+
+                .number {
+                  font-size: 14px;
+                  margin-left: 2px;
+                }
+
+                .para {
+                  font-size: 11px;
                 }
               }
             }
@@ -595,14 +637,17 @@
       }
 
       .bot-side {
-        flex-direction: column;
         gap: 20px;
-        align-items: flex-start;
+        align-items: center;
 
         .right {
-          button {
-            padding: 10px 15px;
-            font-size: 12px;
+          .slide {
+            a {
+              button {
+                padding: 10px 15px;
+                font-size: 12px;
+              }
+            }
           }
         }
 
@@ -709,10 +754,12 @@
       }
 
       .content-container {
+        min-height: 120px;
+
         .slide-content {
           flex-direction: column;
-          gap: 20px;
-          align-items: flex-start;
+          gap: 15px;
+          justify-content: center;
 
           &.slide-right {
             &.active {
@@ -733,34 +780,45 @@
           }
 
           h2 {
-            font-size: 20px;
+            font-size: 15px;
+            width: 100%;
+            text-align: center;
           }
 
           .stats {
             padding: 10px;
             gap: 15px;
-            flex-direction: column;
+            width: max-content;
+            max-width: 100%;
 
             .left {
-              height: 60px;
-              width: 100%;
+              display: none;
             }
 
             .right {
+              gap: 10px;
+
               .top {
+                gap: 10px;
+
                 .number-1 {
-                  font-size: 30px;
+                  font-size: 28px;
                 }
                 .unit {
                   font-size: 10px;
                 }
               }
               .bot {
+                div {
+                  display: flex;
+                  align-items: center;
+                }
+
                 .number {
-                  font-size: 12px;
+                  font-size: 11px;
                 }
                 .para {
-                  font-size: 12px;
+                  font-size: 11px;
                 }
               }
             }
@@ -769,14 +827,17 @@
       }
 
       .bot-side {
-        flex-direction: column;
         gap: 15px;
-        align-items: flex-start;
+        align-items: center;
 
         .right {
-          button {
-            padding: 8px 12px;
-            font-size: 10px;
+          .slide {
+            a {
+              button {
+                padding: 5px 8px;
+                font-size: 11px;
+              }
+            }
           }
         }
 
@@ -796,7 +857,11 @@
           }
 
           .dots {
-            display: none;
+            gap: 5px;
+            .dot {
+              width: 10px;
+              height: 10px;
+            }
           }
         }
       }
