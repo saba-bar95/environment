@@ -1,0 +1,131 @@
+@use "/src/assets/styles/_breakpoints.scss" as *;
+
+.section-container {
+  width: 100%;
+
+  .background-container {
+    position: relative;
+    width: 100%;
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    min-height: 180px;
+    align-items: center;
+    justify-content: center;
+    padding: 30px;
+
+    .overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(
+        0,
+        0,
+        0,
+        0.7
+      ); // Dark overlay to reduce image brightness
+    }
+
+    h1 {
+      color: #ffffff;
+      font-size: 30px;
+      font-feature-settings: "case" on;
+      text-align: center;
+      font-family: FiraGORegular, sans-serif;
+      font-weight: 900;
+      position: relative;
+      z-index: 1;
+      margin: 0;
+    }
+
+    h2 {
+      color: #ffffff;
+      text-align: center;
+      font-size: 16px;
+      font-weight: 900;
+      position: relative;
+      z-index: 1;
+      margin: 0;
+    }
+  }
+}
+
+// Ultrawide screens (1920px and above, up to 15000px)
+@media only screen and (min-width: $desktop) and (max-width: $ultrawide) {
+  .section-container {
+    .background-container {
+      min-height: 180px;
+      gap: 20px;
+      padding: 30px;
+
+      h1 {
+        font-size: 30px;
+      }
+
+      h2 {
+        font-size: 16px;
+      }
+    }
+  }
+}
+
+// Mid-size screens (1200px–1600px)
+@media only screen and (min-width: $tablet) and (max-width: $mid) {
+  .section-container {
+    .background-container {
+      min-height: 160px;
+      gap: 15px;
+      padding: 25px;
+
+      h1 {
+        font-size: 26px;
+      }
+
+      h2 {
+        font-size: 14px;
+      }
+    }
+  }
+}
+
+// Tablet screens (768px–1200px)
+@media only screen and (min-width: $mobile) and (max-width: calc($tablet - 1px)) {
+  .section-container {
+    .background-container {
+      min-height: 140px;
+      gap: 12px;
+      padding: 20px;
+
+      h1 {
+        font-size: 22px;
+      }
+
+      h2 {
+        font-size: 13px;
+      }
+    }
+  }
+}
+
+// Mobile screens (0–767px)
+@media only screen and (min-width: 0) and (max-width: calc($mobile - 1px)) {
+  .section-container {
+    .background-container {
+      min-height: 120px;
+      gap: 10px;
+      padding: 15px;
+
+      h1 {
+        font-size: 18px;
+      }
+
+      h2 {
+        font-size: 12px;
+      }
+    }
+  }
+}

@@ -1,5 +1,31 @@
+import { useParams } from "react-router-dom";
+import backgroundImg from "./Background/background.jpg";
+
 const ForestAndFieldFires = () => {
-  return <div>Forest and Field Fires Page</div>;
+  const { language } = useParams();
+
+  return (
+    <div className="section-container">
+      <div
+        className="background-container"
+        style={{
+          backgroundImage: `url(${backgroundImg})`,
+        }}>
+        <div className="overlay"></div> {/* New overlay div */}
+        <h1>
+          {language === "en"
+            ? "Forest and Field Fires"
+            : "ტყისა და ველის ხანძრები"}
+        </h1>
+        <h2>
+          {" "}
+          {language === "en"
+            ? "Data on fires and damaged areas"
+            : "მონაცემები ხანძრების და დაზიანებული ტერიტორიების შესახებ"}{" "}
+        </h2>
+      </div>
+    </div>
+  );
 };
 
 export default ForestAndFieldFires;

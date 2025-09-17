@@ -1,0 +1,245 @@
+@use "/src/assets/styles/_breakpoints.scss" as *;
+
+.children-container {
+  width: 100%;
+  background-color: #f4f4f7;
+  display: flex;
+  justify-content: center; // Center the wrapper for better alignment
+
+  .wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 80px 30px 120px 30px;
+    justify-content: center;
+    gap: 40px;
+    margin: auto;
+    max-width: 1800px; // Limit max width for large screens
+    align-items: stretch; // Ensures equal heights for cards
+
+    a {
+      text-decoration: none;
+
+      .child-wrapper {
+        width: 350px;
+        height: 100%;
+        overflow: hidden;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        gap: 30px;
+        background-color: #ffffff;
+        padding: 30px;
+        border-radius: 24px;
+        justify-content: space-between;
+        transition: all 0.3s ease;
+
+        .child-background-container {
+          height: 150px;
+          overflow: hidden;
+          border-radius: 15px;
+          position: relative;
+
+          .child-background-inner {
+            height: 100%;
+            width: 100%;
+            background-size: cover;
+            background-position: center;
+            transition: transform 0.5s ease;
+            border-radius: 15px;
+          }
+        }
+
+        &:hover {
+          .child-background-inner {
+            transform: scale(1.1);
+          }
+          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15); // Box-shadow on hover
+        }
+
+        h1 {
+          color: #1e1e1e;
+          font-feature-settings: "case" on;
+          font-family: FiraGORegular, sans-serif;
+          font-size: 18px;
+          margin: 0;
+        }
+
+        h2 {
+          color: #878787;
+          font-size: 14px;
+          line-height: 1.5em;
+          margin: 0;
+        }
+
+        p {
+          color: #003d2f;
+          font-size: 14px;
+          font-weight: 900;
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          margin: 0;
+        }
+      }
+    }
+  }
+}
+
+// Ultrawide screens (1920px and above, up to 15000px)
+@media only screen and (min-width: $desktop) and (max-width: $ultrawide) {
+  .children-container {
+    .wrapper {
+      padding: 80px 50px 120px 50px;
+      gap: 40px;
+      max-width: 1800px;
+
+      a {
+        .child-wrapper {
+          width: 350px;
+          padding: 30px;
+          gap: 30px;
+
+          .child-background-container {
+            height: 150px;
+          }
+
+          h1 {
+            font-size: 18px;
+          }
+
+          h2 {
+            font-size: 14px;
+          }
+
+          p {
+            font-size: 14px;
+          }
+
+          &:hover {
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+          }
+        }
+      }
+    }
+  }
+}
+
+// Mid-size screens (1200px–1600px)
+@media only screen and (min-width: $tablet) and (max-width: $mid) {
+  .children-container {
+    .wrapper {
+      padding: 60px 40px 100px 40px;
+      gap: 30px;
+      max-width: 1100px;
+
+      a {
+        .child-wrapper {
+          width: 300px;
+          padding: 25px;
+          gap: 25px;
+
+          .child-background-container {
+            height: 130px;
+          }
+
+          h1 {
+            font-size: 16px;
+          }
+
+          h2 {
+            font-size: 13px;
+          }
+
+          p {
+            font-size: 13px;
+          }
+
+          &:hover {
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.12);
+          }
+        }
+      }
+    }
+  }
+}
+
+// Tablet screens (768px–1200px)
+@media only screen and (min-width: $mobile) and (max-width: calc($tablet - 1px)) {
+  .children-container {
+    .wrapper {
+      padding: 40px 30px 80px 30px;
+      gap: 20px;
+
+      a {
+        .child-wrapper {
+          max-width: 320px; // Limit card width
+          padding: 20px;
+          gap: 20px;
+
+          .child-background-container {
+            height: 120px;
+          }
+
+          h1 {
+            font-size: 15px;
+          }
+
+          h2 {
+            font-size: 12px;
+          }
+
+          p {
+            font-size: 12px;
+          }
+
+          &:hover {
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+          }
+        }
+      }
+    }
+  }
+}
+
+// Mobile screens (0–767px)
+@media only screen and (min-width: 0) and (max-width: calc($mobile - 1px)) {
+  .children-container {
+    .wrapper {
+      padding: 20px 15px 60px 15px;
+      gap: 15px;
+      max-width: 100%;
+      margin: 0 10px;
+
+      a {
+        .child-wrapper {
+          width: 90%; // Full width for mobile
+          max-width: 300px;
+          padding: 15px;
+          gap: 15px;
+          border-radius: 15px;
+          margin: auto;
+
+          .child-background-container {
+            height: 100px;
+          }
+
+          h1 {
+            font-size: 14px;
+          }
+
+          h2 {
+            font-size: 11px;
+          }
+
+          p {
+            font-size: 11px;
+          }
+
+          &:hover {
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.08);
+          }
+        }
+      }
+    }
+  }
+}
