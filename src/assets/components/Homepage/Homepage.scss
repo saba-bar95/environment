@@ -1,6 +1,38 @@
+@use "/src/assets/styles/_breakpoints.scss" as *;
+
 .homepage {
   max-width: 2000px;
   width: 100%;
-  padding: 40px 120px 0 120px;
+  padding: 40px 120px 230px 120px;
   background-color: #ffffff;
+  margin: 0 auto; // Center the container
+}
+
+// Ultrawide screens (1920px and above, up to 15000px)
+@media only screen and (min-width: $desktop) and (max-width: $ultrawide) {
+  .homepage {
+    padding: 40px 100px 200px 100px;
+  }
+}
+
+// Mid-size screens (1200px–1600px)
+@media only screen and (min-width: $tablet) and (max-width: $mid) {
+  .homepage {
+    padding: 20px 100px 150px 100px;
+  }
+}
+
+// Tablet screens (768px–1200px)
+@media only screen and (min-width: $mobile) and (max-width: calc($tablet - 1px)) {
+  .homepage {
+    padding: 20px 30px 100px 30px;
+  }
+}
+
+// Mobile screens (0–767px)
+@media only screen and (min-width: 0) and (max-width: calc($mobile - 1px)) {
+  .homepage {
+    padding: 15px 15px 60px 15px;
+    margin: 0 10px;
+  }
 }
