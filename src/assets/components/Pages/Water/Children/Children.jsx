@@ -3,7 +3,7 @@ import { text as majorsText } from "./Texts/Majors/text";
 import forestAndFieldFiresBackground from "./Backgrounds/Majors/background.jpg";
 // Protection
 import { text as protectionText } from "./Texts/Protection/text";
-import protectionBackground from "./Backgrounds/protection/background.jpg";
+import protectionBackground from "./Backgrounds/Protection/background.jpg";
 // Supply And Losses
 import { text as supplyAndLossesText } from "./Texts/SupplyAndLosses/text";
 import supplyAndLossesBackground from "./Backgrounds/SupplyAndLosses/background.jpg";
