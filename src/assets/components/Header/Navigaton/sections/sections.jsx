@@ -7,7 +7,7 @@ import Emissions from "./Svgs/Climate/Emissions";
 import Major from "./Svgs/Water/Major";
 import Protection from "./Svgs/Water/Protection";
 import SupplyAndLosses from "./Svgs/Water/SupplyAndLosses";
-import Trace from "./Svgs/Water/Trace";
+// import Trace from "./Svgs/Water/Trace";
 ////// Nature Svgs
 import ProtectedAreas from "./Svgs/Nature/ProtectedAreas";
 import ForestArea from "./Svgs/Nature/ForestArea";
@@ -83,12 +83,12 @@ const sections = [
         link: "supplyandlosses",
         svg: SupplyAndLosses,
       },
-      {
-        header_ge: "წყლის მოხმარების კვალი",
-        header_en: "Water Trace",
-        link: "trace",
-        svg: Trace,
-      },
+      // {
+      //   header_ge: "წყლის მოხმარების კვალი",
+      //   header_en: "Water Trace",
+      //   link: "trace",
+      //   svg: Trace,
+      // },
     ],
   },
   {
