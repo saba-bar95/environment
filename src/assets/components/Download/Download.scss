@@ -1,0 +1,124 @@
+@use "/src/assets/styles/_breakpoints.scss" as *;
+
+.download-container {
+  position: relative;
+  display: flex;
+  flex: 1;
+  justify-content: end;
+
+  .svg-container {
+    svg {
+      cursor: pointer;
+
+      rect {
+        stroke: #e0e0e0; // Default border color
+        stroke-width: 1; // Default border thickness
+      }
+
+      &:hover rect {
+        stroke: #3c77f2; // Change to your desired hover color
+        stroke-width: 1.2; // Increase border thickness on hover
+      }
+    }
+
+    &.selected rect {
+      stroke: #3c77f2; // Same as hover color
+      stroke-width: 1.2; // Same as hover thickness
+    }
+  }
+
+  .dropdown-content {
+    position: absolute;
+    background: #ffffff;
+    border: 1px solid #ededed;
+    box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);
+    border-radius: 16px;
+    padding: 20px 15px;
+    display: flex;
+    flex-direction: column;
+    right: 0;
+    z-index: 1;
+    top: 40px;
+
+    .divider {
+      height: 1px; /* Thickness of the divider */
+      background-color: #efefef; /* Color of the divider */
+      margin: 10px 0; /* Spacing around the divider */
+    }
+
+    .upper,
+    .lower {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+
+      .wrapper {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 5px;
+        border: 0.5px solid transparent;
+        cursor: pointer;
+
+        &:hover {
+          background: #f2f6ff;
+          border: 0.5px solid #a0bfff;
+          border-radius: 8px;
+        }
+
+        p {
+          color: #1e1e1e;
+          font-size: 14px;
+        }
+      }
+    }
+  }
+}
+
+@media only screen and (min-width: $mobile) and (max-width: calc($tablet - 1px)) {
+  .download-container {
+    .svg-container {
+      svg {
+        width: 28px;
+        height: 28px;
+      }
+    }
+
+    .dropdown-content {
+      padding: 10px 8px;
+
+      .upper,
+      .lower {
+        .wrapper {
+          p {
+            font-size: 12px;
+          }
+        }
+      }
+    }
+  }
+}
+
+@media only screen and (min-width: 0) and (max-width: $mobile) {
+  .download-container {
+    .svg-container {
+      svg {
+        width: 24px;
+        height: 24px;
+      }
+    }
+
+    .dropdown-content {
+      padding: 8px 6px;
+
+      .upper,
+      .lower {
+        .wrapper {
+          p {
+            font-size: 11px;
+          }
+        }
+      }
+    }
+  }
+}
