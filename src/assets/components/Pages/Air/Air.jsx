@@ -1,6 +1,8 @@
 import { useParams } from "react-router-dom";
 import backgroundImg from "./Background/background.jpg";
 import Chart1 from "./Charts/Chart1/Chart1";
+import Chart2 from "./Charts/Chart2/Chart2";
+import Chart3 from "./Charts/Chart3/Chart3";
 
 const Air = () => {
   const { language } = useParams();
@@ -28,6 +30,8 @@ const Air = () => {
       <div className="charts-section">
         <div className="chart-container">
           <Chart1 />
+          <Chart2 />
+          <Chart3 />
         </div>
       </div>
     </div>
