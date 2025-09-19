@@ -1,5 +1,6 @@
 import { useParams } from "react-router-dom";
 import backgroundImg from "./Background/background.jpg";
+import Chart1 from "./Charts/Chart1/Chart1";
 
 const Air = () => {
   const { language } = useParams();
@@ -23,6 +24,11 @@ const Air = () => {
             ? "Latest trends in air pollution, emissions and urban air quality in Georgia"
             : "ჰაერის დაბინძურების, გაფრქვევებისა და ქალაქებში ჰაერის ხარისხის უახლესი ტენდენციები საქართველოში"}{" "}
         </h2>
+      </div>
+      <div className="charts-section">
+        <div className="chart-container">
+          <Chart1 />
+        </div>
       </div>
     </div>
   );
