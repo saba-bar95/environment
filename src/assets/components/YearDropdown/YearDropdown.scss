@@ -1,0 +1,95 @@
+@use "/src/assets/styles/_breakpoints.scss" as *;
+
+.years-container {
+  position: relative;
+
+  .heading {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 0 15px;
+    height: 32px;
+    cursor: pointer;
+
+    h3 {
+      font-size: 14px;
+      font-weight: 400;
+    }
+  }
+
+  .dropdown-content {
+    position: absolute;
+    background: #ffffff;
+    border: 1px solid #ededed;
+    box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);
+    border-radius: 16px;
+    padding: 15px 10px;
+    display: flex;
+    flex-direction: column;
+    right: 0;
+    z-index: 1;
+    width: 100%;
+    margin-top: 10px;
+    height: 200px;
+    overflow-y: scroll;
+    gap: 5px;
+
+    .wrapper {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border: 0.5px solid transparent;
+      cursor: pointer;
+      padding: 5px;
+
+      &:hover {
+        background: #f2f6ff;
+        border: 0.5px solid #a0bfff;
+        border-radius: 8px;
+      }
+
+      p {
+        color: #1e1e1e;
+        font-size: 14px;
+      }
+    }
+  }
+}
+
+@media only screen and (min-width: 0) and (max-width: $mobile) {
+  .years-container {
+    .heading {
+      height: 25px;
+
+      svg {
+        width: 10px !important;
+        height: 10px !important;
+      }
+
+      h3 {
+        font-size: 12px;
+      }
+    }
+
+    .dropdown-content {
+      height: 180px;
+      padding: 10px 6px;
+
+      .wrapper {
+        justify-content: center;
+
+        p {
+          font-size: 12px;
+        }
+      }
+
+      svg {
+        width: 14px !important;
+        height: 14px !important;
+      }
+    }
+  }
+}
