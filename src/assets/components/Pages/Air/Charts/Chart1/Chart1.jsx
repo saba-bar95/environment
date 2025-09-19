@@ -28,8 +28,9 @@ const Chart1 = () => {
   const info = useMemo(
     () => ({
       title_ge:
-        "სტაციონარული წყაროებიდან მავნე ნივთიერებების გაფრქვევა რეგიონების მიხედვით",
-      title_en: "Stationary source regions by regional distribution",
+        "სტაციონარული წყაროებიდან მავნე ნივთიერებების დაჭერა და გაფრქვევა რეგიონების მიხედვით",
+      title_en:
+        "Capture and emission of stationary sources of financial resources by regions",
       unit_ge: "ათასი ტონა",
       unit_en: "Thousand Tonnes",
       colors: ["#6CD68C", "#EB4C4B", "#8884d8"],
@@ -121,10 +122,10 @@ const Chart1 = () => {
   }, [info.id, language, info.types]);
 
   // Filter data for 2023 and sort in ascending order by pollution_0 (Total)
-  const data2023 = useMemo(() => {
+  const sortedData = useMemo(() => {
     const filteredData = chartData?.filter((d) => +d.year === year) || [];
     return filteredData.sort(
-      (a, b) => (a.pollution_0 || 0) - (b.pollution_0 || 0)
+      (a, b) => (b.pollution_0 || 0) - (a.pollution_0 || 0)
     );
   }, [chartData, year]);
 
@@ -213,8 +214,13 @@ const Chart1 = () => {
     <div className="chart-wrapper">
       <div className="header">
         <div className="right">
-          <h1>{language === "ge" ? info.title_ge : info.title_en}</h1>
-          <p>{language === "ge" ? info.unit_ge : info.unit_en}</p>
+          <div className="ll">
+            <Svg />
+          </div>
+          <div className="rr">
+            <h1>{language === "ge" ? info.title_ge : info.title_en}</h1>
+            <p>{language === "ge" ? info.unit_ge : info.unit_en}</p>
+          </div>
         </div>
         <div className="left">
           <YearDropdown years={years} year={year} setYear={setYear} />
@@ -222,8 +228,8 @@ const Chart1 = () => {
         </div>
       </div>
       <ResponsiveContainer width="100%" height={460}>
-        <BarChart data={data2023} layout="vertical">
-          <CartesianGrid strokeDasharray="3 3" vertical={false} y={1050} />
+        <BarChart data={sortedData} layout="vertical">
+          <CartesianGrid strokeDasharray="3 3" vertical={false} />
           <XAxis type="number" tick={{ fontSize: 15 }} />
           <YAxis
             dataKey="region"
