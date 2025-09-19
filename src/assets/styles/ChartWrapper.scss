@@ -1,0 +1,100 @@
+.chart-wrapper {
+  background-color: #ffffff;
+  padding: 30px 40px;
+  border-radius: 24px;
+  outline: none;
+
+  .header {
+    display: flex;
+    margin-bottom: 20px;
+
+    .right {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      font-feature-settings: "case" on;
+
+      h1 {
+        font-size: 18px;
+      }
+    }
+
+    .left {
+      display: flex;
+      gap: 15px;
+    }
+  }
+
+  .custom-tooltip {
+    padding: 20px 40px 20px 20px;
+    background-color: #111729;
+    color: #ffffff;
+    border-radius: 14px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+
+    .tooltip-container {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+
+      p {
+        font-size: 14px;
+        align-items: center;
+        display: flex;
+
+        .before-span {
+          width: 12px;
+          height: 12px;
+          display: inline-block;
+          margin-right: 8px;
+          background-color: inherit;
+        }
+      }
+    }
+  }
+
+  .recharts-surface {
+    outline: none;
+  }
+
+  .recharts-wrapper {
+    outline: none;
+  }
+
+  .recharts-default-legend {
+    text-align: center;
+
+    .recharts-legend-item {
+      display: inline-flex !important;
+      align-items: center;
+      gap: 5px;
+      cursor: pointer;
+      height: 20px;
+      margin-right: 15px;
+
+      /* Active state (bar is visible) */
+      &.active {
+        color: inherit; /* Use the bar's color, set via inline style */
+        opacity: 1;
+      }
+
+      /* Inactive state (bar is hidden) */
+      &.inactive {
+        color: #999;
+        opacity: 0.5;
+      }
+
+      .recharts-legend-item-icon {
+        width: 12px;
+        height: 12px;
+        display: inline-block;
+      }
+
+      .recharts-legend-item-text {
+        font-size: 14px;
+        font-feature-settings: "case" on;
+      }
+    }
+  }
+}
