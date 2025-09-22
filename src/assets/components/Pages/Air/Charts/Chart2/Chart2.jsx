@@ -8,6 +8,7 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
+  Brush,
 } from "recharts";
 import Svg from "./Svg";
 import { useParams } from "react-router-dom";
@@ -154,7 +155,9 @@ const Chart2 = () => {
     return (
       <div className="custom-tooltip">
         <div className="tooltip-container">
-          <p className="tooltip-label">{label}</p>
+          <p className="tooltip-label">
+            {label} {language === "en" ? "Year" : "წელი"}{" "}
+          </p>
           {payload.map(({ name, value, fill }, index) => {
             const displayName =
               pollutionLabels[name.replace("pollution_", "")] || name;
@@ -245,7 +248,7 @@ const Chart2 = () => {
             }
           />
           <Legend
-            wrapperStyle={{ marginBottom: -10 }}
+            wrapperStyle={{ marginBottom: -20 }}
             content={
               <CustomLegend
                 onClick={toggleBar}
@@ -267,6 +270,12 @@ const Chart2 = () => {
               hide={!activeBars.includes(`pollution_${p.id}`)}
             />
           ))}
+          <Brush
+            dataKey="year"
+            height={20}
+            stroke="#8884d8"
+            travellerWidth={5}
+          />
         </BarChart>
       </ResponsiveContainer>
     </div>
