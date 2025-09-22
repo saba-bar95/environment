@@ -7,6 +7,10 @@
   outline: none;
   box-sizing: border-box; /* Ensure padding is included in width calculations */
 
+  .recharts-brush {
+    transform: translateY(10px);
+  }
+
   .header {
     display: flex;
     margin-bottom: 20px;
@@ -31,12 +35,12 @@
         font-feature-settings: "case" on;
 
         h1 {
-          font-size: 18px;
+          font-size: 16px;
           width: 85%;
         }
 
         p {
-          font-size: 14px;
+          font-size: 12px;
         }
       }
     }
@@ -163,11 +167,11 @@
 
         .rr {
           h1 {
-            font-size: 16px;
+            font-size: 12px;
           }
 
           p {
-            font-size: 12px;
+            font-size: 10px;
           }
         }
 
@@ -237,13 +241,15 @@
     .header {
       margin-bottom: 15px;
 
-      .rr {
-        h1 {
-          font-size: 16px;
-        }
+      .right {
+        .rr {
+          h1 {
+            font-size: 14px;
+          }
 
-        p {
-          font-size: 13px;
+          p {
+            font-size: 13px;
+          }
         }
       }
     }
@@ -306,6 +312,14 @@
 
     .header {
       margin-bottom: 18px;
+
+      .right {
+        .rr {
+          h1 {
+            font-size: 15px;
+          }
+        }
+      }
     }
 
     .city-list {
@@ -327,12 +341,12 @@
         gap: 9px;
 
         p {
-          font-size: 14px;
+          font-size: 13px;
 
           .before-span {
-            width: 12px;
-            height: 12px;
-            margin-right: 8px;
+            width: 11px;
+            height: 11px;
+            margin-right: 6px;
           }
         }
       }
