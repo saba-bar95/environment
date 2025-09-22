@@ -278,8 +278,6 @@ const Chart3 = () => {
     setSelectedStationarySource(stationaryName || null);
   };
 
-  if (!chartData.length) return <div>Loading...</div>;
-
   return (
     <div className="chart-wrapper">
       <div className="header">
