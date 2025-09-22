@@ -181,38 +181,38 @@
 @media only screen and (min-width: calc($mid + 1px)) and (max-width: $desktop) {
   .years-container {
     .heading {
-      height: 36px;
-      padding: 0 18px;
-      gap: 12px;
+      height: 32px; // Reduced from 36px
+      padding: 0 14px; // Reduced from 18px
+      gap: 10px; // Reduced from 12px
 
       svg {
-        width: 16px !important;
-        height: 16px !important;
+        width: 14px !important; // Reduced from 16px
+        height: 14px !important; // Reduced from 16px
       }
 
       h3 {
-        font-size: 15px;
+        font-size: 13px; // Reduced from 15px
       }
     }
 
     .dropdown-content {
-      height: 220px;
-      padding: 18px 14px;
-      border-radius: 18px;
-      margin-top: 12px;
+      height: 180px; // Reduced from 220px
+      padding: 14px 10px; // Reduced from 18px 14px
+      border-radius: 14px; // Reduced from 18px
+      margin-top: 10px; // Reduced from 12px
 
       .wrapper {
-        gap: 12px;
-        padding: 8px;
+        gap: 10px; // Reduced from 12px
+        padding: 6px; // Reduced from 8px
 
         p {
-          font-size: 15px;
+          font-size: 13px; // Reduced from 15px
         }
       }
 
       svg {
-        width: 18px !important;
-        height: 18px !important;
+        width: 16px !important; // Reduced from 18px
+        height: 16px !important; // Reduced from 18px
       }
     }
   }
@@ -222,38 +222,38 @@
 @media only screen and (min-width: calc($desktop + 1px)) and (max-width: $ultrawide) {
   .years-container {
     .heading {
-      height: 40px;
-      padding: 0 20px;
-      gap: 14px;
+      height: 34px; // Reduced from 40px
+      padding: 0 16px; // Reduced from 20px
+      gap: 12px; // Reduced from 14px
 
       svg {
-        width: 18px !important;
-        height: 18px !important;
+        width: 16px !important; // Reduced from 18px
+        height: 16px !important; // Reduced from 18px
       }
 
       h3 {
-        font-size: 16px;
+        font-size: 14px; // Reduced from 16px
       }
     }
 
     .dropdown-content {
-      height: 240px;
-      padding: 20px 16px;
-      border-radius: 20px;
-      margin-top: 14px;
+      height: 200px; // Reduced from 240px
+      padding: 16px 12px; // Reduced from 20px 16px
+      border-radius: 16px; // Reduced from 20px
+      margin-top: 12px; // Reduced from 14px
 
       .wrapper {
-        gap: 14px;
-        padding: 10px;
+        gap: 12px; // Reduced from 14px
+        padding: 8px; // Reduced from 10px
 
         p {
-          font-size: 16px;
+          font-size: 14px; // Reduced from 16px
         }
       }
 
       svg {
-        width: 20px !important;
-        height: 20px !important;
+        width: 18px !important; // Reduced from 20px
+        height: 18px !important; // Reduced from 20px
       }
     }
   }
