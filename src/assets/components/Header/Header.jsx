@@ -8,6 +8,7 @@ import "./Header.scss";
 import Navigation from "./Navigaton/Navigation";
 import Text from "./Svgs/Text";
 import { useState, useEffect } from "react";
+import SearchBar from "../SearchBar.jsx/SearchBar";
 
 const Header = () => {
   const { language } = useParams();
@@ -61,6 +62,7 @@ const Header = () => {
             </Link>
             {isEnglish ? <h1>Environmental Statistics Portal</h1> : <Text />}
           </div>
+          <SearchBar />
           <div className="left">
             <div className="socials">
               <Socials />
