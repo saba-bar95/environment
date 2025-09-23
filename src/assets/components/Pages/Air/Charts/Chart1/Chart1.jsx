@@ -15,7 +15,7 @@ import fetchData from "../../../../../function/fetchData";
 import YearDropdown from "../../../../YearDropdown/YearDropdown";
 import Download from "../../../../Download/Download";
 
-const Chart1 = () => {
+const Chart1 = ({ chartInfo }) => {
   const { language } = useParams();
   const [pollution, setPollution] = useState(null);
   const [chartData, setChartData] = useState(null);
@@ -27,10 +27,8 @@ const Chart1 = () => {
 
   const info = useMemo(
     () => ({
-      title_ge:
-        "სტაციონარული წყაროებიდან მავნე ნივთიერებების დაჭერა და გაფრქვევა რეგიონების მიხედვით",
-      title_en:
-        "Capture and emission of stationary sources of financial resources by regions",
+      title_ge: chartInfo.title_ge,
+      title_en: chartInfo.title_en,
       unit_ge: "ათასი ტონა",
       unit_en: "Thousand Tonnes",
       colors: ["#6CD68C", "#EB4C4B", "#8884d8"],
@@ -38,7 +36,7 @@ const Chart1 = () => {
       id: "air-pollution-regions",
       types: ["data", "metadata"],
     }),
-    []
+    [chartInfo]
   );
 
   // Initialize activeBars when pollution data is loaded
@@ -211,7 +209,7 @@ const Chart1 = () => {
   );
 
   return (
-    <div className="chart-wrapper">
+    <div className="chart-wrapper" id={chartInfo.id}>
       <div className="header">
         <div className="right">
           <div className="ll">

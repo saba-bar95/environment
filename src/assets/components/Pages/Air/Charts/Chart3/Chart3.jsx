@@ -15,7 +15,7 @@ import { useParams } from "react-router-dom";
 import fetchData from "../../../../../function/fetchData";
 import Download from "../../../../Download/Download";
 
-const Chart3 = () => {
+const Chart3 = ({ chartInfo }) => {
   const { language } = useParams();
   const [mobileData, setMobileData] = useState(null);
   const [stationaryData, setStationaryData] = useState(null);
@@ -33,9 +33,8 @@ const Chart3 = () => {
 
   const info = useMemo(
     () => ({
-      title_ge:
-        "მავნე ნივთიერებების გაფრქვევა: სტაციონარული და მობილური წყაროები",
-      title_en: "Security Council Dispersion: Stationary and Mobile Sources",
+      title_ge: chartInfo.title_ge,
+      title_en: chartInfo.title_en,
       unit_ge: "ათასი ტონა",
       unit_en: "Thousand Tonnes",
       colors: ["#63b8e9ff", "#e75816ff"],
@@ -44,7 +43,7 @@ const Chart3 = () => {
       stationaryId: "stationary-source-pollution",
       types: ["data", "metadata"],
     }),
-    []
+    [chartInfo]
   );
 
   // Fetch mobile data (transport-emissions)
@@ -279,7 +278,7 @@ const Chart3 = () => {
   };
 
   return (
-    <div className="chart-wrapper">
+    <div className="chart-wrapper" id={chartInfo.id}>
       <div className="header">
         <div className="right">
           <div className="ll">

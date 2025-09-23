@@ -15,7 +15,7 @@ import { useParams } from "react-router-dom";
 import fetchData from "../../../../../function/fetchData";
 import Download from "../../../../Download/Download";
 
-const Chart2 = () => {
+const Chart2 = ({ chartInfo }) => {
   const { language } = useParams();
   const [pollution, setPollution] = useState(null);
   const [chartData, setChartData] = useState(null);
@@ -27,10 +27,8 @@ const Chart2 = () => {
 
   const info = useMemo(
     () => ({
-      title_ge:
-        "სტაციონარული წყაროებიდან მავნე ნივთიერებების დაჭერა და გაფრქვევა ქალაქების მიხედვით",
-      title_en:
-        "Capture and emission of stationary sources of financial resources by cities",
+      title_ge: chartInfo.title_ge,
+      title_en: chartInfo.title_en,
       unit_ge: "ათასი ტონა",
       unit_en: "Thousand Tonnes",
       colors: ["#06bd3dff", "#e75816ff"],
@@ -38,7 +36,7 @@ const Chart2 = () => {
       id: "air-pollution-cities",
       types: ["data", "metadata"],
     }),
-    []
+    [chartInfo]
   );
 
   // Initialize activeBars when pollution data is loaded
@@ -209,7 +207,7 @@ const Chart2 = () => {
   );
 
   return (
-    <div className="chart-wrapper">
+    <div className="chart-wrapper" id={chartInfo.id}>
       <div className="header">
         <div className="right">
           <div className="ll">
