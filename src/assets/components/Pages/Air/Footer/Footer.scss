@@ -1,0 +1,207 @@
+@use "/src/assets/styles/_breakpoints.scss" as *;
+
+.air-footer {
+  margin-bottom: 80px;
+
+  .background-container {
+    min-height: 500px !important;
+    display: block !important;
+
+    h1 {
+      margin-top: 50px !important;
+      text-transform: capitalize;
+      font-size: 2.5rem;
+    }
+
+    .overlay {
+      background-color: #003d2f !important;
+      opacity: 0.7;
+    }
+  }
+
+  .links-wrapper {
+    display: flex;
+    gap: 40px;
+    justify-content: center;
+    max-width: 1000px;
+    margin: auto;
+    margin-top: 40px;
+    width: 80%;
+
+    .link {
+      display: flex;
+      flex-direction: column;
+      background-color: #f5f7f9;
+      border-radius: 24px;
+      padding: 20px;
+      z-index: 10;
+      color: #1e1e1e;
+      flex: 1;
+      justify-content: space-between;
+      gap: 25px;
+      align-items: start;
+      .img-wrapper {
+        width: 66px;
+        height: 66px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 10px;
+
+        img {
+          width: 80%;
+        }
+      }
+
+      h3 {
+        font-feature-settings: "case" on;
+        font-size: 18px;
+        font-weight: 900;
+        font-family: FiraGORegular;
+        min-height: 50px;
+      }
+
+      button {
+        width: 100%;
+        border: 1px solid #003d2f;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        border-radius: 15px;
+        padding: 15px 0;
+        cursor: pointer;
+        color: #003d2f;
+        font-weight: 600;
+        transition: background-color 0.3s ease, color 0.3s ease,
+          transform 0.3s ease;
+
+        &:hover {
+          background-color: #003d2f;
+          color: #ffffff;
+          transform: translateX(5px);
+
+          svg path {
+            fill: #ffffff;
+          }
+        }
+      }
+    }
+  }
+
+  // Mobile (up to 768px)
+  @media (max-width: $mobile) {
+    margin-bottom: 40px;
+
+    .background-container {
+      min-height: 400px !important;
+
+      h1 {
+        margin-top: 30px !important;
+        font-size: 1.8rem;
+      }
+    }
+
+    .links-wrapper {
+      flex-direction: column;
+      gap: 20px;
+      width: 90%;
+      margin-top: 20px;
+      padding: 0 20px;
+
+      .link {
+        padding: 15px;
+        gap: 15px;
+
+        .img-wrapper {
+          width: 50px;
+          height: 50px;
+
+          img {
+            width: 70%;
+          }
+        }
+
+        h3 {
+          font-size: 15px;
+          min-height: 40px;
+        }
+
+        button {
+          padding: 12px 0;
+          font-size: 13px;
+        }
+      }
+    }
+  }
+
+  // Tablet (769px to 1200px)
+  @media (min-width: ($mobile + 1)) and (max-width: $tablet) {
+    margin-bottom: 60px;
+
+    .background-container {
+      min-height: 450px !important;
+
+      h1 {
+        font-size: 2rem;
+      }
+    }
+
+    .links-wrapper {
+      gap: 30px;
+      width: 85%;
+      padding: 0 40px;
+
+      .link {
+        padding: 18px;
+        gap: 20px;
+
+        .img-wrapper {
+          width: 60px;
+          height: 60px;
+        }
+
+        h3 {
+          font-size: 16px;
+        }
+
+        button {
+          padding: 13px 0;
+          font-size: 14px;
+        }
+      }
+    }
+  }
+
+  // Mid (1201px to 1600px)
+  @media (min-width: ($tablet + 1)) and (max-width: $mid) {
+    .links-wrapper {
+      max-width: 900px;
+      width: 85%;
+      gap: 35px;
+    }
+  }
+
+  // Desktop (1601px to 1920px)
+  @media (min-width: ($mid + 1)) and (max-width: $desktop) {
+    .links-wrapper {
+      width: 80%;
+      gap: 40px;
+    }
+  }
+
+  // Ultrawide (1921px and above)
+  @media (min-width: ($desktop + 1)) {
+    .links-wrapper {
+      max-width: 1100px;
+      width: 75%;
+      gap: 50px;
+    }
+
+    .background-container {
+      h1 {
+        font-size: 2.8rem;
+      }
+    }
+  }
+}

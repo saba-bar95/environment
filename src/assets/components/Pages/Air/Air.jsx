@@ -5,6 +5,7 @@ import Charts from "../../../../Charts";
 import Chart1 from "./Charts/Chart1/Chart1";
 import Chart2 from "./Charts/Chart2/Chart2";
 import Chart3 from "./Charts/Chart3/Chart3";
+import Footer from "./Footer/Footer";
 
 const Air = () => {
   const { language } = useParams();
@@ -47,6 +48,7 @@ const Air = () => {
           <Chart3 chartInfo={Charts.air[2]} />
         </div>
       </div>
+      <Footer />
     </div>
   );
 };
