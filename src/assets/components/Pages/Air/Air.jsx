@@ -6,6 +6,7 @@ import Chart1 from "./Charts/Chart1/Chart1";
 import Chart2 from "./Charts/Chart2/Chart2";
 import Chart3 from "./Charts/Chart3/Chart3";
 import Footer from "./Footer/Footer";
+import Quality from "./Quality/Quality";
 
 const Air = () => {
   const { language } = useParams();
@@ -42,6 +43,7 @@ const Air = () => {
         </h2>
       </div>
       <div className="charts-section">
+        <Quality />
         <div className="chart-container">
           <Chart1 chartInfo={Charts.air[0]} />
           <Chart2 chartInfo={Charts.air[1]} />

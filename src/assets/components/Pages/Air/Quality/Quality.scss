@@ -1,0 +1,244 @@
+@use "/src/assets/styles/_breakpoints.scss" as *;
+
+.quality-container {
+  margin-bottom: 40px;
+
+  .quality-wrapper {
+    display: flex;
+    max-width: 1100px;
+    margin: auto;
+    gap: 30px;
+    justify-content: center;
+
+    .city {
+      max-width: 300px;
+      background-color: #ffffff;
+      border-radius: 24px;
+      padding: 15px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+
+      .top {
+        height: 126px;
+        background-size: cover;
+        border-radius: 15px;
+      }
+
+      .bottom {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-bottom: 20px;
+        border-bottom: 1px solid #cacaca;
+
+        .right {
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between; /* Ensure equal height with .left */
+          flex: 1;
+
+          h2 {
+            font-feature-settings: "case" on;
+            text-transform: capitalize;
+            color: #1e1e1e;
+            font-size: 18px;
+            font-family: FiraGOMedium;
+            margin: 0; /* Remove default margins */
+          }
+
+          p {
+            font-size: 14px;
+            color: #1e1e1e;
+            font-family: FiraGORegular;
+            width: max-content;
+            margin: 0; /* Remove default margins */
+          }
+        }
+
+        .left {
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between; /* Ensure equal height with .right */
+          align-items: end;
+          flex: 1;
+
+          h2 {
+            font-size: 30px;
+            font-family: FiraGOBold;
+            margin: 0; /* Remove default margins */
+          }
+
+          p {
+            font-size: 14px;
+            font-family: FiraGORegular;
+            margin: 0; /* Remove default margins */
+          }
+        }
+      }
+
+      .update {
+        p {
+          color: #747476;
+          font-size: 12px;
+          font-family: FiraGORegular;
+          margin: 0; /* Remove default margins */
+        }
+      }
+    }
+  }
+
+  /* Mobile: Up to 768px */
+  @media (max-width: $mobile) {
+    .quality-wrapper {
+      flex-direction: column; /* Stack cities vertically */
+      gap: 20px;
+      padding: 0 15px; /* Add padding for mobile */
+      flex-wrap: wrap;
+
+      .city {
+        padding: 10px; /* Reduce padding */
+        margin: auto;
+        min-width: 250px;
+
+        .top {
+          height: 100px; /* Smaller image height */
+        }
+
+        .bottom {
+          padding-bottom: 15px;
+
+          .right {
+            h2 {
+              font-size: 16px; /* Smaller font size */
+            }
+
+            p {
+              font-size: 12px;
+            }
+          }
+
+          .left {
+            h2 {
+              font-size: 24px; /* Smaller font size */
+            }
+
+            p {
+              font-size: 12px;
+            }
+          }
+        }
+
+        .update {
+          p {
+            font-size: 10px; /* Smaller font for update text */
+          }
+        }
+      }
+    }
+  }
+
+  /* Tablet: 769px to 1200px */
+  @media (min-width: calc($mobile + 1px)) and (max-width: $tablet) {
+    .quality-wrapper {
+      gap: 20px;
+      max-width: 90%; /* Slightly narrower container */
+      flex-wrap: wrap;
+
+      .city {
+        flex: 1 1 45%; /* Allow two columns with flex-grow */
+
+        .top {
+          height: 110px; /* Slightly smaller image */
+        }
+
+        .bottom {
+          .right {
+            h2 {
+              font-size: 17px;
+            }
+
+            p {
+              font-size: 13px;
+            }
+          }
+
+          .left {
+            h2 {
+              font-size: 28px;
+            }
+
+            p {
+              font-size: 13px;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  /* Mid: 1201px to 1600px */
+  @media (min-width: calc($tablet + 1px)) and (max-width: $mid) {
+    .quality-wrapper {
+      max-width: 1000px; /* Adjust max-width for mid-sized screens */
+      gap: 25px;
+
+      .city {
+        flex: 1 1 30%; /* Allow three columns */
+      }
+    }
+  }
+
+  /* Desktop: 1601px to 1920px */
+  @media (min-width: calc($mid + 1px)) and (max-width: $desktop) {
+    .quality-wrapper {
+      max-width: 1200px; /* Slightly wider container */
+      gap: 30px;
+
+      .city {
+        flex: 1 1 22%; /* Allow four columns */
+      }
+    }
+  }
+
+  /* Ultrawide: Above 1920px */
+  @media (min-width: calc($desktop + 1px)) {
+    .quality-wrapper {
+      max-width: 1400px; /* Wider container for ultrawide */
+      gap: 35px;
+
+      .city {
+        min-width: 20%; /* Allow more cities per row */
+        flex: 1 1 20%; /* Allow five columns if needed */
+        padding: 20px; /* More padding for larger screens */
+
+        .top {
+          height: 140px; /* Larger image height */
+        }
+
+        .bottom {
+          .right {
+            h2 {
+              font-size: 20px; /* Slightly larger font */
+            }
+
+            p {
+              font-size: 15px;
+            }
+          }
+
+          .left {
+            h2 {
+              font-size: 32px; /* Slightly larger font */
+            }
+
+            p {
+              font-size: 15px;
+            }
+          }
+        }
+      }
+    }
+  }
+}
