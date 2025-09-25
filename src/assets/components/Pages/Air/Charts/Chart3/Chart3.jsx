@@ -13,7 +13,7 @@ import {
 import Svg from "./Svg";
 import { useParams } from "react-router-dom";
 import fetchData from "../../../../../function/fetchData";
-import Download from "../../../../Download/Download";
+import Download from "../Download/Download";
 
 const Chart3 = ({ chartInfo }) => {
   const { language } = useParams();
@@ -290,7 +290,13 @@ const Chart3 = ({ chartInfo }) => {
           </div>
         </div>
         <div className="left">
-          <Download />
+          <Download
+            data={chartData}
+            unit={info[`unit_${language}`]}
+            filename={info[`title_${language}`]}
+            isChart3={true}
+            source={selectedStationarySource}
+          />
         </div>
       </div>
 

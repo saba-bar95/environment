@@ -13,7 +13,7 @@ import Svg from "./Svg";
 import { useParams } from "react-router-dom";
 import fetchData from "../../../../../function/fetchData";
 import YearDropdown from "../../../../YearDropdown/YearDropdown";
-import Download from "../../../../Download/Download";
+import Download from "../Download/Download";
 
 const Chart1 = ({ chartInfo }) => {
   const { language } = useParams();
@@ -222,7 +222,13 @@ const Chart1 = ({ chartInfo }) => {
         </div>
         <div className="left">
           <YearDropdown years={years} year={year} setYear={setYear} />
-          <Download />
+          <Download
+            data={sortedData}
+            year={year}
+            unit={info[`unit_${language}`]}
+            filename={info[`title_${language}`]}
+            isChart1={true}
+          />
         </div>
       </div>
       <ResponsiveContainer width="100%" height={460}>
@@ -236,6 +242,7 @@ const Chart1 = ({ chartInfo }) => {
             tick={{ fontSize: 12 }}
             tickLine={false}
           />
+
           <Tooltip
             content={<CustomTooltip pollutionLabels={pollutionLabels} />}
           />
