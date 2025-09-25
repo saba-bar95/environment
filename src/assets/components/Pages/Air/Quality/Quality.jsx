@@ -68,7 +68,7 @@ const Quality = () => {
                 <h2>
                   {airQualityData[el.name_en]
                     ? airQualityData[el.name_en].data.average.value || "N/A"
-                    : "Loading..."}
+                    : ""}
                 </h2>
                 <p>
                   {" "}
