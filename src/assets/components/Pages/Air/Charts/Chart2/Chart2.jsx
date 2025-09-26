@@ -12,7 +12,7 @@ import {
 } from "recharts";
 import Svg from "./Svg";
 import { useParams } from "react-router-dom";
-import fetchData from "../../../../../function/fetchData";
+import commonData from "../../../../../fetchFunctions/commonData";
 import Download from "../Download/Download";
 
 const Chart2 = ({ chartInfo }) => {
@@ -50,8 +50,8 @@ const Chart2 = ({ chartInfo }) => {
     const getData = async () => {
       try {
         const [dataResult, metaDataResult] = await Promise.all([
-          fetchData(info.id, info.types[0], language),
-          fetchData(info.id, info.types[1], language),
+          commonData(info.id, info.types[0], language),
+          commonData(info.id, info.types[1], language),
         ]);
 
         const regions =

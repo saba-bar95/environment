@@ -12,7 +12,7 @@ import {
 } from "recharts";
 import Svg from "./Svg";
 import { useParams } from "react-router-dom";
-import fetchData from "../../../../../function/fetchData";
+import commonData from "../../../../../fetchFunctions/commonData";
 import Download from "../Download/Download";
 
 const Chart3 = ({ chartInfo }) => {
@@ -51,8 +51,8 @@ const Chart3 = ({ chartInfo }) => {
     const getMobileData = async () => {
       try {
         const [dataResult, metaDataResult] = await Promise.all([
-          fetchData(info.mobileId, info.types[0], language),
-          fetchData(info.mobileId, info.types[1], language),
+          commonData(info.mobileId, info.types[0], language),
+          commonData(info.mobileId, info.types[1], language),
         ]);
 
         const substanceList =
@@ -108,8 +108,8 @@ const Chart3 = ({ chartInfo }) => {
     const getStationaryData = async () => {
       try {
         const [dataResult, metaDataResult] = await Promise.all([
-          fetchData(info.stationaryId, info.types[0], language),
-          fetchData(info.stationaryId, info.types[1], language),
+          commonData(info.stationaryId, info.types[0], language),
+          commonData(info.stationaryId, info.types[1], language),
         ]);
 
         const sourceListUnordered =

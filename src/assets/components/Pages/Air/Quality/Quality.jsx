@@ -1,7 +1,7 @@
 import { useParams } from "react-router-dom";
 import cities from "./cities";
 import "./Quality.scss";
-import fetchCitiesAirQuality from "../../../../function/fetchCitiesAirQuality";
+import citiesAirQuality from "../../../../fetchFunctions/citiesAirQuality";
 import { useState, useEffect } from "react";
 
 const Quality = () => {
@@ -12,9 +12,7 @@ const Quality = () => {
     const fetchData = async () => {
       try {
         // Fetch air quality data for each city
-        const promises = cities.map((city) =>
-          fetchCitiesAirQuality(city.name_en)
-        );
+        const promises = cities.map((city) => citiesAirQuality(city.name_en));
         const results = await Promise.all(promises);
 
         // Create an object to store air quality data by city name
