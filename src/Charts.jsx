@@ -46,12 +46,16 @@ const rawCharts = {
     {
       majors: [
         {
-          title_ge: "ძირითადი მდინარეები 1",
-          title_en: "majors 1",
+          title_ge: "ძირითადი მდინარეები",
+          title_en: "Major rivers",
+          path_ge: "საქართველოს მთავარი მდინარეები და ტბები",
+          path_en: "Main Rivers and Lakes of Georgia",
         },
         {
-          title_ge: "ძირითადი მდინარეები 2",
-          title_en: "majors 2",
+          title_ge: "ძირითადი ტბები და წყალსაცავები",
+          title_en: "Major lakes and reservoirs",
+          path_ge: "საქართველოს მთავარი მდინარეები და ტბები",
+          path_en: "Main Rivers and Lakes of Georgia",
         },
       ],
     },
