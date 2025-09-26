@@ -1,0 +1,91 @@
+@use "/src/assets/styles/_breakpoints.scss" as *;
+
+.info-container {
+  cursor: pointer;
+  position: relative;
+  display: inline-block; /* Ensures the container wraps tightly around the SVGs */
+}
+
+.info-container svg rect {
+  transition: stroke 0.3s ease; /* Smooth transition for stroke color */
+}
+
+.info-container svg path {
+  transition: fill 0.3s ease; /* Smooth transition for fill color */
+}
+
+.info-container:hover svg rect {
+  stroke: #004920; /* Change border color of Frame SVG on hover */
+}
+
+.info-container:hover svg path {
+  fill: #004920; /* Change fill color of Text SVG on hover */
+}
+
+.info-content {
+  position: absolute;
+  top: 100%; /* Places the content directly below the info-container */
+  left: 50%; /* Center horizontally relative to info-container */
+  transform: translateX(-50%); /* Offset by half the width to center */
+  width: 600px; /* Adjust width as needed */
+  background-color: #f5f5f5;
+  border: 1px solid #004920;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 10; /* Ensures it appears above other elements */
+  font-size: 14px;
+  color: #333;
+  padding: 15px;
+  border-radius: 15px;
+  margin-top: 8px; /* Adds a small gap to move content further down */
+}
+
+@media only screen and (min-width: $tablet) and (max-width: calc($mid - 1px)) {
+  .info-content {
+    transform: translateX(-50%); /* Offset by half the width to center */
+    width: 400px; /* Adjust width as needed */
+    font-size: 13px;
+    padding: 13px;
+    border-radius: 15px;
+  }
+}
+
+@media only screen and (min-width: $mobile) and (max-width: calc($tablet - 1px)) {
+  .info-container {
+    .svg-1 {
+      width: 28px;
+      height: 28px;
+    }
+    .svg-2 {
+      width: 10px;
+      height: 10px;
+    }
+  }
+
+  .info-content {
+    transform: translateX(-50%); /* Offset by half the width to center */
+    width: 300px; /* Adjust width as needed */
+    font-size: 12px;
+    padding: 12px;
+    border-radius: 15px;
+  }
+}
+
+@media only screen and (min-width: 0) and (max-width: $mobile) {
+  .info-container {
+    .svg-1 {
+      width: 24px;
+      height: 24px;
+    }
+    .svg-2 {
+      width: 8px;
+      height: 8px;
+    }
+  }
+  .info-content {
+    transform: translateX(0); /* Offset by half the width to center */
+    width: 200px; /* Adjust width as needed */
+    font-size: 11px;
+    padding: 10px;
+    border-radius: 15px;
+  }
+}
