@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import backgroundImg from "./Background/background.jpg";
 import Charts from "../../../../../Charts";
 import Chart1 from "./Charts/Chart1/Chart1";
+import Chart2 from "./Charts/Chart2/Chart2";
 
 const Majors = () => {
   const { language } = useParams();
@@ -31,6 +32,7 @@ const Majors = () => {
   }, [location.hash]);
 
   const info1 = Charts.water[0].majors[0];
+  const info2 = Charts.water[0].majors[1];
 
   // Set chart-container width based on window size
   const chartContainerWidth = windowWidth < 768 ? "100%" : "80%";
@@ -57,6 +59,7 @@ const Majors = () => {
       <div className="charts-section">
         <div className="chart-container" style={{ width: chartContainerWidth }}>
           <Chart1 chartInfo={info1} />
+          <Chart2 chartInfo={info2} />
         </div>
       </div>
     </div>

@@ -1,183 +1,130 @@
 import { useEffect, useState, useMemo } from "react";
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-  Brush,
-} from "recharts";
+import { Treemap, Tooltip, ResponsiveContainer } from "recharts";
 import Svg from "./Svg";
 import { useParams } from "react-router-dom";
-import fetchData from "../../../../../function/fetchData";
 import Download from "../Download/Download";
+import riversAndLakes from "../../../../../../fetchFunctions/riversAndLakes";
+import Info from "../../../../../Info/Info";
 
 const Chart2 = ({ chartInfo }) => {
   const { language } = useParams();
-  const [pollution, setPollution] = useState(null);
   const [chartData, setChartData] = useState(null);
-  const [activeBars, setActiveBars] = useState([]);
-  const [city, setCity] = useState(null);
-  const [cities, setCities] = useState(null);
 
-  const totalText = language === "ge" ? "წარმოქმნილი" : "Generated";
+  const infoText = {
+    ge: "დიაგრამაზე წარმოდგენილია საქართველოს უდიდესი ტბები მათი ფართობის მიხედვით. გადაატარეთ მაუსი თითოეულ მართკუთხედზე დეტალური ინფორმაციის სანახავად.",
+    en: "The diagram shows the largest lakes in Georgia by their area. Hover over a rectangle to see detailed information.",
+  };
 
   const info = useMemo(
     () => ({
       title_ge: chartInfo.title_ge,
       title_en: chartInfo.title_en,
-      unit_ge: "ათასი ტონა",
-      unit_en: "Thousand Tonnes",
-      colors: ["#06bd3dff", "#e75816ff"],
+      colors: [
+        "#1f77b4", // Blue
+        "#ff7f0e", // Orange
+        "#2ca02c", // Green
+        "#d62728", // Red
+        "#9467bd", // Purple
+        "#8c564b", // Brown
+        "#e377c2", // Pink
+        "#7f7f7f", // Gray
+        "#bcbd22", // Olive
+        "#17becf", // Cyan
+        "#aec7e8", // Light Blue
+        "#ffbb78", // Light Orange
+        "#98df8a", // Light Green
+        "#ff9896", // Light Red
+        "#c5b0d5", // Light Purple
+        "#c49c94", // Light Brown
+        "#f7b6d2", // Light Pink
+      ],
       svg: Svg(),
-      id: "air-pollution-cities",
-      types: ["data", "metadata"],
+      id: "lakes",
     }),
     [chartInfo]
   );
 
-  // Initialize activeBars when pollution data is loaded
-  useEffect(() => {
-    if (pollution) {
-      setActiveBars(pollution.map((p) => `pollution_${p.id}`));
-    }
-  }, [pollution]);
-
   useEffect(() => {
     const getData = async () => {
       try {
-        const [dataResult, metaDataResult] = await Promise.all([
-          fetchData(info.id, info.types[0], language),
-          fetchData(info.id, info.types[1], language),
-        ]);
+        const response = await riversAndLakes(info.id, language);
+        // Sort data by area in descending order and clean mainUse
+        const sortedData = response?.data?.lakes
+          ?.slice()
+          .sort((a, b) => (b.area || 0) - (a.area || 0))
+          .map((lake) => ({
+            ...lake,
+            mainUse: lake.mainUse ? lake.mainUse.replace(/\r$/, "") : "N/A",
+            area: typeof lake.area === "number" ? lake.area : 0, // Ensure valid number
+          }));
 
-        const regions =
-          metaDataResult.data.metadata.variables[0].valueTexts.map(
-            (region, i) => ({ name: region, id: i })
-          );
-        const years = metaDataResult.data.metadata.variables[1].valueTexts.map(
-          (year, i) => ({ year: year, id: i })
-        );
-        setCities(regions);
-        setCity(regions[0]?.name || null);
-
-        const pollution = metaDataResult.data.metadata.variables[2].valueTexts
-          .slice(1)
-          .map((poll, i) => ({ pollution: poll, id: i + 1 }));
-
-        setPollution(pollution);
-
-        const transformData = (rawData, regions, years) => {
-          const transformed = [];
-          rawData.forEach((yearObj) => {
-            const yearId = parseInt(yearObj.year);
-            const yearName = years.find((y) => y.id === yearId)?.year || yearId;
-
-            Object.keys(yearObj).forEach((key) => {
-              if (key.includes(" - ")) {
-                const [regionIdStr, pollutionIdStr] = key.split(" - ");
-                const regionId = parseInt(regionIdStr);
-                const pollutionId = parseInt(pollutionIdStr);
-
-                if (!isNaN(regionId) && !isNaN(pollutionId)) {
-                  const regionName =
-                    regions.find((r) => r.id === regionId)?.name ||
-                    `Region ${regionId}`;
-                  let entry = transformed.find(
-                    (e) => e.region === regionName && e.year === yearName
-                  );
-
-                  if (!entry) {
-                    entry = { region: regionName, year: yearName };
-                    transformed.push(entry);
-                  }
-
-                  entry[`pollution_${pollutionId}`] = yearObj[key];
-                }
-              }
-            });
-          });
-
-          return transformed.sort(
-            (a, b) => a.year - b.year || a.region.localeCompare(b.region)
-          );
-        };
-
-        const transformedData = transformData(
-          dataResult.data.data,
-          regions,
-          years
-        );
-
-        setChartData(transformedData);
+        setChartData({ data: { lakes: sortedData } });
       } catch (error) {
-        console.log("Error fetching data or metadata:", error);
+        console.log(error);
       }
     };
 
     getData();
-  }, [info.id, language, info.types]);
+  }, [info, language]);
 
-  // Filter data for selected city and sort by year
-  const sortedData = useMemo(() => {
-    const filteredData = chartData?.filter((d) => d.region === city) || [];
-    return filteredData.sort((a, b) => a.year - b.year);
-  }, [chartData, city]);
-
-  // Pollution labels for display (in language)
-  const pollutionLabels = pollution?.reduce((acc, p) => {
-    acc[p.id] = p.pollution;
-    return acc;
-  }, {}) || { 1: "Captured", 2: "Emitted" };
-
-  // Toggle bar visibility
-  const toggleBar = (dataKey) => {
-    setActiveBars((prev) => {
-      if (prev.length === 1 && prev.includes(dataKey)) {
-        return prev;
-      }
-      return prev.includes(dataKey)
-        ? prev.filter((bar) => bar !== dataKey)
-        : [...prev, dataKey];
-    });
-  };
-
-  const CustomTooltip = ({ active, payload, label, pollutionLabels }) => {
+  // Custom Tooltip Component for lakes
+  const CustomTooltip = ({ active, payload }) => {
     if (!active || !payload || !payload.length) return null;
 
-    const total = payload.reduce((sum, { value }) => sum + value, 0);
+    const data = payload[0].payload;
+
+    // Helper function to format numbers safely
+    const formatNumber = (value) =>
+      typeof value === "number" ? value.toFixed(1) : value || "N/A";
 
     return (
       <div className="custom-tooltip">
         <div className="tooltip-container">
-          <p className="tooltip-label">
-            {label} {language === "en" ? "Year" : "წელი"}{" "}
+          <p
+            className="tooltip-label"
+            style={{
+              textAlign: "center",
+              width: "100%",
+              fontWeight: "900",
+              fontSize: "16px", // Reduced for better mobile compatibility
+              textDecoration: "underline",
+            }}>
+            {data.name}
           </p>
-          {payload.map(({ name, value, fill }, index) => {
-            const displayName =
-              pollutionLabels[name.replace("pollution_", "")] || name;
-            return (
-              <p key={`item-${index}`} className="text">
-                <span
-                  style={{ backgroundColor: fill }}
-                  className="before-span"></span>
-                {displayName} :
-                <span style={{ fontWeight: 900, marginLeft: "5px" }}>
-                  {value.toFixed(1)}
-                </span>
-              </p>
-            );
-          })}
           <p className="text">
-            <span
-              style={{ backgroundColor: "#148664ff" }}
-              className="before-span"></span>
-            {totalText} :
+            {language === "en" ? "Area" : "ფართობი"} :
             <span style={{ fontWeight: 900, marginLeft: "5px" }}>
-              {total.toFixed(1)}
+              {formatNumber(data.area)} {language === "en" ? "km²" : "კმ²"}
+            </span>
+          </p>
+          <p className="text">
+            {language === "en" ? "Volume" : "მოცულობა"} :
+            <span style={{ fontWeight: 900, marginLeft: "5px" }}>
+              {formatNumber(data.volume)}
+            </span>
+          </p>
+          <p className="text">
+            {language === "en" ? "Average Depth" : "საშუალო სიღრმე"} :
+            <span style={{ fontWeight: 900, marginLeft: "5px" }}>
+              {formatNumber(data.avgDepth)} {language === "en" ? "m" : "მ"}
+            </span>
+          </p>
+          <p className="text">
+            {language === "en" ? "Maximum Depth" : "მაქსიმალური სიღრმე"} :
+            <span style={{ fontWeight: 900, marginLeft: "5px" }}>
+              {formatNumber(data.maxDepth)} {language === "en" ? "m" : "მ"}
+            </span>
+          </p>
+          <p className="text">
+            {language === "en" ? "Location" : "მდებარეობა"} :
+            <span style={{ fontWeight: 900, marginLeft: "5px" }}>
+              {data.location || "N/A"}
+            </span>
+          </p>
+          <p className="text">
+            {language === "en" ? "Main Use" : "ძირითადი გამოყენება"} :
+            <span style={{ fontWeight: 900, marginLeft: "5px" }}>
+              {data.mainUse}
             </span>
           </p>
         </div>
@@ -185,101 +132,82 @@ const Chart2 = ({ chartInfo }) => {
     );
   };
 
-  const CustomLegend = ({ payload, onClick, activeBars, pollutionLabels }) => (
-    <ul className="recharts-default-legend">
-      {payload.map((entry, index) => (
-        <li
-          key={`legend-item-${index}`}
-          className={`recharts-legend-item legend-item-${index} ${
-            activeBars.includes(entry.dataKey) ? "active" : "inactive"
-          }`}
-          onClick={() => onClick(entry.dataKey)}>
-          <span
-            className="recharts-legend-item-icon"
-            style={{ backgroundColor: entry.color }}></span>
-          <span className="recharts-legend-item-text">
-            {pollutionLabels[entry.dataKey.replace("pollution_", "")] ||
-              entry.dataKey}
-          </span>
-        </li>
-      ))}
-    </ul>
-  );
+  // Custom content for Treemap rectangles with labels
+  const CustomizedContent = (props) => {
+    const { depth, x, y, width, height, name, index } = props;
+
+    const fillColor = info.colors[index % info.colors.length];
+
+    // Truncate long names to prevent overflow
+    const truncatedName = name.length > 20 ? `${name.slice(0, 17)}...` : name;
+
+    return (
+      <g>
+        <rect
+          x={x}
+          y={y}
+          width={width}
+          height={height}
+          style={{
+            fill: fillColor,
+            stroke: "#fff",
+            strokeWidth: 2 / (depth + 1e-10),
+            strokeOpacity: 1 / (depth + 1e-10),
+          }}
+        />
+        {width > 40 && height > 15 && (
+          <text
+            x={x + width / 2}
+            y={y + height / 2}
+            textAnchor="middle"
+            fill="#fff"
+            fontSize={13}
+            dominantBaseline="middle">
+            <tspan x={x + width / 2} dy="-0.5em">
+              {truncatedName}
+            </tspan>
+            <tspan x={x + width / 2} dy="1em"></tspan>
+          </text>
+        )}
+      </g>
+    );
+  };
+
+  const sortedData = chartData?.data?.lakes || [];
 
   return (
-    <div className="chart-wrapper" id={chartInfo.id}>
+    <div
+      className="chart-wrapper"
+      id={chartInfo.id}
+      style={{ height: "700px", width: "100%", margin: "auto" }}>
       <div className="header">
         <div className="right">
           <div className="ll">
             <Svg />
           </div>
           <div className="rr">
-            <h1>{language === "ge" ? info.title_ge : info.title_en}</h1>
-            <p>{language === "ge" ? info.unit_ge : info.unit_en}</p>
+            <h1 style={{ width: "100%" }}>
+              {language === "ge" ? info.title_ge : info.title_en}
+            </h1>
           </div>
         </div>
         <div className="left">
+          <Info text={infoText} />
           <Download
             data={sortedData}
-            unit={info[`unit_${language}`]}
             filename={info[`title_${language}`]}
             isChart2={true}
           />
         </div>
       </div>
-      <div className="city-list">
-        {cities?.map((c) => (
-          <span
-            key={`city-${c.id}`}
-            className={`city-item ${city === c.name ? "active" : ""}`}
-            onClick={() => setCity(c.name)}>
-            {c.name}
-          </span>
-        ))}
-      </div>
-      <ResponsiveContainer width="100%" height={460}>
-        <BarChart data={sortedData}>
-          <CartesianGrid strokeDasharray="3 3" vertical={false} />
-          <XAxis dataKey="year" tick={{ fontSize: 15 }} tickLine={false} />
-          <YAxis tick={{ fontSize: 12 }} />
-          <Tooltip
-            content={
-              <CustomTooltip
-                pollutionLabels={pollutionLabels}
-                language={language}
-              />
-            }
-          />
-          <Legend
-            wrapperStyle={{ marginBottom: -20 }}
-            content={
-              <CustomLegend
-                onClick={toggleBar}
-                activeBars={activeBars}
-                pollutionLabels={pollutionLabels}
-              />
-            }
-            verticalAlign="bottom"
-            align="center"
-          />
-          {pollution?.map((p, index) => (
-            <Bar
-              key={`pollution_${p.id}`}
-              dataKey={`pollution_${p.id}`}
-              fill={info.colors[index] || "#8884d8"}
-              name={`pollution_${p.id}`}
-              stackId="a"
-              minPointSize={3}
-              hide={!activeBars.includes(`pollution_${p.id}`)}
-            />
-          ))}
-          <Brush
-            dataKey="year"
-            height={20}
-            stroke="#8884d8"
-            travellerWidth={5}
-          />
-        </BarChart>
+      <ResponsiveContainer width="100%" height="90%">
+        <Treemap
+          data={sortedData}
+          dataKey="area"
+          isAnimationActive={false} // Disable animations to prevent flickering
+          content={<CustomizedContent />}>
+          <Tooltip content={<CustomTooltip />} />
+        </Treemap>
       </ResponsiveContainer>
     </div>
   );

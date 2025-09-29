@@ -2,7 +2,7 @@ import { jsPDF } from "jspdf";
 import { autoTable } from "jspdf-autotable";
 import georgianFont from "../../../../../../fonts/NotoSansGeorgian_ExtraCondensed-Bold.ttf";
 
-const downloadPDF = (data, year, filename, language, isChart1, isChart2) => {
+const downloadPDF = (data, filename, language, isChart1, isChart2) => {
   const isGeorgian = language === "ge";
 
   if (!data || !Array.isArray(data) || data.length === 0) {
@@ -68,20 +68,46 @@ const downloadPDF = (data, year, filename, language, isChart1, isChart2) => {
   }
 
   if (isChart2) {
-    const yearHeader = !isGeorgian ? "Year" : "წელი";
     const rowHeaders = isGeorgian
-      ? ["წარმოქმნილი", "დაჭერილი", "გაფრქვეული"]
-      : ["Generated", "Captured", "Emitted"];
+      ? [
+          "სახელი", // Name
+          "მდებარეობა", // Location
+          "ძირითადი გამოყენება", // Main Use
+          "ფართობი", // Area
+          "მოცულობა", // Volume
+          "საშუალო სიღრმე", // Average Depth
+          "მაქსიმალური სიღრმე", // Maximum Depth
+        ]
+      : [
+          "Name",
+          "Location",
+          "Main Use",
+          "Area",
+          "Volume",
+          "Average Depth",
+          "Maximum Depth",
+        ];
 
     const tableHead = [
-      [yearHeader, rowHeaders[1], rowHeaders[2], rowHeaders[0]],
+      [
+        rowHeaders[0],
+        rowHeaders[1],
+        rowHeaders[2],
+        rowHeaders[3],
+        rowHeaders[4],
+        rowHeaders[5],
+        rowHeaders[6],
+      ],
     ];
 
     const tableBody = data.map((item) => [
-      item.year,
-      item.pollution_1,
-      item.pollution_2,
-      item.pollution_0,
+      item.name,
+      item.location,
+      item.mainUse,
+      `${item.area} ${isGeorgian ? "კმ²" : "km²"}`,
+      `${item.volume} ${isGeorgian ? "მლნ მ³" : "million m³"}`,
+      `${item.avgDepth} ${isGeorgian ? "მ" : "m"}`,
+      `${item.maxDepth} ${isGeorgian ? "მ" : "m"}`,
     ]);
 
     autoTable(doc, {
@@ -94,12 +120,9 @@ const downloadPDF = (data, year, filename, language, isChart1, isChart2) => {
       margin: { top: 20 },
     });
 
-    const finalFilename = isGeorgian
-      ? `${filename} ((${data[0].region}).pdf`
-      : `${filename} ((${data[0]}).pdf`;
+    const finalFilename = isGeorgian ? `${filename}.pdf` : `${filename}.pdf`;
 
     doc.save(finalFilename);
-
     return;
   }
 };

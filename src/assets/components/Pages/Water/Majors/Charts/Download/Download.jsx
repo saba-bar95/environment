@@ -11,15 +11,7 @@ import PDF from "../../../../../Download/Svgs/PDF";
 import JPG from "../../../../../Download/Svgs/JPG";
 import PNG from "../../../../../Download/Svgs/PNG";
 
-const Download = ({
-  data,
-  year,
-  filename,
-  isChart1,
-  isChart2,
-  isChart3,
-  source,
-}) => {
+const Download = ({ data, filename, isChart1, isChart2, isChart3, source }) => {
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef(null); // Create a ref for the dropdown
   const { language } = useParams();
@@ -67,7 +59,6 @@ const Download = ({
               onClick={() => {
                 downloadExcel(
                   data,
-                  year,
                   filename,
                   language,
                   isChart1,
@@ -85,7 +76,6 @@ const Download = ({
               onClick={() => {
                 downloadPDF(
                   data,
-                  year,
                   filename,
                   language,
                   isChart1,
