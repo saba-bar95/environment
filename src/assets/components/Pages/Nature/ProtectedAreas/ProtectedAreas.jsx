@@ -1,5 +1,6 @@
 import { useParams } from "react-router-dom";
 import backgroundImg from "./Background/background.jpg";
+import GeoMapContainer from "./GeoMapContainer";
 
 const ProtectedAreas = () => {
   const { language } = useParams();
@@ -23,6 +24,9 @@ const ProtectedAreas = () => {
             ? "Discover Georgia's growing network of national parks, reserves, and protected landscapes"
             : "აღმოაჩინეთ საქართველოს ეროვნული პარკების, ნაკრძალებისა და დაცული ლანდშაფტების მზარდი ქსელი"}{" "}
         </h2>
+      </div>
+      <div className="charts-section">
+        <GeoMapContainer />
       </div>
     </div>
   );
