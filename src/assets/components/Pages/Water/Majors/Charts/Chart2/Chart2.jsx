@@ -10,11 +10,6 @@ const Chart2 = ({ chartInfo }) => {
   const { language } = useParams();
   const [chartData, setChartData] = useState(null);
 
-  const infoText = {
-    ge: "დიაგრამაზე წარმოდგენილია საქართველოს უდიდესი ტბები მათი ფართობის მიხედვით. გადაატარეთ მაუსი თითოეულ მართკუთხედზე დეტალური ინფორმაციის სანახავად.",
-    en: "The diagram shows the largest lakes in Georgia by their area. Hover over a rectangle to see detailed information.",
-  };
-
   const info = useMemo(
     () => ({
       title_ge: chartInfo.title_ge,
@@ -86,7 +81,6 @@ const Chart2 = ({ chartInfo }) => {
               textAlign: "center",
               width: "100%",
               fontWeight: "900",
-              fontSize: "16px", // Reduced for better mobile compatibility
               textDecoration: "underline",
             }}>
             {data.name}
@@ -192,7 +186,7 @@ const Chart2 = ({ chartInfo }) => {
           </div>
         </div>
         <div className="left">
-          <Info text={infoText} />
+          <Info text={false} />
           <Download
             data={sortedData}
             filename={info[`title_${language}`]}
