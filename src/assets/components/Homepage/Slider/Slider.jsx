@@ -63,7 +63,7 @@ const Slider = () => {
             <span className="unit">{slide.text[language].unit1}</span>
           </div>
           <div className="bot">
-            <div>
+            <div style={{ display: "flex", alignItems: "center" }}>
               <Rise />
               <span className="number">{slide.text[language].number2}</span>
             </div>
