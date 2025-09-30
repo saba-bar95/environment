@@ -1,9 +1,24 @@
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 import backgroundImg from "./Background/background.jpg";
 import GeoMapContainer from "./GeoMapContainer";
+import Charts from "../../../../../Charts";
+import { useEffect } from "react";
 
 const ProtectedAreas = () => {
   const { language } = useParams();
+  const location = useLocation(); // Get the current location to access hash
+
+  const info = Charts.nature[0].protectedAreas[0];
+
+  useEffect(() => {
+    if (location.hash) {
+      const chartId = location.hash.replace("#", "");
+      const element = document.getElementById(chartId);
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }
+  }, [location.hash]); // Re-run when the hash changes
 
   return (
     <div className="section-container">
@@ -26,7 +41,7 @@ const ProtectedAreas = () => {
         </h2>
       </div>
       <div className="charts-section">
-        <GeoMapContainer />
+        <GeoMapContainer chartInfo={info} />
       </div>
     </div>
   );

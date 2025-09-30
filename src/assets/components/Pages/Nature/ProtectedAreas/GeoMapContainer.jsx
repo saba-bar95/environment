@@ -6,7 +6,7 @@ import { jsPDF } from "jspdf";
 import "./mapContainer.css";
 import * as XLSX from "xlsx";
 
-const GeoMapContainer = () => {
+const GeoMapContainer = ({ chartInfo }) => {
   const mapRef = useRef(null);
   const mapInstanceRef = useRef(null);
   const protectedAreasLayerRef = useRef(null);
@@ -578,55 +578,54 @@ const GeoMapContainer = () => {
   };
 
   return (
-    <div>
-      <div
-        className="map-container mt-4 mx-auto px-4"
-        style={{
-          width: "90%",
-          padding: "20px",
-          borderRadius: "15px",
-        }}>
-        <div className="map-header flex justify-between items-center mb-2">
-          <div className="map-header-buttons space-x-2">
-            <button
-              className="export-button bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-              onClick={exportAsGeoJSON}>
-              ⬇️ GeoJSON
-            </button>
-            <button
-              className="export-button bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-              onClick={exportAsExcel}>
-              ⬇️ Excel
-            </button>
-            <button
-              className="export-button bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-              onClick={exportAsKML}>
-              ⬇️ KML
-            </button>
-            <button
-              className="export-button bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-              onClick={exportAsPDF}
-              disabled={exporting}>
-              📄 PDF
-            </button>
-          </div>
-          <div className="layer-info text-sm text-gray-600">
-            დააკლიკეთ კატეგორიას ფილტრაციისთვის
-          </div>
+    <div
+      id={chartInfo.id}
+      className="map-container mt-4 mx-auto px-4"
+      style={{
+        width: "90%",
+        padding: "20px",
+        borderRadius: "15px",
+      }}>
+      <div className="map-header flex justify-between items-center mb-2">
+        <div className="map-header-buttons space-x-2">
+          <button
+            className="export-button bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+            onClick={exportAsGeoJSON}>
+            ⬇️ GeoJSON
+          </button>
+          <button
+            className="export-button bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+            onClick={exportAsExcel}>
+            ⬇️ Excel
+          </button>
+          <button
+            className="export-button bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+            onClick={exportAsKML}>
+            ⬇️ KML
+          </button>
+          <button
+            className="export-button bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+            onClick={exportAsPDF}
+            disabled={exporting}>
+            📄 PDF
+          </button>
         </div>
-        <div ref={mapRef} className="w-full h-[600px] bg-gray-200"></div>
-        <div
-          className={`export-progress flex items-center space-x-2 mt-2 ${
-            exporting ? "block" : "hidden"
-          }`}>
-          <div className="loading-spinner border-4 border-blue-500 border-t-transparent rounded-full w-6 h-6 animate-spin"></div>
-          <div>PDF იქმნება...</div>
+        <div className="layer-info text-sm text-gray-600">
+          დააკლიკეთ კატეგორიას ფილტრაციისთვის
         </div>
-        <button
-          id="reset-btn"
-          className="hidden"
-          onClick={showAllCategories}></button>
       </div>
+      <div ref={mapRef} className="w-full h-[600px] bg-gray-200"></div>
+      <div
+        className={`export-progress flex items-center space-x-2 mt-2 ${
+          exporting ? "block" : "hidden"
+        }`}>
+        <div className="loading-spinner border-4 border-blue-500 border-t-transparent rounded-full w-6 h-6 animate-spin"></div>
+        <div>PDF იქმნება...</div>
+      </div>
+      <button
+        id="reset-btn"
+        className="hidden"
+        onClick={showAllCategories}></button>
     </div>
   );
 };

@@ -42,6 +42,16 @@ const rawCharts = {
       path_en: "Material Flow Accounts",
     },
   ],
+  nature: [
+    {
+      protectedAreas: [
+        {
+          title_ge: "საქართველოს დაცული ტერიტორიები",
+          title_en: "Protected areas of Georgia",
+        },
+      ],
+    },
+  ],
   water: [
     {
       majors: [
