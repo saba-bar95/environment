@@ -4,6 +4,7 @@ import GeoMapContainer from "./GeoMapContainer";
 import Charts from "../../../../../Charts";
 import { useEffect } from "react";
 import Header from "./Header/Header";
+import Footer from "./Footer/Footer";
 
 const ProtectedAreas = () => {
   const { language } = useParams();
@@ -45,6 +46,7 @@ const ProtectedAreas = () => {
       <div className="charts-section">
         <GeoMapContainer chartInfo={info} />
       </div>
+      <Footer />
     </div>
   );
 };
