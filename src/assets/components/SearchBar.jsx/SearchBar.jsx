@@ -103,7 +103,9 @@ const SearchBar = ({ onSelectChart }) => {
               className="px-4 py-2 text-sm text-gray-800 cursor-pointer hover:bg-blue-100"
               onClick={() => handleSelect(chart)}>
               {chart[`title_${language}`]}
-              <span> ({chart[`path_${language}`]}) </span>
+              {chart[`path_${language}`] && (
+                <span> ({chart[`path_${language}`]}) </span>
+              )}
             </li>
           ))}
         </ul>
