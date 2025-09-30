@@ -1,0 +1,235 @@
+@use "/src/assets/styles/_breakpoints.scss" as *;
+
+.header-container {
+  padding-top: 70px;
+  background-color: #f5f5f8;
+
+  .svg-text {
+    font-size: 20px; /* Adjust font size to fit within SVG */
+    fill: white; /* Match the stroke color or choose another */
+    font-family: Arial, sans-serif; /* Specify font */
+  }
+
+  .protected-header {
+    max-width: 1600px;
+    display: flex;
+    margin: auto;
+    gap: 30px;
+    justify-content: center;
+
+    .info-wrapper {
+      border-radius: 24px;
+      padding: 20px 30px;
+      flex: 1;
+      color: #ffffff;
+      max-width: 350px;
+      display: flex;
+      flex-direction: column;
+      gap: 25px;
+
+      .top {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+
+        svg {
+          flex-shrink: 0;
+        }
+
+        h1 {
+          color: inherit;
+          font-feature-settings: "case" on;
+          font-size: 18px;
+        }
+      }
+
+      .bottom {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+
+        h2 {
+          font-size: 40px;
+          font-family: FiraGOMedium;
+          font-feature-settings: "case" off;
+          font-weight: 900;
+          letter-spacing: 0.02em;
+        }
+
+        p {
+          font-size: 24px;
+          font-family: FiraGOBold;
+        }
+      }
+    }
+  }
+
+  // Mobile (≤ 768px)
+  @media (max-width: $mobile) {
+    padding-top: 40px; /* Reduce padding for mobile */
+
+    .protected-header {
+      flex-direction: column; /* Stack cards vertically */
+      gap: 20px;
+      padding: 0 15px; /* Prevent edge touching */
+
+      .info-wrapper {
+        padding: 15px 20px;
+        gap: 15px;
+        max-width: 300px;
+        margin: auto;
+
+        .top {
+          gap: 10px;
+
+          svg {
+            width: 28px; /* Smaller SVG */
+            height: 32px;
+          }
+
+          h1 {
+            font-size: 16px; /* Smaller title */
+          }
+        }
+
+        .bottom {
+          gap: 8px;
+
+          h2 {
+            font-size: 28px; /* Smaller number */
+          }
+
+          p {
+            font-size: 18px; /* Smaller unit */
+          }
+        }
+      }
+    }
+
+    .svg-text {
+      font-size: 10px; /* Smaller to fit SVG */
+    }
+  }
+
+  // Tablet (769px–1200px)
+  @media (min-width: calc($mobile + 1px)) and (max-width: $tablet) {
+    padding-top: 50px;
+
+    .protected-header {
+      flex-wrap: wrap; /* Allow wrapping */
+      gap: 25px;
+      padding: 0 20px;
+
+      .info-wrapper {
+        padding: 18px 25px;
+        max-width: 250px;
+        gap: 20px;
+
+        .top {
+          gap: 15px;
+
+          svg {
+            width: 30px;
+            height: 36px;
+          }
+
+          h1 {
+            font-size: 17px;
+          }
+        }
+
+        .bottom {
+          gap: 9px;
+
+          h2 {
+            font-size: 34px;
+          }
+
+          p {
+            font-size: 20px;
+          }
+        }
+      }
+    }
+
+    .svg-text {
+      font-size: 12px;
+    }
+  }
+
+  // Mid (1201px–1600px)
+  @media (min-width: calc($tablet + 1px)) and (max-width: $mid) {
+    padding-top: 60px;
+
+    .protected-header {
+      gap: 28px;
+      max-width: 1200px; /* Smaller container */
+
+      .info-wrapper {
+        max-width: 320px;
+      }
+    }
+
+    .svg-text {
+      font-size: 15px;
+    }
+  }
+
+  // Desktop (1601px–1920px)
+  @media (min-width: calc($mid + 1px)) and (max-width: $desktop) {
+    padding-top: 70px;
+
+    .protected-header {
+      max-width: 1400px; /* Slightly smaller container */
+    }
+
+    .svg-text {
+      font-size: 18px;
+    }
+  }
+
+  // Ultrawide (≥ 1921px)
+  @media (min-width: calc($desktop + 1px)) {
+    padding-top: 80px;
+
+    .protected-header {
+      max-width: 1800px; /* Larger container */
+      gap: 35px;
+
+      .info-wrapper {
+        max-width: 400px; /* Larger cards */
+        padding: 25px 35px;
+        gap: 30px;
+
+        .top {
+          gap: 25px;
+
+          svg {
+            width: 40px; /* Larger SVG */
+            height: 48px;
+          }
+
+          h1 {
+            font-size: 20px; /* Larger title */
+          }
+        }
+
+        .bottom {
+          gap: 12px;
+
+          h2 {
+            font-size: 44px; /* Larger number */
+          }
+
+          p {
+            font-size: 26px; /* Larger unit */
+          }
+        }
+      }
+    }
+
+    .svg-text {
+      font-size: 20px; /* Match default */
+    }
+  }
+}

@@ -3,6 +3,7 @@ import backgroundImg from "./Background/background.jpg";
 import GeoMapContainer from "./GeoMapContainer";
 import Charts from "../../../../../Charts";
 import { useEffect } from "react";
+import Header from "./Header/Header";
 
 const ProtectedAreas = () => {
   const { language } = useParams();
@@ -40,6 +41,7 @@ const ProtectedAreas = () => {
             : "აღმოაჩინეთ საქართველოს ეროვნული პარკების, ნაკრძალებისა და დაცული ლანდშაფტების მზარდი ქსელი"}{" "}
         </h2>
       </div>
+      <Header />
       <div className="charts-section">
         <GeoMapContainer chartInfo={info} />
       </div>
