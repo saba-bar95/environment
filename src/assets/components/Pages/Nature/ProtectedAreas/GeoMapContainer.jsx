@@ -5,6 +5,7 @@ import html2canvas from "html2canvas";
 import { jsPDF } from "jspdf";
 import "./mapContainer.css";
 import * as XLSX from "xlsx";
+import { useParams } from "react-router-dom";
 
 const GeoMapContainer = ({ chartInfo }) => {
   const mapRef = useRef(null);
@@ -19,14 +20,26 @@ const GeoMapContainer = ({ chartInfo }) => {
   const [error, setError] = useState(null);
   const [exporting, setExporting] = useState(false);
 
+  const { language } = useParams();
+
   const categoryColors = useMemo(
     () => ({
-      "ბუნების ძეგლი": "#14532D",
-      აღკვეთილი: "#EA580C",
-      "ეროვნული პარკი": "#16A34A",
-      "სახელმწიფო ნაკრძალი": "#1E40AF",
-      "დაცული ლანდშაფტი": "#84CC16",
-      "მრავალმხრივი გამოყენების ტერიტორია": "#EAB308",
+      ge: {
+        "ბუნების ძეგლი": "#14532D",
+        აღკვეთილი: "#EA580C",
+        "ეროვნული პარკი": "#16A34A",
+        "სახელმწიფო ნაკრძალი": "#1E40AF",
+        "დაცული ლანდშაფტი": "#84CC16",
+        "მრავალმხრივი გამოყენების ტერიტორია": "#EAB308",
+      },
+      en: {
+        "Natural Monument": "#14532D",
+        "Managed Reserve": "#EA580C",
+        "National Park": "#16A34A",
+        "Strict Nature Reserve": "#1E40AF",
+        "Protected Landscape": "#84CC16",
+        "Multiple Use Area": "#EAB308",
+      },
     }),
     []
   );
@@ -40,7 +53,11 @@ const GeoMapContainer = ({ chartInfo }) => {
       totalCount,
       categoryColors
     ) => {
-      let innerHTML = `<h4>📊 დაცული ტერიტორიების კატეგორიები</h4><div id="legend-content">`;
+      let innerHTML = `<h4>📊 ${
+        language === "en"
+          ? "Protected Area Categories"
+          : "დაცული ტერიტორიების კატეგორიები"
+      }</h4><div id="legend-content">`;
       if (isLoading) {
         innerHTML += `
           <div style="text-align: center;">
@@ -66,7 +83,7 @@ const GeoMapContainer = ({ chartInfo }) => {
                     activeCategories.has(category) ? "👁️" : "👁️‍🗨️"
                   }</span>
                   <span class="legend-color-box" style="background-color: ${
-                    categoryColors[category] || "#6B7280"
+                    categoryColors[language][category] || "#6B7280"
                   };"></span>
                   ${category}
                 </div>
@@ -77,15 +94,19 @@ const GeoMapContainer = ({ chartInfo }) => {
           .join("");
         innerHTML += `
           <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #ddd;">
-            <b>სულ: <span style="color: #667eea;">${totalCount}</span></b>
+            <b>${
+              language === "en" ? "Total" : "სულ"
+            }: <span style="color: #667eea;">${totalCount}</span></b>
           </div>
-          <button class="reset-filters-btn" onclick="document.getElementById('reset-btn').click()">ყველას ჩვენება</button>
+          <button class="reset-filters-btn" onclick="document.getElementById('reset-btn').click()"> ${
+            language === "en" ? "Show All" : "ყველას ჩვენება"
+          } </button>
         `;
       }
       innerHTML += `</div>`;
       return innerHTML;
     },
-    []
+    [language]
   );
 
   const toggleCategory = useCallback((category) => {
@@ -116,7 +137,7 @@ const GeoMapContainer = ({ chartInfo }) => {
       cqlFilter = undefined;
     } else {
       cqlFilter = Array.from(activeCategories)
-        .map((cat) => `kategoria='${cat}'`)
+        .map((cat) => `${language === "en" ? "Type" : "kategoria"}='${cat}'`)
         .join(" OR ");
     }
 
@@ -128,37 +149,38 @@ const GeoMapContainer = ({ chartInfo }) => {
         version: "1.1.0",
         opacity: 0.9,
         tiled: true,
+        ...(language === "en" && { env: "MunicName:NameENG" }), // Conditionally include env
         CQL_FILTER: cqlFilter,
       })
       .addTo(mapInstanceRef.current);
-  }, [activeCategories]);
+  }, [activeCategories, language]);
 
   // Map initialization
   useEffect(() => {
     // Initialize map
     mapInstanceRef.current = L.map(mapRef.current).setView([42.1, 43.5], 7.6);
 
-    // Add OpenStreetMap tile layer
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      attribution: "© OpenStreetMap contributors",
-      maxZoom: 18,
-      opacity: 0.7,
-    }).addTo(mapInstanceRef.current);
-
     // Add municipalities layer
+    const layerOptions = {
+      layers: "census:municipalitetebi",
+      format: "image/png",
+      transparent: true,
+      version: "1.1.0",
+      opacity: 0.9,
+      tiled: true,
+      styles: "",
+    };
+
+    if (language === "en") {
+      layerOptions.env = "MunicName:NAME_EN";
+    } else {
+      layerOptions.env = "MunicName:NAME_SYL";
+    }
+
     L.tileLayer
-      .wms("https://census-map.geostat.ge/geoserver/wms", {
-        layers: "census:municipalitetebi",
-        format: "image/png",
-        transparent: true,
-        version: "1.1.0",
-        opacity: 0.9,
-        tiled: true,
-        styles: "",
-      })
+      .wms("https://census-map.geostat.ge/geoserver/wms", layerOptions)
       .addTo(mapInstanceRef.current);
 
-    // Initialize protected areas layer
     protectedAreasLayerRef.current = L.tileLayer
       .wms("https://census-map.geostat.ge/geoserver/wms", {
         layers: "census:daculi",
@@ -168,7 +190,7 @@ const GeoMapContainer = ({ chartInfo }) => {
         attribution: "GeoStat",
         opacity: 0.9,
         tiled: true,
-        styles: "",
+        styles: "census:polygon-daculi",
       })
       .addTo(mapInstanceRef.current);
 
@@ -179,6 +201,7 @@ const GeoMapContainer = ({ chartInfo }) => {
 
     // Add legend control
     const legend = L.control({ position: "bottomright" });
+
     legend.onAdd = () => {
       const div = L.DomUtil.create("div", "info legend");
       legendRef.current = div;
@@ -241,37 +264,51 @@ const GeoMapContainer = ({ chartInfo }) => {
           let popupContent = "";
 
           if (props.kategoria) {
-            const name = props.NameGEO || props.name || "უცნობი";
-            const category = props.kategoria;
+            const name =
+              language === "en" ? props.NameENG : props.NameGEO || "N/A";
+
+            const category =
+              language === "en" ? props.Type : props.kategoria || "N/A";
             const area = parseFloat(props.Area) || 0;
-            const color = categoryColors[category] || "#6B7280";
+            const color = categoryColors[language][category] || "#6B7280";
 
             popupContent = `
             <div class="popup-header">
-              📍 დაცული ტერიტორიის ინფორმაცია
-            </div>
+              ${
+                language === "en"
+                  ? "Protected Area Information"
+                  : "დაცული ტერიტორიის ინფორმაცია"
+              }
+            </div> 
             <div style="padding: 10px;">
-              <p style="margin: 8px 0;"><b>დასახელება:</b> ${name}</p>
+              <p style="margin: 8px 0;"><b>${
+                language === "en" ? "Name" : "დასახელება"
+              }:</b> ${name}</p>
               <p style="margin: 8px 0;">
-                <b>კატეგორია:</b> 
+                <b>${language === "en" ? "Category" : "კატეგორია"}:</b>
                 ${category} <span class="legend-color-box" style="background-color: ${color}; vertical-align: middle;"></span>
               </p>
-              <p style="margin: 8px 0;"><b>ფართობი:</b> ${
-                area > 1000000
-                  ? (area / 1000000).toFixed(2) + " კმ²"
-                  : area.toFixed(2) + " მ²"
-              }</p>
+              <p style="margin: 8px 0;"><b>${
+                language === "en" ? "Area" : "ფართობი"
+              }:</b> ${
+              area > 1000000
+                ? (area / 1000000).toFixed(2) + " კმ²"
+                : area.toFixed(2) + `${language === "en" ? " m²" : " მ²"}`
+            }</p>
             </div>
           `;
           } else {
             const name =
-              props.MunicName || props.NAME_GEO || props.name || "უცნობი";
+              language === "en" ? props.NameENG : props.NameGEO || "N/A";
+
             popupContent = `
             <div class="popup-header">
-              🏛️ მუნიციპალიტეტი
+              🏛️ ${language === "en" ? "Municipality" : "მუნიციპალიტეტი"}
             </div>
             <div style="padding: 10px;">
-              <p style="margin: 8px 0;"><b>დასახელება:</b> ${name}</p>
+              <p style="margin: 8px 0;"><b>${
+                language === "en" ? "Name" : "დასახელება"
+              }:</b> ${name}</p>
             </div>
           `;
           }
@@ -299,6 +336,7 @@ const GeoMapContainer = ({ chartInfo }) => {
     isLoading,
     renderLegendContent,
     totalCount,
+    language,
   ]);
 
   useEffect(() => {
@@ -311,7 +349,11 @@ const GeoMapContainer = ({ chartInfo }) => {
           setAllFeaturesData(data.features);
           const categoryCounts = {};
           data.features.forEach((feature) => {
-            const category = feature.properties.kategoria || "სხვა";
+            const category =
+              language === "en"
+                ? feature.properties.Type
+                : feature.properties.kategoria || "N/A";
+
             categoryCounts[category] = (categoryCounts[category] || 0) + 1;
           });
           const sortedCategories = Object.entries(categoryCounts).sort(
@@ -327,10 +369,14 @@ const GeoMapContainer = ({ chartInfo }) => {
       })
       .catch((err) => {
         console.error(err);
-        setError("მონაცემების ჩატვირთვა ვერ მოხერხდა");
+        setError(
+          language === "en"
+            ? "Failed to load data."
+            : "მონაცემების ჩატვირთვა ვერ მოხერხდა"
+        );
         setIsLoading(false);
       });
-  }, []);
+  }, [language]);
 
   const showAllCategories = useCallback(() => {
     setActiveCategories(new Set(categories.map(([cat]) => cat)));
@@ -370,26 +416,49 @@ const GeoMapContainer = ({ chartInfo }) => {
   const exportAsGeoJSON = () => {
     const features = getFilteredFeatures();
     if (features.length === 0) {
-      alert("არ არის მონაცემები ექსპორტისთვის");
+      alert(
+        `${
+          language === "en"
+            ? "No data to export"
+            : "არ არის მონაცემები ექსპორტისთვის"
+        }`
+      );
       return;
     }
 
     const geojson = { type: "FeatureCollection", features };
     const dataStr = JSON.stringify(geojson, null, 2);
-    downloadFile(dataStr, "daculi_teritoriebi.geojson", "application/geo+json");
+    downloadFile(
+      dataStr,
+      language === "en"
+        ? "protected_areas.geojson"
+        : "daculi_teritoriebi.geojson",
+      "application/geo+json"
+    );
   };
 
   const exportAsExcel = () => {
     const features = getFilteredFeatures();
     if (features.length === 0) {
-      alert("არ არის მონაცემები ექსპორტისთვის");
+      alert(
+        `${
+          language === "en"
+            ? "No data to export"
+            : "არ არის მონაცემები ექსპორტისთვის"
+        }`
+      );
       return;
     }
-
     const data = features.map((feature) => ({
-      დასახელება: feature.properties.NameGEO || feature.properties.name || "",
-      კატეგორია: feature.properties.kategoria || "",
-      "ფართობი (კმ²)": parseFloat(
+      [language === "en" ? "Name" : "დასახელება"]:
+        language === "en"
+          ? feature.properties.NameENG
+          : feature.properties.NameGEO || "N/A",
+      [language === "en" ? "Category" : "კატეგორია"]:
+        language === "en"
+          ? feature.properties.Type
+          : feature.properties.kategoria || "N/A",
+      [language === "en" ? "Area (km²)" : "ფართობი (კმ²)"]: parseFloat(
         ((parseFloat(feature.properties.Area) || 0) / 1000000).toFixed(2)
       ),
     }));
@@ -397,24 +466,39 @@ const GeoMapContainer = ({ chartInfo }) => {
     const wb = XLSX.utils.book_new();
     const ws = XLSX.utils.json_to_sheet(data);
     ws["!cols"] = [{ wch: 30 }, { wch: 25 }, { wch: 15 }];
-    XLSX.utils.book_append_sheet(wb, ws, "დაცული ტერიტორიები");
-    XLSX.writeFile(wb, "daculi_teritoriebi.xlsx");
+    XLSX.utils.book_append_sheet(
+      wb,
+      ws,
+      `${language === "en" ? "protected_areas" : "დაცული ტერიტორიები"}`
+    );
+    XLSX.writeFile(
+      wb,
+      `${
+        language === "en" ? "protected_areas.xlsx" : "daculi_teritoriebi.xlsx"
+      }`
+    );
   };
 
   const exportAsKML = () => {
     const features = getFilteredFeatures();
     if (features.length === 0) {
-      alert("არ არის მონაცემები ექსპორტისთვის");
+      alert(
+        language === "en"
+          ? "No data to export"
+          : "არ არის მონაცემები ექსპორტისთვის"
+      );
       return;
     }
 
     let kml = '<?xml version="1.0" encoding="UTF-8"?>\n';
     kml += '<kml xmlns="http://www.opengis.net/kml/2.2">\n';
     kml += "  <Document>\n";
-    kml += "    <name>დაცული ტერიტორიები</name>\n";
+    kml += `    <name>${
+      language === "en" ? "Protected Areas" : "დაცული ტერიტორიები"
+    }</name>\n`;
 
     Object.entries(categoryColors).forEach(([category, color]) => {
-      const colorKML = color.substring(1);
+      const colorKML = color;
       kml += `    <Style id="${category.replace(/\s/g, "_")}">\n`;
       kml += `      <PolyStyle>\n`;
       kml += `        <color>b3${colorKML}</color>\n`;
@@ -425,13 +509,19 @@ const GeoMapContainer = ({ chartInfo }) => {
 
     features.forEach((feature) => {
       const props = feature.properties;
-      const name = props.NameGEO || props.name || "უსახელო";
-      const category = props.kategoria || "";
+      const name =
+        language === "en"
+          ? props.NameENG || props.name || "Unnamed"
+          : props.NameGEO || props.name || "უსახელო";
+      const category =
+        language === "en" ? props.Type || "" : props.kategoria || "";
       const styleId = category.replace(/\s/g, "_");
 
       kml += "    <Placemark>\n";
       kml += `      <name>${name}</name>\n`;
-      kml += `      <description>კატეგორია: ${category}</description>\n`;
+      kml += `      <description>${
+        language === "en" ? "Category" : "კატეგორია"
+      }: ${category}</description>\n`;
       kml += `      <styleUrl>#${styleId}</styleUrl>\n`;
 
       if (feature.geometry?.type === "Polygon") {
@@ -469,11 +559,10 @@ const GeoMapContainer = ({ chartInfo }) => {
 
     downloadFile(
       kml,
-      "daculi_teritoriebi.kml",
+      language === "en" ? "protected_areas.kml" : "daculi_teritoriebi.kml",
       "application/vnd.google-earth.kml+xml"
     );
   };
-
   const exportAsPDF = async () => {
     setExporting(true);
     try {
@@ -504,7 +593,13 @@ const GeoMapContainer = ({ chartInfo }) => {
         'bold 60px Arial, "Noto Sans Georgian", "DejaVu Sans", sans-serif';
       pdfCtx.fillStyle = "#1f2937";
       pdfCtx.textAlign = "center";
-      pdfCtx.fillText("საქართველოს დაცული ტერიტორიების რუკა", a4Width / 2, 120);
+      pdfCtx.fillText(
+        language === "en"
+          ? "Map of Protected Areas of Georgia"
+          : "საქართველოს დაცული ტერიტორიების რუკა",
+        a4Width / 2,
+        120
+      );
 
       const img = new Image();
       img.onload = () => {
@@ -530,11 +625,19 @@ const GeoMapContainer = ({ chartInfo }) => {
         pdfCtx.textAlign = "left";
         const today = new Date();
         const dateStr = today.toLocaleDateString("ka-GE");
-        pdfCtx.fillText(`შექმნის თარიღი: ${dateStr}`, 150, infoY);
+        pdfCtx.fillText(
+          `${
+            language === "en" ? "Creation date" : "შექმნის თარიღი"
+          }: ${dateStr}`,
+          150,
+          infoY
+        );
 
         pdfCtx.textAlign = "right";
         pdfCtx.fillText(
-          `სულ ტერიტორიები: ${getFilteredFeatures().length}`,
+          language === "en"
+            ? `Total areas: ${getFilteredFeatures().length}`
+            : `სულ ტერიტორიები: ${getFilteredFeatures().length}`,
           a4Width - 150,
           infoY
         );
@@ -544,7 +647,9 @@ const GeoMapContainer = ({ chartInfo }) => {
         pdfCtx.fillStyle = "#6b7280";
         pdfCtx.textAlign = "center";
         pdfCtx.fillText(
-          "წყარო: საქართველოს სტატისტიკის ეროვნული სამსახური",
+          language === "en"
+            ? "Source: National Statistics Office of Georgia"
+            : "წყარო: საქართველოს სტატისტიკის ეროვნული სამსახური",
           a4Width / 2,
           a4Height - 60
         );
@@ -556,13 +661,21 @@ const GeoMapContainer = ({ chartInfo }) => {
           format: "a4",
         });
         pdf.addImage(finalImgData, "JPEG", 0, 0, 297, 210);
-        pdf.save(`დაცული_ტერიტორიები_${dateStr.replace(/\./g, "_")}.pdf`);
+        pdf.save(
+          language === "en"
+            ? `protected_areas_${dateStr.replace(/\./g, "_")}.pdf`
+            : `დაცული_ტერიტორიები_${dateStr.replace(/\./g, "_")}.pdf`
+        );
         setExporting(false);
       };
       img.src = imgData;
     } catch (error) {
       console.error("PDF export error:", error);
-      alert("PDF-ის შექმნისას მოხდა შეცდომა. გთხოვთ სცადოთ თავიდან.");
+      alert(
+        language === "en"
+          ? "An error occurred while creating the PDF. Please try again."
+          : "PDF-ის შექმნისას მოხდა შეცდომა. გთხოვთ სცადოთ თავიდან."
+      );
       setExporting(false);
     }
   };
@@ -611,7 +724,9 @@ const GeoMapContainer = ({ chartInfo }) => {
           </button>
         </div>
         <div className="layer-info text-sm text-gray-600">
-          დააკლიკეთ კატეგორიას ფილტრაციისთვის
+          {language === "en"
+            ? "Click on category to filter"
+            : "დააკლიკეთ კატეგორიას ფილტრაციისთვის"}
         </div>
       </div>
       <div ref={mapRef} className="w-full h-[600px] bg-gray-200"></div>
@@ -620,7 +735,9 @@ const GeoMapContainer = ({ chartInfo }) => {
           exporting ? "block" : "hidden"
         }`}>
         <div className="loading-spinner border-4 border-blue-500 border-t-transparent rounded-full w-6 h-6 animate-spin"></div>
-        <div>PDF იქმნება...</div>
+        <div>
+          {language === "en" ? "PDF is being created..." : "PDF იქმნება..."}
+        </div>
       </div>
       <button
         id="reset-btn"
