@@ -17,193 +17,144 @@ import Download from "../Download/Download";
 
 const Chart1 = ({ chartInfo }) => {
   const { language } = useParams();
-  const [mobileData, setMobileData] = useState(null);
-  const [stationaryData, setStationaryData] = useState(null);
-  const [mobileSubstances, setMobileSubstances] = useState([]);
-  const [stationarySources, setStationarySources] = useState([]);
-  const [selectedMobileSubstance, setSelectedMobileSubstance] = useState(null);
-  const [selectedStationarySource, setSelectedStationarySource] =
-    useState(null);
-  const [activeLines, setActiveLines] = useState(["mobile", "stationary"]);
+  const [forestData, setForestData] = useState(null);
+  const [substanceList, setSubstanceList] = useState([]);
+  const [selectedSubstance, setSelectedSubstance] = useState(null);
+  const [activeLines, setActiveLines] = useState(["forestData"]);
 
   const info = useMemo(
     () => ({
       title_ge: chartInfo.title_ge,
       title_en: chartInfo.title_en,
-      unit_ge: "ათასი ტონა",
-      unit_en: "Thousand Tonnes",
-      colors: ["#63b8e9ff", "#e75816ff"],
+      unit_ge: "კუბური მეტრი / ჰექტარი",
+      unit_en: "Cubic meter / Hectare",
+      colors: ["#63b8e9ff", "#e75816ff", "#28a745", "#ff6b35"],
       svg: Svg(),
-      mobileId: "felled-timber-volume",
-      stationaryId: "illegal-logging",
+      apiIds: [
+        "felled-timber-volume",
+        "illegal-logging",
+        "forest-planting-recovery",
+      ],
       types: ["data", "metadata"],
+      substanceTitles: [
+        "ტყის ჭრით მიღებული ხე-ტყის მოცულობა(კუბური მეტრი)",
+        "ტყის უკანონო ჭრა",
+        "ტყის თესვა და დარგვა (ჰექტარი)",
+        "ტყის ბუნებრივი განახლებისთვის ხელშეწყობა (ჰექტარი)",
+      ],
     }),
     [chartInfo]
   );
 
-  // Fetch mobile data (felled-timber-volume)
+  // Fetch forest data from multiple APIs
   useEffect(() => {
-    const getMobileData = async () => {
+    const getForestData = async () => {
       try {
-        const [dataResult, metaDataResult] = await Promise.all([
-          commonData(info.mobileId, info.types[0], language),
-          commonData(info.mobileId, info.types[1], language),
-        ]);
+        // Create substance list with the 4 specific titles
+        const substanceHeaders = [
+          { name: info.substanceTitles[0], id: 0, apiIndex: 0 }, // Felled timber
+          { name: info.substanceTitles[1], id: 1, apiIndex: 1 }, // Illegal logging
+          { name: info.substanceTitles[2], id: 2, apiIndex: 2 }, // Forest planting
+          { name: info.substanceTitles[3], id: 3, apiIndex: 2 }, // Forest recovery
+        ];
 
-        const substanceList =
-          metaDataResult.data.metadata.variables[0].valueTexts
-            .map((name, id) => ({ name, id }))
-            .filter((_, i) => [0, 1, 2, 7].includes(i));
+        // Fetch data from all 3 APIs
+        const allData = [];
 
-        console.log(substanceList);
+        for (let i = 0; i < info.apiIds.length; i++) {
+          const apiId = info.apiIds[i];
+          const [dataResult, metaDataResult] = await Promise.all([
+            commonData(apiId, info.types[0], language),
+            commonData(apiId, info.types[1], language),
+          ]);
 
-        const yearList =
-          metaDataResult.data.metadata.variables[1].valueTexts.map(
-            (year, id) => ({ year, id })
-          );
+          const yearList =
+            metaDataResult.data.metadata.variables[1].valueTexts.map(
+              (year, id) => ({ year, id })
+            );
 
-        const transformed = [];
+          dataResult.data.data.forEach((yearObj) => {
+            const yearId = parseInt(yearObj.year);
+            const yearName =
+              yearList.find((y) => y.id === yearId)?.year || yearId;
 
-        dataResult.data.data.forEach((yearObj) => {
-          const yearId = parseInt(yearObj.year);
-          const yearName =
-            yearList.find((y) => y.id === yearId)?.year || yearId;
+            Object.keys(yearObj).forEach((key) => {
+              if (key === "year") return;
 
-          Object.keys(yearObj).forEach((key) => {
-            if (key === "year") return;
+              const value = parseFloat(yearObj[key]) || 0;
 
-            const substanceId = parseInt(key);
-            if (isNaN(substanceId) || ![0, 1, 2, 7].includes(substanceId))
-              return;
-
-            const substanceName =
-              substanceList.find((s) => s.id === substanceId)?.name ||
-              `Substance ${substanceId}`;
-
-            transformed.push({
-              substance: substanceName,
-              year: parseInt(yearName),
-              value: parseFloat(yearObj[key]) || 0,
-              type: "mobile",
+              // Map data to substance headers based on API
+              if (i === 0) {
+                // felled-timber-volume
+                allData.push({
+                  substance: substanceHeaders[0].name,
+                  year: parseInt(yearName),
+                  value: value,
+                  id: 0,
+                });
+              } else if (i === 1) {
+                // illegal-logging
+                allData.push({
+                  substance: substanceHeaders[1].name,
+                  year: parseInt(yearName),
+                  value: value,
+                  id: 1,
+                });
+              } else if (i === 2) {
+                // forest-planting-recovery
+                // This API has both planting and recovery data
+                if (key === "0") {
+                  // Planting data
+                  allData.push({
+                    substance: substanceHeaders[2].name,
+                    year: parseInt(yearName),
+                    value: value,
+                    id: 2,
+                  });
+                } else if (key === "1") {
+                  // Recovery data
+                  allData.push({
+                    substance: substanceHeaders[3].name,
+                    year: parseInt(yearName),
+                    value: value,
+                    id: 3,
+                  });
+                }
+              }
             });
           });
-        });
+        }
 
-        setMobileSubstances(substanceList);
-        setSelectedMobileSubstance(substanceList[0]?.name || null);
-        setMobileData(transformed);
+        setSubstanceList(substanceHeaders);
+        setSelectedSubstance(substanceHeaders[0]?.name || null);
+        setForestData(allData);
       } catch (error) {
-        console.log("Error fetching mobile data:", error);
+        console.log("Error fetching forest data:", error);
       }
     };
 
-    getMobileData();
-  }, [info.mobileId, language, info.types]);
-
-  // Fetch stationary data (stationary-source-pollution)
-  useEffect(() => {
-    const getStationaryData = async () => {
-      try {
-        const [dataResult, metaDataResult] = await Promise.all([
-          commonData(info.stationaryId, info.types[0], language),
-          commonData(info.stationaryId, info.types[1], language),
-        ]);
-
-        const sourceListUnordered =
-          metaDataResult.data.metadata.variables[0].valueTexts
-            .map((name, id) => ({ name, id }))
-            .filter((s) => [4, 5, 6, 3].includes(s.id));
-
-        // Reorder sourceList to ensure id: 3 is last
-        const desiredOrder = [4, 5, 6, 3];
-        const sourceList = desiredOrder
-          .map((id) => sourceListUnordered.find((s) => s.id === id))
-          .filter((item) => item !== undefined);
-
-        const yearList =
-          metaDataResult.data.metadata.variables[1].valueTexts.map(
-            (year, id) => ({ year, id })
-          );
-
-        const transformed = [];
-
-        dataResult.data.data.forEach((yearObj) => {
-          const yearId = parseInt(yearObj.year);
-          const yearName =
-            yearList.find((y) => y.id === yearId)?.year || yearId;
-
-          Object.keys(yearObj).forEach((key) => {
-            if (key === "year") return;
-
-            const sourceId = parseInt(key);
-            if (isNaN(sourceId) || ![4, 5, 6, 3].includes(sourceId)) return;
-
-            const sourceName =
-              sourceList.find((s) => s.id === sourceId)?.name ||
-              `Source ${sourceId}`;
-
-            transformed.push({
-              source: sourceName,
-              year: parseInt(yearName),
-              value: parseFloat(yearObj[key]) || 0,
-              type: "stationary",
-            });
-          });
-        });
-
-        setStationarySources(sourceList);
-        setSelectedStationarySource(sourceList[0]?.name || null);
-        setStationaryData(transformed);
-      } catch (error) {
-        console.log("Error fetching stationary data:", error);
-      }
-    };
-
-    getStationaryData();
-  }, [info.stationaryId, language, info.types]);
+    getForestData();
+  }, [info.apiIds, language, info.types, info.substanceTitles]);
 
   // Combined and filtered data for chart
   const chartData = useMemo(() => {
-    if (
-      !mobileData ||
-      !stationaryData ||
-      !selectedMobileSubstance ||
-      !selectedStationarySource
-    )
-      return [];
+    if (!forestData || !selectedSubstance) return [];
 
-    const mobileFiltered = mobileData
-      .filter(
-        (d) => d.substance === selectedMobileSubstance && d.type === "mobile"
-      )
-      .map((d) => ({ ...d, key: "mobile" }));
+    const filtered = forestData.filter(
+      (d) => d.substance === selectedSubstance
+    );
 
-    const stationaryFiltered = stationaryData
-      .filter(
-        (d) => d.source === selectedStationarySource && d.type === "stationary"
-      )
-      .map((d) => ({ ...d, key: "stationary", substance: d.source }));
-
-    const years = [
-      ...new Set([
-        ...mobileFiltered.map((d) => d.year),
-        ...stationaryFiltered.map((d) => d.year),
-      ]),
-    ].sort((a, b) => a - b);
+    const years = [...new Set(filtered.map((d) => d.year))].sort(
+      (a, b) => a - b
+    );
 
     const merged = years.map((year) => ({
       year,
-      mobile: mobileFiltered.find((d) => d.year === year)?.value || 0,
-      stationary: stationaryFiltered.find((d) => d.year === year)?.value || 0,
+      forestData: filtered.find((d) => d.year === year)?.value || 0,
     }));
 
     return merged;
-  }, [
-    mobileData,
-    stationaryData,
-    selectedMobileSubstance,
-    selectedStationarySource,
-  ]);
+  }, [forestData, selectedSubstance]);
 
   // Toggle line visibility
   const toggleLine = (dataKey) => {
@@ -263,18 +214,9 @@ const Chart1 = ({ chartInfo }) => {
     );
   };
 
-  // Handle mobile substance selection and auto-select corresponding stationary source
-  const handleMobileSelection = (substanceName) => {
-    setSelectedMobileSubstance(substanceName);
-    const selectedMobileIndex = mobileSubstances.find(
-      (s) => s.name === substanceName
-    )?.id;
-    const indexMapping = { 0: 4, 1: 5, 2: 6, 7: 3 };
-    const stationaryIndex = indexMapping[selectedMobileIndex];
-    const stationaryName = stationarySources.find(
-      (s) => s.id === stationaryIndex
-    )?.name;
-    setSelectedStationarySource(stationaryName || null);
+  // Handle substance selection
+  const handleSubstanceSelection = (substanceName) => {
+    setSelectedSubstance(substanceName);
   };
 
   return (
@@ -295,27 +237,25 @@ const Chart1 = ({ chartInfo }) => {
             unit={info[`unit_${language}`]}
             filename={info[`title_${language}`]}
             isChart1={true}
-            source={selectedStationarySource}
+            source={selectedSubstance}
           />
         </div>
       </div>
 
-      {/* Mobile Sources Selector */}
+      {/* Forest Data Selector */}
       <div className="city-list">
-        {mobileSubstances.map((s) => (
+        {substanceList.map((s) => (
           <span
-            key={`mobile-${s.id}`}
+            key={`forest-${s.id}`}
             className={`city-item ${
-              selectedMobileSubstance === s.name ? "active" : ""
+              selectedSubstance === s.name ? "active" : ""
             }`}
-            onClick={() => handleMobileSelection(s.name)}
+            onClick={() => handleSubstanceSelection(s.name)}
           >
             {s.name}
           </span>
         ))}
       </div>
-
-      {/* Stationary Sources - Hidden selector, auto-selected based on mobile selection */}
 
       <ResponsiveContainer width="100%" height={460}></ResponsiveContainer>
     </div>
