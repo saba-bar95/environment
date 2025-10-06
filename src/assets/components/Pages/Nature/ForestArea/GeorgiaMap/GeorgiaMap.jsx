@@ -34,32 +34,40 @@ const GeorgiaMap = () => {
       })
     );
 
-    // Region values with opacity settings
+    // Region values with opacity and highlight settings
     const data = [
-      { id: "GE-TB", value: 75, opacity: 0.45 }, // Tbilisi
-      { id: "GE-AB", value: 40, opacity: 0.45 }, // Abkhazia
-      { id: "GE-AJ", value: 30, opacity: 0.45 }, // Adjara
-      { id: "GE-KA", value: 55, opacity: 1.0 }, // Kakheti - full opacity
-      { id: "GE-IM", value: 60, opacity: 0.45 }, // Imereti
-      { id: "GE-RK", value: 45, opacity: 0.45 }, // Racha-Lechkhumi
-      { id: "GE-GU", value: 50, opacity: 0.45 }, // Guria
-      { id: "GE-SZ", value: 35, opacity: 0.45 }, // Samtskhe-Zemo
+      { id: "GE-TB", value: 8500, opacity: 0.6, name: "თბილისი" }, // Tbilisi
+      { id: "GE-AB", value: 4200, opacity: 0.6, name: "აფხაზეთი" }, // Abkhazia
+      { id: "GE-AJ", value: 3800, opacity: 0.6, name: "აჭარა" }, // Adjara
+      { id: "GE-KA", value: 12400, opacity: 0.6, name: "კახეთი" }, // Kakheti
+      { id: "GE-IM", value: 9600, opacity: 0.6, name: "იმერეთი" }, // Imereti
+      { id: "GE-RK", value: 15200, opacity: 1.0, name: "რაჭა-ლეჩხუმი და ქვემო სვანეთი", highlighted: true }, // Racha-Lechkhumi - highlighted
+      { id: "GE-GU", value: 5100, opacity: 0.6, name: "გურია" }, // Guria
+      { id: "GE-SZ", value: 7300, opacity: 0.6, name: "სამცხე-ჯავახეთი" }, // Samtskhe-Javakheti
     ];
     polygonSeries.data.setAll(data);
 
     polygonSeries.mapPolygons.template.setAll({
-      tooltipText: "{name}: {value}",
+      tooltipText: "", // We'll handle tooltips manually
       interactive: true,
-      fill: am5.color(0x084e99),
+      fill: am5.color(0x6ba3d6), // Lighter blue base color
       stroke: am5.color(0xffffff),
-      strokeWidth: 1,
-      strokeOpacity: 1,
+      strokeWidth: 0.5,
+      strokeOpacity: 0.8,
     });
 
-    // Apply different opacity based on data
+    // Apply different colors and opacity based on data
+    polygonSeries.mapPolygons.template.adapters.add("fill", (fill, target) => {
+      const dataContext = target.dataItem?.dataContext;
+      if (dataContext?.highlighted) {
+        return am5.color(0x084e99); // Darker blue for highlighted region
+      }
+      return am5.color(0x6ba3d6); // Light blue for other regions
+    });
+
     polygonSeries.mapPolygons.template.adapters.add("fillOpacity", (opacity, target) => {
       const dataContext = target.dataItem?.dataContext;
-      return dataContext?.opacity || 0.45;
+      return dataContext?.opacity || 0.6;
     });
 
     // Show value label on each region
@@ -71,13 +79,33 @@ const GeorgiaMap = () => {
       }
     );
 
+    // Custom tooltip functionality
     polygonSeries.events.on("datavalidated", () => {
       polygonSeries.mapPolygons.each((polygon) => {
         polygon.events.on("pointerover", (event) => {
           const data = event.target.dataItem?.dataContext;
           const name = data?.name || "Unknown";
-          const value = data?.value ?? "No value";
-          console.log(`Hovered: ${name} — Value: ${value}`);
+          const value = data?.value ?? 0;
+          
+          // Show custom tooltip
+          const tooltip = document.getElementById("custom-tooltip");
+          if (tooltip) {
+            tooltip.style.display = "block";
+            const titleElement = tooltip.querySelector(".tooltip-title");
+            const valueElement = tooltip.querySelector(".tooltip-value");
+            if (titleElement) titleElement.textContent = name;
+            if (valueElement) valueElement.textContent = `${value.toLocaleString()} მ³`;
+          }
+        });
+
+        polygon.events.on("pointerout", () => {
+          // Hide tooltip after a delay
+          setTimeout(() => {
+            const tooltip = document.getElementById("custom-tooltip");
+            if (tooltip) {
+              tooltip.style.display = "none";
+            }
+          }, 200);
         });
       });
     });
@@ -107,33 +135,66 @@ const GeorgiaMap = () => {
         }}
       ></div>
       
-      {/* Region Label Overlay */}
+      {/* Custom Tooltip */}
       <div 
-        className="region-label"
+        id="custom-tooltip"
         style={{
           position: "absolute",
-          width: "344px",
-          height: "72px",
-          left: "350px",
-          top: "105px",
-          background: "#111729",
-          borderRadius: "14px",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
+          left: "400px",
+          top: "80px",
+          background: "#2D3748",
+          borderRadius: "12px",
+          padding: "16px 20px",
+          boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+          display: "block",
+          zIndex: 1000,
+          minWidth: "280px",
         }}
       >
-        <span style={{
-          fontFamily: "'FiraGO', Arial, sans-serif",
-          fontStyle: "normal",
-          fontWeight: 400,
-          fontSize: "14px",
-          lineHeight: "17px",
-          color: "#FFFFFF",
-          textAlign: "center",
+        <div style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: "8px",
         }}>
-          რაჭა-ლეჩხუმი და ქვემო სვანეთი
-        </span>
+          <div 
+            className="tooltip-title"
+            style={{
+              fontFamily: "'FiraGO', Arial, sans-serif",
+              fontSize: "14px",
+              fontWeight: 400,
+              color: "#FFFFFF",
+              lineHeight: "1.4",
+              marginBottom: "4px",
+            }}
+          >
+            რაჭა-ლეჩხუმი და ქვემო სვანეთი
+          </div>
+          <div 
+            className="tooltip-value"
+            style={{
+              fontFamily: "'FiraGO', Arial, sans-serif",
+              fontSize: "24px",
+              fontWeight: 600,
+              color: "#48BB78",
+              lineHeight: "1.2",
+            }}
+          >
+            15 200 მ³
+          </div>
+        </div>
+        
+        {/* Tooltip Arrow */}
+        <div style={{
+          position: "absolute",
+          top: "50%",
+          left: "-8px",
+          transform: "translateY(-50%)",
+          width: 0,
+          height: 0,
+          borderTop: "8px solid transparent",
+          borderBottom: "8px solid transparent",
+          borderRight: "8px solid #2D3748",
+        }}></div>
       </div>
     </div>
   );
