@@ -6,27 +6,32 @@ import * as am5geodata_georgiaHigh from "@amcharts/amcharts5-geodata/georgiaLow"
 const GeorgiaMap = () => {
   const [highlightedRegion, setHighlightedRegion] = useState("GE-RL"); // Default to Racha-Lechkhumi with correct ID
   const [hoveredRegion, setHoveredRegion] = useState(null);
-  
+
   // Region data for easy access - memoized to prevent re-renders
-  const regions = useMemo(() => [
-    { id: "GE-TB", value: 8500, name: "თბილისი" },
-    { id: "GE-AB", value: 4200, name: "აფხაზეთი" },
-    { id: "GE-AJ", value: 3800, name: "აჭარა" },
-    { id: "GE-KA", value: 12400, name: "კახეთი" },
-    { id: "GE-IM", value: 9600, name: "იმერეთი" },
-    { id: "GE-RL", value: 15200, name: "რაჭა-ლეჩხუმი და ქვემო სვანეთი" }, // Fixed ID
-    { id: "GE-GU", value: 5100, name: "გურია" },
-    { id: "GE-SJ", value: 7300, name: "სამცხე-ჯავახეთი" }, // Fixed ID
-    { id: "GE-MM", value: 6800, name: "მცხეთა-მთიანეთი" }, // Added missing region
-    { id: "GE-KK", value: 5900, name: "ქვემო ქართლი" }, // Added missing region
-    { id: "GE-SZ", value: 8200, name: "შიდა ქართლი" }, // Added another region
-  ], []);
+  const regions = useMemo(
+    () => [
+      { id: "GE-TB", value: 8500, name: "თბილისი" },
+      { id: "GE-AB", value: 4200, name: "აფხაზეთი" },
+      { id: "GE-AJ", value: 3800, name: "აჭარა" },
+      { id: "GE-KA", value: 12400, name: "კახეთი" },
+      { id: "GE-IM", value: 9600, name: "იმერეთი" },
+      { id: "GE-RL", value: 15200, name: "რაჭა-ლეჩხუმი და ქვემო სვანეთი" },
+      { id: "GE-GU", value: 5100, name: "გურია" },
+      { id: "GE-SJ", value: 7300, name: "სამცხე-ჯავახეთი" },
+      { id: "GE-MM", value: 6800, name: "მცხეთა-მთიანეთი" },
+      { id: "GE-KK", value: 5900, name: "ქვემო ქართლი" },
+      { id: "GE-SK", value: 8200, name: "შიდა ქართლი" },
+    ],
+    []
+  );
 
   // Get current highlighted region data
   const currentRegionData = useMemo(() => {
-    return regions.find(region => region.id === highlightedRegion) || regions[5];
+    return (
+      regions.find((region) => region.id === highlightedRegion) || regions[5]
+    );
   }, [regions, highlightedRegion]);
-  
+
   console.log(am5geodata_georgiaHigh.default);
 
   useLayoutEffect(() => {
@@ -58,12 +63,12 @@ const GeorgiaMap = () => {
     );
 
     // Region values with dynamic highlighting
-    const data = regions.map(region => ({
+    const data = regions.map((region) => ({
       ...region,
       highlighted: region.id === highlightedRegion,
-      opacity: region.id === highlightedRegion ? 1.0 : 0.6
+      opacity: region.id === highlightedRegion ? 1.0 : 0.6,
     }));
-    
+
     polygonSeries.data.setAll(data);
 
     polygonSeries.mapPolygons.template.setAll({
@@ -79,18 +84,21 @@ const GeorgiaMap = () => {
     polygonSeries.mapPolygons.template.adapters.add("fill", (fill, target) => {
       const dataContext = target.dataItem?.dataContext;
       if (dataContext?.id === highlightedRegion) {
-        return am5.color(0x084E99); // Darker blue for highlighted region - using exact hex
+        return am5.color(0x084e99); // Darker blue for highlighted region - using exact hex
       }
       return am5.color(0x6ba3d6); // Light blue for other regions
     });
 
-    polygonSeries.mapPolygons.template.adapters.add("fillOpacity", (opacity, target) => {
-      const dataContext = target.dataItem?.dataContext;
-      if (dataContext?.id === highlightedRegion) {
-        return 1.0; // Full opacity for highlighted region
+    polygonSeries.mapPolygons.template.adapters.add(
+      "fillOpacity",
+      (opacity, target) => {
+        const dataContext = target.dataItem?.dataContext;
+        if (dataContext?.id === highlightedRegion) {
+          return 1.0; // Full opacity for highlighted region
+        }
+        return 0.6; // Reduced opacity for other regions
       }
-      return 0.6; // Reduced opacity for other regions
-    });
+    );
 
     // Show value label on each region
     polygonSeries.mapPolygons.template.adapters.add(
@@ -109,23 +117,23 @@ const GeorgiaMap = () => {
           const name = data?.name || "Unknown";
           const value = data?.value ?? 0;
           const regionId = data?.id;
-          
+
           // Update highlighted region on hover
           setHighlightedRegion(regionId);
           setHoveredRegion(regionId);
-          
+
           // Force refresh the map styling
           polygonSeries.mapPolygons.each((mapPolygon) => {
             const polygonData = mapPolygon.dataItem?.dataContext;
             if (polygonData?.id === regionId) {
-              mapPolygon.set("fill", am5.color(0x084E99));
+              mapPolygon.set("fill", am5.color(0x084e99));
               mapPolygon.set("fillOpacity", 1.0);
             } else {
               mapPolygon.set("fill", am5.color(0x6ba3d6));
               mapPolygon.set("fillOpacity", 0.6);
             }
           });
-          
+
           // Show custom tooltip
           const tooltip = document.getElementById("custom-tooltip");
           if (tooltip) {
@@ -133,14 +141,15 @@ const GeorgiaMap = () => {
             const titleElement = tooltip.querySelector(".tooltip-title");
             const valueElement = tooltip.querySelector(".tooltip-value");
             if (titleElement) titleElement.textContent = name;
-            if (valueElement) valueElement.textContent = `${value.toLocaleString()} მ³`;
+            if (valueElement)
+              valueElement.textContent = `${value.toLocaleString()} მ³`;
           }
         });
 
         polygon.events.on("pointerout", () => {
           // Clear hovered region state
           setHoveredRegion(null);
-          
+
           // Hide tooltip after a delay
           setTimeout(() => {
             const tooltip = document.getElementById("custom-tooltip");
@@ -149,8 +158,6 @@ const GeorgiaMap = () => {
             }
           }, 200);
         });
-
-
       });
     });
 
@@ -158,7 +165,7 @@ const GeorgiaMap = () => {
   }, [highlightedRegion, regions]);
 
   return (
-    <div 
+    <div
       className="georgia-map-wrapper"
       style={{
         position: "relative",
@@ -170,8 +177,6 @@ const GeorgiaMap = () => {
         overflow: "hidden",
       }}
     >
-
-
       <div
         id="georgia-map-container"
         style={{
@@ -180,9 +185,9 @@ const GeorgiaMap = () => {
           position: "relative",
         }}
       ></div>
-      
+
       {/* Dynamic Tooltip showing current highlighted region */}
-      <div 
+      <div
         style={{
           position: "absolute",
           left: "400px",
@@ -196,12 +201,14 @@ const GeorgiaMap = () => {
           minWidth: "280px",
         }}
       >
-        <div style={{
-          display: "flex",
-          flexDirection: "column",
-          gap: "8px",
-        }}>
-          <div 
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "8px",
+          }}
+        >
+          <div
             style={{
               fontFamily: "'FiraGO', Arial, sans-serif",
               fontSize: "14px",
@@ -213,7 +220,7 @@ const GeorgiaMap = () => {
           >
             {currentRegionData.name}
           </div>
-          <div 
+          <div
             style={{
               fontFamily: "'FiraGO', Arial, sans-serif",
               fontSize: "24px",
@@ -225,23 +232,25 @@ const GeorgiaMap = () => {
             {currentRegionData.value.toLocaleString()} მ³
           </div>
         </div>
-        
+
         {/* Tooltip Arrow */}
-        <div style={{
-          position: "absolute",
-          top: "50%",
-          left: "-8px",
-          transform: "translateY(-50%)",
-          width: 0,
-          height: 0,
-          borderTop: "8px solid transparent",
-          borderBottom: "8px solid transparent",
-          borderRight: "8px solid #2D3748",
-        }}></div>
+        <div
+          style={{
+            position: "absolute",
+            top: "50%",
+            left: "-8px",
+            transform: "translateY(-50%)",
+            width: 0,
+            height: 0,
+            borderTop: "8px solid transparent",
+            borderBottom: "8px solid transparent",
+            borderRight: "8px solid #2D3748",
+          }}
+        ></div>
       </div>
 
       {/* Hover Tooltip (hidden by default) */}
-      <div 
+      <div
         id="custom-tooltip"
         style={{
           position: "absolute",
@@ -255,12 +264,14 @@ const GeorgiaMap = () => {
           minWidth: "200px",
         }}
       >
-        <div style={{
-          display: "flex",
-          flexDirection: "column",
-          gap: "4px",
-        }}>
-          <div 
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "4px",
+          }}
+        >
+          <div
             className="tooltip-title"
             style={{
               fontFamily: "'FiraGO', Arial, sans-serif",
@@ -269,9 +280,8 @@ const GeorgiaMap = () => {
               color: "#FFFFFF",
               lineHeight: "1.3",
             }}
-          >
-          </div>
-          <div 
+          ></div>
+          <div
             className="tooltip-value"
             style={{
               fontFamily: "'FiraGO', Arial, sans-serif",
@@ -280,8 +290,7 @@ const GeorgiaMap = () => {
               color: "#48BB78",
               lineHeight: "1.2",
             }}
-          >
-          </div>
+          ></div>
         </div>
       </div>
     </div>
