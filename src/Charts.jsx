@@ -50,6 +50,12 @@ const rawCharts = {
           title_en: "Protected areas of Georgia",
         },
       ],
+      forestarea: [
+        {
+          title_ge: "მოჭრილი მერქნის მოცულობა, უკანონო ჭრა და ტყის განახლება საქართველოში (2013–2023)",
+          title_en: "Volume of harvested timber, illegal logging and forest regeneration in Georgia (2013–2023)",
+        },
+      ],
     },
   ],
   water: [
