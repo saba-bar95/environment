@@ -4,7 +4,7 @@ import * as am5map from "@amcharts/amcharts5/map";
 import * as am5geodata_georgiaHigh from "@amcharts/amcharts5-geodata/georgiaLow";
 
 const GeorgiaMap = () => {
-  const [highlightedRegion, setHighlightedRegion] = useState("GE-RK"); // Default to Racha-Lechkhumi
+  const [highlightedRegion, setHighlightedRegion] = useState("GE-RL"); // Default to Racha-Lechkhumi with correct ID
   const [hoveredRegion, setHoveredRegion] = useState(null);
   
   // Region data for easy access - memoized to prevent re-renders
@@ -14,9 +14,12 @@ const GeorgiaMap = () => {
     { id: "GE-AJ", value: 3800, name: "აჭარა" },
     { id: "GE-KA", value: 12400, name: "კახეთი" },
     { id: "GE-IM", value: 9600, name: "იმერეთი" },
-    { id: "GE-RK", value: 15200, name: "რაჭა-ლეჩხუმი და ქვემო სვანეთი" },
+    { id: "GE-RL", value: 15200, name: "რაჭა-ლეჩხუმი და ქვემო სვანეთი" }, // Fixed ID
     { id: "GE-GU", value: 5100, name: "გურია" },
-    { id: "GE-SZ", value: 7300, name: "სამცხე-ჯავახეთი" },
+    { id: "GE-SJ", value: 7300, name: "სამცხე-ჯავახეთი" }, // Fixed ID
+    { id: "GE-MM", value: 6800, name: "მცხეთა-მთიანეთი" }, // Added missing region
+    { id: "GE-KK", value: 5900, name: "ქვემო ქართლი" }, // Added missing region
+    { id: "GE-SZ", value: 8200, name: "შიდა ქართლი" }, // Added another region
   ], []);
 
   // Get current highlighted region data
