@@ -14,6 +14,7 @@ import Svg from "./Svg";
 import { useParams } from "react-router-dom";
 import commonData from "../../../../../../fetchFunctions/commonData";
 import Download from "../Download/Download";
+import GeorgiaMap from "../../GeorgiaMap/GeorgiaMap";
 
 const Chart1 = ({ chartInfo }) => {
   const { language } = useParams();
@@ -37,10 +38,10 @@ const Chart1 = ({ chartInfo }) => {
       ],
       types: ["data", "metadata"],
       substanceTitles: [
-        "ტყის ჭრით მიღებული ხე-ტყის მოცულობა(კუბური მეტრი)",
+        "ტყის ჭრით მიღებული ხე-ტყის მოცულობა",
         "ტყის უკანონო ჭრა",
-        "ტყის თესვა და დარგვა (ჰექტარი)",
-        "ტყის ბუნებრივი განახლებისთვის ხელშეწყობა (ჰექტარი)",
+        "ტყის თესვა და დარგვა",
+        "ტყის ბუნებრივი განახლებისთვის ხელშეწყობა",
       ],
     }),
     [chartInfo]
@@ -257,7 +258,10 @@ const Chart1 = ({ chartInfo }) => {
         ))}
       </div>
 
-      <ResponsiveContainer width="100%" height={460}></ResponsiveContainer>
+      {/* Georgia Map */}
+      <div className="map-container">
+        <GeorgiaMap />
+      </div>
     </div>
   );
 };
