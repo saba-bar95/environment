@@ -1,0 +1,167 @@
+
+.water-protection-scope {
+    --charts-max: 1100px;
+    --charts-gap: 20px;
+}
+
+.water-protection-scope .chart-card {
+    --surface: #fff; --border: #E8E8EF; --text: #4C5054; --muted: #94969D; --accent: #0284c7;
+    --shadow-sm: 0 2px 4px rgba(0,0,0,.04); --shadow-lg: 0 12px 24px rgba(0,0,0,.06);
+    --shadow: var(--shadow-sm), var(--shadow-lg);
+    --radius: 16px; --pad: 24px; --transition: 120ms cubic-bezier(.4,0,.2,1);
+    position: relative; background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: var(--pad);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    box-shadow: var(--shadow); display: flex; flex-direction: column;
+    width: 100%; /* Make card flexible by default */
+}
+
+
+.water-protection-scope .chart-card--standalone {
+    margin: 24px auto;
+    max-width: var(--charts-max);
+}
+
+@media(hover:hover) and (pointer:fine) {
+    .water-protection-scope .chart-card:hover {
+        box-shadow: 0 2px 6px rgba(0,0,0,.05), 0 14px 28px rgba(0,0,0,.08);
+        transition: box-shadow var(--transition);
+    }
+}
+
+
+.water-protection-scope .chart-header {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; min-width: 0;
+}
+.water-protection-scope .chart-header .chart-title {
+    display: flex; align-items: center; margin: 0; font-size: 18px; font-weight: 600; line-height: 1.2; color: var(--text); min-width: 0; flex: 1 1 auto;
+}
+.water-protection-scope .chart-header .chart-actions-inline {
+    display: flex; align-items: center; gap: 8px; flex: 0 0 auto;
+}
+.water-protection-scope .chart-card .chart-wrapper {
+    position: relative; width: 100%; height: 350px; overflow: hidden;
+}
+.water-protection-scope .chart-card .chart-footer {
+    margin-top: 12px;
+}
+.water-protection-scope .chart-card .chart-source-note {
+    margin: 0; font-size: 12px; color: var(--muted); line-height: 1.4;
+}
+.water-protection-scope .chart-card .title-icon {
+    width: 24px; height: 24px; margin-right: 8px; border-radius: 6px; background: transparent no-repeat center/contain; flex-shrink: 0; pointer-events: none; user-select: none;
+}
+.water-protection-scope .wa-scope .title-icon { background-image: url('/src/assets/components/Pages/Water/Protection/Download/Svgs/Group (1).svg'); }
+.water-protection-scope .la-scope .title-icon { background-image: url('/src/assets/components/Pages/Water/Protection/Download/Svgs/Vector.svg'); }
+.water-protection-scope .sa-scope .title-icon { background-image: url('/src/assets/components/Pages/Water/Protection/Download/Svgs/krani.svg'); }
+.water-protection-scope .do-scope .title-icon { background-image: url('/src/assets/components/Pages/Water/Protection/Download/Svgs/Page-1.svg'); }
+
+/* 2) ACTION MENUS (Scoped) */
+.water-protection-scope .wc-info,
+.water-protection-scope .wc-download { position: relative; display: flex; align-items: center; }
+.water-protection-scope .wc-download-trigger,
+.water-protection-scope .wc-info-trigger,
+.water-protection-scope .wc-dropdown-item { font: inherit; border: 0; background: none; cursor: pointer; color: var(--text); }
+.water-protection-scope .wc-download-trigger,
+.water-protection-scope .wc-info-trigger { display: inline-flex; align-items: center; justify-content: center; padding: 6px; border-radius: 8px; transition: background-color var(--transition),color var(--transition); }
+@media(hover:hover) and (pointer:fine) {
+    .water-protection-scope .wc-download-trigger:hover,
+    .water-protection-scope .wc-info-trigger:hover { background: #f3f4f6; }
+}
+.water-protection-scope .wc-download-trigger:focus-visible,
+.water-protection-scope .wc-info-trigger:focus-visible,
+.water-protection-scope .wc-dropdown-item:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 8px; }
+.water-protection-scope .wc-info-popover { position: absolute; right: 0; top: 40px; width: 300px; max-width: 82vw; z-index: 40; background: #111827; color: #fff; border-radius: 10px; padding: 12px 14px; box-shadow: 0 10px 18px rgba(0,0,0,.18); font-size: 14px; line-height: 1.45; }
+.water-protection-scope .wc-dropdown { position: absolute; right: 0; top: 40px; min-width: 180px; z-index: 50; background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 6px; box-shadow: 0 10px 18px rgba(0,0,0,.08); display: flex; flex-direction: column; gap: 2px; }
+.water-protection-scope .wc-dropdown-item { width: 100%; display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 8px; font-size: 14px; transition: background-color var(--transition); }
+@media(hover:hover) and (pointer:fine) { .water-protection-scope .wc-dropdown-item:hover { background: #f8fafc; } }
+.water-protection-scope .wc-download-trigger svg,
+.water-protection-scope .wc-info-trigger svg,
+.water-protection-scope .wc-dropdown-item svg { width: 20px; height: 20px; flex-shrink: 0; }
+
+
+.water-protection-scope .chart-row {
+    display: flex;
+    flex-direction: column;
+    gap: var(--charts-gap);
+    max-width: var(--charts-max);
+    margin: 0 auto 24px;
+    align-items: stretch;
+}
+.water-protection-scope .chart-row > .chart-card {
+    margin: 0; /* This is CRITICAL. It ensures cards inside a row do not have the auto margin. */
+    max-width: none;
+    flex: 1 1 0;
+}
+@media (min-width: 960px) {
+    .water-protection-scope .chart-row {
+        flex-direction: row;
+    }
+}
+.water-protection-scope .chart-row--60-40 > .chart-card:first-child { flex: 7; }
+.water-protection-scope .chart-row--60-40 > .chart-card:last-child { flex: 3; }
+
+
+.water-protection-scope .sa-scope.chart-card .chart-wrapper { height: 380px; }
+.water-protection-scope .do-scope.chart-card .chart-wrapper { height: 330px; }
+
+
+.water-protection-scope .custom-legend {
+    list-style: none;
+    padding: 0;
+    margin: 16px 0 0 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.water-protection-scope .custom-legend-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+    color: var(--text);
+}
+
+.water-protection-scope .custom-legend-item > div {
+    display: flex;
+    align-items: center;
+}
+
+.water-protection-scope .legend-color-box {
+    width: 12px;
+    height: 12px;
+    border-radius: 4px;
+    margin-right: 8px;
+    flex-shrink: 0;
+}
+
+.water-protection-scope .legend-value {
+    font-weight: 600;
+}
+
+/* 5) RESPONSIVE (Scoped) */
+@media (max-width: 640px) {
+    .water-protection-scope .chart-card { padding: 16px; }
+    .water-protection-scope .chart-card .chart-wrapper { height: 300px; }
+    .water-protection-scope .do-scope .custom-legend { padding-top: 12px; }
+}
+
+/* 6) REDUCED MOTION (Scoped) */
+@media (prefers-reduced-motion: reduce) {
+    .water-protection-scope .chart-card,
+    .water-protection-scope .wc-download-trigger,
+    .water-protection-scope .wc-info-trigger,
+    .water-protection-scope .wc-dropdown-item {
+        transition: none !important;
+    }
+}
+
+/* 7) HIGH CONTRAST (Scoped) */
+@media (forced-colors: active) {
+    .water-protection-scope .chart-card { border: 1px solid ButtonBorder; box-shadow: none; }
+    .water-protection-scope .wc-dropdown,
+    .water-protection-scope .wc-info-popover { border: 1px solid ButtonBorder; }
+    .water-protection-scope .wc-download-trigger:focus-visible,
+    .water-protection-scope .wc-info-trigger:focus-visible { outline-color: Highlight; }
+}
