@@ -259,7 +259,12 @@ const Chart1 = ({ chartInfo }) => {
       </div>
 
       {/* Georgia Map */}
-      <div className="map-container">
+      <div className="map-container" style={{ 
+        marginTop: "40px", 
+        display: "flex", 
+        justifyContent: "center",
+        width: "100%"
+      }}>
         <GeorgiaMap />
       </div>
     </div>
