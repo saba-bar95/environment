@@ -1,31 +1,108 @@
-import { useLayoutEffect, useState, useMemo } from "react";
+import { useLayoutEffect, useState, useMemo, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import * as am5 from "@amcharts/amcharts5";
 import * as am5map from "@amcharts/amcharts5/map";
 import * as am5geodata_georgiaHigh from "@amcharts/amcharts5-geodata/georgiaLow";
+import commonData from "../../../../../fetchFunctions/commonData";
 
-const GeorgiaMap = () => {
-  const [highlightedRegion, setHighlightedRegion] = useState(null); // No default highlighting
+const GeorgiaMap = ({ selectedYear = 2023 }) => {
+  const { language } = useParams();
+  const [highlightedRegion, setHighlightedRegion] = useState(null);
   const [hoveredRegion, setHoveredRegion] = useState(null);
   const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
+  const [apiData, setApiData] = useState(null);
 
-  // Region data for easy access - memoized to prevent re-renders
-  const regions = useMemo(
+  // Static region mapping with names
+  const regionMapping = useMemo(
     () => [
-      { id: "GE-TB", value: 8500, name: "თბილისი" },
-      { id: "GE-AB", value: 4200, name: "აფხაზეთი" },
-      { id: "GE-AJ", value: 3800, name: "აჭარა" },
-      { id: "GE-KA", value: 12400, name: "კახეთი" },
-      { id: "GE-IM", value: 9600, name: "იმერეთი" },
-      { id: "GE-RL", value: 15200, name: "რაჭა-ლეჩხუმი და ქვემო სვანეთი" },
-      { id: "GE-GU", value: 5100, name: "გურია" },
-      { id: "GE-SJ", value: 7300, name: "სამცხე-ჯავახეთი" },
-      { id: "GE-MM", value: 6800, name: "მცხეთა-მთიანეთი" },
-      { id: "GE-KK", value: 5900, name: "ქვემო ქართლი" },
-      { id: "GE-SK", value: 8200, name: "შიდა ქართლი" },
-      { id: "GE-SZ", value: 11300, name: "სამეგრელო-ზემო სვანეთი" },
+      { id: "GE-TB", name: "თბილისი" },
+      { id: "GE-AB", name: "აფხაზეთი" },
+      { id: "GE-AJ", name: "აჭარა" },
+      { id: "GE-KA", name: "კახეთი" },
+      { id: "GE-IM", name: "იმერეთი" },
+      { id: "GE-RL", name: "რაჭა-ლეჩხუმი და ქვემო სვანეთი" },
+      { id: "GE-GU", name: "გურია" },
+      { id: "GE-SJ", name: "სამცხე-ჯავახეთი" },
+      { id: "GE-MM", name: "მცხეთა-მთიანეთი" },
+      { id: "GE-KK", name: "ქვემო ქართლი" },
+      { id: "GE-SK", name: "შიდა ქართლი" },
+      { id: "GE-SZ", name: "სამეგრელო-ზემო სვანეთი" },
     ],
     []
   );
+
+  // Fetch felled timber data from API
+  useEffect(() => {
+    const getFelledTimberData = async () => {
+      try {
+        console.log("Fetching felled timber data for map...");
+        const [dataResult, metaDataResult] = await Promise.all([
+          commonData("felled-timber-volume", "data", language),
+          commonData("felled-timber-volume", "metadata", language),
+        ]);
+
+        console.log("Felled timber data result:", dataResult);
+        console.log("Felled timber metadata result:", metaDataResult);
+
+        setApiData({ data: dataResult, metadata: metaDataResult });
+      } catch (error) {
+        console.error("Error fetching felled timber data:", error);
+      }
+    };
+
+    getFelledTimberData();
+  }, [language]);
+
+  // Process regions data with API values
+  const regions = useMemo(() => {
+    if (!apiData) {
+      // Return regions with default values while loading
+      return regionMapping.map(region => ({ ...region, value: 0 }));
+    }
+
+    try {
+      const yearList = apiData.metadata.data.metadata.variables[1].valueTexts.map(
+        (year, id) => ({ year, id })
+      );
+
+      const regionList = apiData.metadata.data.metadata.variables[0].valueTexts.map(
+        (region, id) => ({ name: region, id })
+      );
+
+      console.log("Available years:", yearList);
+      console.log("Available regions from API:", regionList);
+
+      // Find data for selected year
+      const yearData = apiData.data.data.data.find(yearObj => {
+        const yearId = parseInt(yearObj.year);
+        const yearName = yearList.find(y => y.id === yearId)?.year;
+        return parseInt(yearName) === selectedYear;
+      });
+
+      console.log("Data for selected year:", yearData);
+
+      return regionMapping.map(region => {
+        let value = 0;
+        if (yearData) {
+          // Try to find matching data for this region
+          Object.keys(yearData).forEach(key => {
+            if (key !== "year") {
+              const regionId = parseInt(key);
+              const apiRegionName = regionList.find(r => r.id === regionId)?.name;
+              // Simple matching - you might need to adjust this based on API region names
+              if (apiRegionName && apiRegionName.includes(region.name.split(" ")[0])) {
+                value = parseFloat(yearData[key]) || 0;
+              }
+            }
+          });
+        }
+        return { ...region, value };
+      });
+    } catch (error) {
+      console.error("Error processing API data:", error);
+      return regionMapping.map(region => ({ ...region, value: 0 }));
+    }
+  }, [apiData, selectedYear, regionMapping]);
 
   // Get current hovered region data for dynamic tooltip
   const currentRegionData = useMemo(() => {
@@ -193,6 +270,8 @@ const GeorgiaMap = () => {
         overflow: "hidden",
       }}
     >
+
+
       <div
         id="georgia-map-container"
         style={{
@@ -216,7 +295,7 @@ const GeorgiaMap = () => {
             display: "block",
             zIndex: 1000,
             minWidth: "280px",
-            pointerEvents: "none", // Prevent tooltip from interfering with mouse events
+            pointerEvents: "none",
           }}
         >
           <div

@@ -13,6 +13,7 @@ import {
 import Svg from "./Svg";
 import { useParams } from "react-router-dom";
 import commonData from "../../../../../../fetchFunctions/commonData";
+import YearDropdown from "../../../../../YearDropdown/YearDropdown";
 import Download from "../Download/Download";
 import GeorgiaMap from "../../GeorgiaMap/GeorgiaMap";
 
@@ -22,6 +23,9 @@ const Chart1 = ({ chartInfo }) => {
   const [substanceList, setSubstanceList] = useState([]);
   const [selectedSubstance, setSelectedSubstance] = useState(null);
   const [activeLines, setActiveLines] = useState(["forestData"]);
+
+  const [year, setYear] = useState(2023);
+  const [years, setYears] = useState(null);
 
   const info = useMemo(
     () => ({
@@ -51,6 +55,11 @@ const Chart1 = ({ chartInfo }) => {
   useEffect(() => {
     const getForestData = async () => {
       try {
+        // Test direct API call for felled-timber-volume
+        console.log("Fetching data from:", `http://192.168.1.27:3000/api/datasets/felled-timber-volume/data`);
+        const testResponse = await fetch(`http://192.168.1.27:3000/api/datasets/felled-timber-volume/data`);
+        const testData = await testResponse.json();
+        console.log("Direct API response for felled-timber-volume:", testData);
         // Create substance list with the 4 specific titles
         const substanceHeaders = [
           { name: info.substanceTitles[0], id: 0, apiIndex: 0 }, // Felled timber
@@ -86,7 +95,8 @@ const Chart1 = ({ chartInfo }) => {
 
               // Map data to substance headers based on API
               if (i === 0) {
-                // felled-timber-volume
+                // felled-timber-volume - ტყის ჭრით მიღებული ხე-ტყის მოცულობა
+                console.log(`Felled timber data - Year: ${yearName}, Key: ${key}, Value: ${value}`);
                 allData.push({
                   substance: substanceHeaders[0].name,
                   year: parseInt(yearName),
@@ -126,6 +136,9 @@ const Chart1 = ({ chartInfo }) => {
           });
         }
 
+        console.log("All fetched forest data:", allData);
+        console.log("Substance headers:", substanceHeaders);
+        
         setSubstanceList(substanceHeaders);
         setSelectedSubstance(substanceHeaders[0]?.name || null);
         setForestData(allData);
@@ -233,6 +246,7 @@ const Chart1 = ({ chartInfo }) => {
           </div>
         </div>
         <div className="left">
+          <YearDropdown years={years} year={year} setYear={setYear} />
           <Download
             data={chartData}
             unit={info[`unit_${language}`]}
@@ -259,13 +273,16 @@ const Chart1 = ({ chartInfo }) => {
       </div>
 
       {/* Georgia Map */}
-      <div className="map-container" style={{ 
-        marginTop: "40px", 
-        display: "flex", 
-        justifyContent: "center",
-        width: "100%"
-      }}>
-        <GeorgiaMap />
+      <div
+        className="map-container"
+        style={{
+          marginTop: "40px",
+          display: "flex",
+          justifyContent: "center",
+          width: "100%",
+        }}
+      >
+        <GeorgiaMap selectedYear={year} />
       </div>
     </div>
   );
