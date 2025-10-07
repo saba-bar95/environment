@@ -6,6 +6,7 @@ import * as am5geodata_georgiaHigh from "@amcharts/amcharts5-geodata/georgiaLow"
 const GeorgiaMap = () => {
   const [highlightedRegion, setHighlightedRegion] = useState(null); // No default highlighting
   const [hoveredRegion, setHoveredRegion] = useState(null);
+  const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
 
   // Region data for easy access - memoized to prevent re-renders
   const regions = useMemo(
@@ -121,6 +122,13 @@ const GeorgiaMap = () => {
           setHighlightedRegion(regionId);
           setHoveredRegion(regionId);
 
+          // Get mouse position relative to the map container
+          if (event.point) {
+            const x = event.point.x;
+            const y = event.point.y;
+            setTooltipPosition({ x: x + 20, y: y - 50 }); // Offset tooltip from cursor
+          }
+
           // Force refresh the map styling
           polygonSeries.mapPolygons.each((mapPolygon) => {
             const polygonData = mapPolygon.dataItem?.dataContext;
@@ -145,6 +153,15 @@ const GeorgiaMap = () => {
           }
         });
 
+        // Track mouse movement for tooltip positioning
+        polygon.events.on("pointermove", (event) => {
+          if (event.point && hoveredRegion) {
+            const x = event.point.x;
+            const y = event.point.y;
+            setTooltipPosition({ x: x + 20, y: y - 50 });
+          }
+        });
+
         polygon.events.on("pointerout", () => {
           // Clear hovered region state
           setHoveredRegion(null);
@@ -161,7 +178,7 @@ const GeorgiaMap = () => {
     });
 
     return () => root.dispose();
-  }, [highlightedRegion, regions]);
+  }, [highlightedRegion, regions, hoveredRegion]);
 
   return (
     <div
@@ -190,8 +207,8 @@ const GeorgiaMap = () => {
         <div
           style={{
             position: "absolute",
-            left: "400px",
-            top: "80px",
+            left: `${tooltipPosition.x}px`,
+            top: `${tooltipPosition.y}px`,
             background: "#2D3748",
             borderRadius: "12px",
             padding: "16px 20px",
@@ -199,6 +216,7 @@ const GeorgiaMap = () => {
             display: "block",
             zIndex: 1000,
             minWidth: "280px",
+            pointerEvents: "none", // Prevent tooltip from interfering with mouse events
           }}
         >
           <div
