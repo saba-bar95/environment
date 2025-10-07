@@ -692,7 +692,7 @@ const GeoMapContainer = ({ chartInfo }) => {
 
   return (
     <div
-      id={chartInfo.id}
+      id={chartInfo.chartID}
       className="map-container mt-4 mx-auto px-4"
       style={{
         width: "90%",

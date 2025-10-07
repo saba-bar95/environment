@@ -172,7 +172,7 @@ const Chart2 = ({ chartInfo }) => {
   return (
     <div
       className="chart-wrapper"
-      id={chartInfo.id}
+      id={chartInfo.chartID}
       style={{ height: "700px", width: "100%", margin: "auto" }}>
       <div className="header">
         <div className="right">

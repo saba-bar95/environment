@@ -278,7 +278,7 @@ const Chart3 = ({ chartInfo }) => {
   };
 
   return (
-    <div className="chart-wrapper" id={chartInfo.id}>
+    <div className="chart-wrapper" id={chartInfo.chartID}>
       <div className="header">
         <div className="right">
           <div className="ll">
