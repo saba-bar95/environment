@@ -5,7 +5,7 @@ import * as am5map from "@amcharts/amcharts5/map";
 import * as am5geodata_georgiaHigh from "@amcharts/amcharts5-geodata/georgiaLow";
 import commonData from "../../../../../fetchFunctions/commonData";
 
-const GeorgiaMap = ({ selectedYear = 2023 }) => {
+const GeorgiaMap = ({ selectedYear = 2023, selectedSubstance = null }) => {
   const { language } = useParams();
   const [highlightedRegion, setHighlightedRegion] = useState(null);
   const [hoveredRegion, setHoveredRegion] = useState(null);
@@ -31,23 +31,51 @@ const GeorgiaMap = ({ selectedYear = 2023 }) => {
     []
   );
 
-  // Fetch felled timber data from API
+  // Map substance names to API IDs
+  const substanceToApiId = useMemo(() => ({
+    "ტყის ჭრით მიღებული ხე-ტყის მოცულობა": "felled-timber-volume",
+    "ტყის უკანონო ჭრა": "illegal-logging",
+    "ტყის თესვა და დარგვა": "forest-planting-recovery",
+    "ტყის ბუნებრივი განახლებისთვის ხელშეწყობა": "forest-planting-recovery"
+  }), []);
+
+  // Fetch API data based on selected substance
   useEffect(() => {
-    const getFelledTimberData = async () => {
+    const getApiData = async () => {
+      if (!selectedSubstance) {
+        // Default to felled timber if no substance selected
+        try {
+          const [dataResult, metaDataResult] = await Promise.all([
+            commonData("felled-timber-volume", "data", language),
+            commonData("felled-timber-volume", "metadata", language),
+          ]);
+          setApiData({ data: dataResult, metadata: metaDataResult });
+        } catch (error) {
+          console.error("Error fetching default timber data:", error);
+        }
+        return;
+      }
+
+      const apiId = substanceToApiId[selectedSubstance];
+      if (!apiId) {
+        console.warn(`No API mapping found for substance: ${selectedSubstance}`);
+        return;
+      }
+
       try {
         const [dataResult, metaDataResult] = await Promise.all([
-          commonData("felled-timber-volume", "data", language),
-          commonData("felled-timber-volume", "metadata", language),
+          commonData(apiId, "data", language),
+          commonData(apiId, "metadata", language),
         ]);
 
         setApiData({ data: dataResult, metadata: metaDataResult });
       } catch (error) {
-        console.error("Error fetching felled timber data:", error);
+        console.error(`Error fetching data for ${apiId}:`, error);
       }
     };
 
-    getFelledTimberData();
-  }, [language]);
+    getApiData();
+  }, [language, selectedSubstance, substanceToApiId]);
 
   // Process regions data with API values
   const regions = useMemo(() => {
@@ -105,6 +133,8 @@ const GeorgiaMap = ({ selectedYear = 2023 }) => {
         "GE-SJ": 11, // სამცხე-ჯავახეთი -> Samtskhe-Javakheti (index 11)
       };
 
+
+
       return regionMapping.map((region) => {
         let value = 0;
         if (yearData) {
@@ -119,6 +149,8 @@ const GeorgiaMap = ({ selectedYear = 2023 }) => {
             } else if (yearData[numberKey] !== undefined) {
               value = parseFloat(yearData[numberKey]) || 0;
             }
+
+
           }
         }
         return { ...region, value };

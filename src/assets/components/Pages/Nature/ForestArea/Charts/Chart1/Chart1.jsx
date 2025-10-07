@@ -38,7 +38,7 @@ const Chart1 = ({ chartInfo }) => {
       apiIds: [
         "felled-timber-volume",
         "illegal-logging",
-        "forest-planting-recovery",
+        // "forest-planting-recovery", // Still disabled due to 500 error - will test separately
       ],
       types: ["data", "metadata"],
       substanceTitles: [
@@ -54,12 +54,13 @@ const Chart1 = ({ chartInfo }) => {
   // Fetch forest data from multiple APIs
   useEffect(() => {
     const getForestData = async () => {
-      // Create substance list with the 4 specific titles
+      // Create substance list - only include working APIs for now
       const substanceHeaders = [
         { name: info.substanceTitles[0], id: 0, apiIndex: 0 }, // Felled timber
         { name: info.substanceTitles[1], id: 1, apiIndex: 1 }, // Illegal logging
-        { name: info.substanceTitles[2], id: 2, apiIndex: 2 }, // Forest planting
-        { name: info.substanceTitles[3], id: 3, apiIndex: 2 }, // Forest recovery
+        // Forest planting and recovery disabled due to API errors
+        // { name: info.substanceTitles[2], id: 2, apiIndex: 2 }, // Forest planting
+        // { name: info.substanceTitles[3], id: 3, apiIndex: 2 }, // Forest recovery
       ];
 
       // Always set substance headers first so UI elements appear
@@ -78,6 +79,12 @@ const Chart1 = ({ chartInfo }) => {
             commonData(apiId, info.types[1], language),
           ]);
 
+          // Check if we got valid data
+          if (!dataResult?.data?.data || !metaDataResult?.data?.metadata) {
+            console.warn(`Invalid data structure for ${apiId}`);
+            continue;
+          }
+
           const yearList =
             metaDataResult.data.metadata.variables[1].valueTexts.map(
               (year, id) => ({ year, id })
@@ -93,7 +100,7 @@ const Chart1 = ({ chartInfo }) => {
 
               const value = parseFloat(yearObj[key]) || 0;
 
-              // Map data to substance headers based on API
+              // Map data to substance headers based on API (only working APIs)
               if (i === 0) {
                 // felled-timber-volume - ტყის ჭრით მიღებული ხე-ტყის მოცულობა
                 allData.push({
@@ -110,27 +117,8 @@ const Chart1 = ({ chartInfo }) => {
                   value: value,
                   id: 1,
                 });
-              } else if (i === 2) {
-                // forest-planting-recovery
-                // This API has both planting and recovery data
-                if (key === "0") {
-                  // Planting data
-                  allData.push({
-                    substance: substanceHeaders[2].name,
-                    year: parseInt(yearName),
-                    value: value,
-                    id: 2,
-                  });
-                } else if (key === "1") {
-                  // Recovery data
-                  allData.push({
-                    substance: substanceHeaders[3].name,
-                    year: parseInt(yearName),
-                    value: value,
-                    id: 3,
-                  });
-                }
               }
+              // forest-planting-recovery APIs temporarily disabled due to 500 errors
             });
           });
         } catch (error) {
@@ -277,7 +265,7 @@ const Chart1 = ({ chartInfo }) => {
           width: "100%",
         }}
       >
-        <GeorgiaMap selectedYear={year} />
+        <GeorgiaMap selectedYear={year} selectedSubstance={selectedSubstance} />
       </div>
     </div>
   );
