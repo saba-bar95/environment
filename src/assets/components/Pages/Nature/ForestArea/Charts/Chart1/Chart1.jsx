@@ -38,7 +38,7 @@ const Chart1 = ({ chartInfo }) => {
       apiIds: [
         "felled-timber-volume",
         "illegal-logging",
-        // "forest-planting-recovery", // Still disabled due to 500 error - will test separately
+        "forest-planting-recovery",
       ],
       types: ["data", "metadata"],
       substanceTitles: [
@@ -54,13 +54,12 @@ const Chart1 = ({ chartInfo }) => {
   // Fetch forest data from multiple APIs
   useEffect(() => {
     const getForestData = async () => {
-      // Create substance list - only include working APIs for now
+      // Create substance list - include all 4 forest data types
       const substanceHeaders = [
         { name: info.substanceTitles[0], id: 0, apiIndex: 0 }, // Felled timber
         { name: info.substanceTitles[1], id: 1, apiIndex: 1 }, // Illegal logging
-        // Forest planting and recovery disabled due to API errors
-        // { name: info.substanceTitles[2], id: 2, apiIndex: 2 }, // Forest planting
-        // { name: info.substanceTitles[3], id: 3, apiIndex: 2 }, // Forest recovery
+        { name: info.substanceTitles[2], id: 2, apiIndex: 2 }, // Forest planting
+        { name: info.substanceTitles[3], id: 3, apiIndex: 2 }, // Forest recovery
       ];
 
       // Always set substance headers first so UI elements appear
@@ -80,46 +79,91 @@ const Chart1 = ({ chartInfo }) => {
           ]);
 
           // Check if we got valid data
-          if (!dataResult?.data?.data || !metaDataResult?.data?.metadata) {
+          if (!dataResult?.data?.data) {
             console.warn(`Invalid data structure for ${apiId}`);
             continue;
           }
 
-          const yearList =
-            metaDataResult.data.metadata.variables[1].valueTexts.map(
+          // Handle different API structures
+          let yearList = [];
+          if (apiId === "forest-planting-recovery") {
+            // For forest-planting-recovery, years are directly in the data objects
+            yearList = dataResult.data.data.map(item => ({ year: item.year.toString(), id: item.year }));
+          } else {
+            // For other APIs, use metadata structure
+            if (!metaDataResult?.data?.metadata) {
+              console.warn(`Invalid metadata structure for ${apiId}`);
+              continue;
+            }
+            yearList = metaDataResult.data.metadata.variables[1].valueTexts.map(
               (year, id) => ({ year, id })
             );
+          }
 
           dataResult.data.data.forEach((yearObj) => {
             const yearId = parseInt(yearObj.year);
-            const yearName =
-              yearList.find((y) => y.id === yearId)?.year || yearId;
+            const yearName = yearList.find((y) => y.id === yearId)?.year || yearId;
 
-            Object.keys(yearObj).forEach((key) => {
-              if (key === "year") return;
+            if (apiId === "forest-planting-recovery") {
+              // Handle forest-planting-recovery API structure
+              // Process planting data (even categories: 0,2,4,6,8,10,12,14,16,18,20,22,24)
+              const plantingCategories = [0,2,4,6,8,10,12,14,16,18,20,22,24];
+              const recoveryCategories = [1,3,5,7,9,11,13,15,17,19,21,23,25];
+              
+              // Sum up all planting values for this year
+              let plantingTotal = 0;
+              let recoveryTotal = 0;
+              
+              plantingCategories.forEach(cat => {
+                plantingTotal += parseFloat(yearObj[cat.toString()]) || 0;
+              });
+              
+              recoveryCategories.forEach(cat => {
+                recoveryTotal += parseFloat(yearObj[cat.toString()]) || 0;
+              });
+              
+              // Add planting data
+              allData.push({
+                substance: substanceHeaders[2].name, // ტყის თესვა და დარგვა
+                year: parseInt(yearName),
+                value: plantingTotal,
+                id: 2,
+              });
+              
+              // Add recovery data
+              allData.push({
+                substance: substanceHeaders[3].name, // ტყის ბუნებრივი განახლებისთვის ხელშეწყობა
+                year: parseInt(yearName),
+                value: recoveryTotal,
+                id: 3,
+              });
+            } else {
+              // Handle regular API structure for felled-timber and illegal-logging
+              Object.keys(yearObj).forEach((key) => {
+                if (key === "year") return;
 
-              const value = parseFloat(yearObj[key]) || 0;
+                const value = parseFloat(yearObj[key]) || 0;
 
-              // Map data to substance headers based on API (only working APIs)
-              if (i === 0) {
-                // felled-timber-volume - ტყის ჭრით მიღებული ხე-ტყის მოცულობა
-                allData.push({
-                  substance: substanceHeaders[0].name,
-                  year: parseInt(yearName),
-                  value: value,
-                  id: 0,
-                });
-              } else if (i === 1) {
-                // illegal-logging
-                allData.push({
-                  substance: substanceHeaders[1].name,
-                  year: parseInt(yearName),
-                  value: value,
-                  id: 1,
-                });
-              }
-              // forest-planting-recovery APIs temporarily disabled due to 500 errors
-            });
+                // Map data to substance headers based on API
+                if (i === 0) {
+                  // felled-timber-volume - ტყის ჭრით მიღებული ხე-ტყის მოცულობა
+                  allData.push({
+                    substance: substanceHeaders[0].name,
+                    year: parseInt(yearName),
+                    value: value,
+                    id: 0,
+                  });
+                } else if (i === 1) {
+                  // illegal-logging
+                  allData.push({
+                    substance: substanceHeaders[1].name,
+                    year: parseInt(yearName),
+                    value: value,
+                    id: 1,
+                  });
+                }
+              });
+            }
           });
         } catch (error) {
           console.error(`Error fetching data for ${apiId}:`, error);

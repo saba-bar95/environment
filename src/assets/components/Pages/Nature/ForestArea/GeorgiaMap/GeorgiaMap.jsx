@@ -108,22 +108,47 @@ const GeorgiaMap = ({ selectedYear = 2023, selectedSubstance = null }) => {
         console.error("Data array not found or not an array:", dataArray);
       }
 
-      // Create a mapping of our region IDs to API region IDs
-      // Based on the API categoryMapping structure you provided
-      const regionIdMapping = {
-        "GE-TB": 1, // თბილისი -> Tbilisi (index 1)
-        "GE-AB": 0, // აფხაზეთი -> This seems to map to Georgia total, let's check logs
-        "GE-AJ": 2, // აჭარა -> Adjara A/R (index 2)
-        "GE-SZ": 3, // სამეგრელო-ზემო სვანეთი -> Samegrelo-Zemo Svaneti (index 3)
-        "GE-GU": 4, // გურია -> Guria (index 4)
-        "GE-IM": 5, // იმერეთი -> Imereti (index 5)
-        "GE-RL": 6, // რაჭა-ლეჩხუმი და ქვემო სვანეთი -> Racha-Lechkhumi and Kvemo Svaneti (index 6)
-        "GE-SK": 7, // შიდა ქართლი -> Shida Kartli (index 7)
-        "GE-MM": 8, // მცხეთა-მთიანეთი -> Mtskheta-Mtianeti (index 8)
-        "GE-KA": 9, // კახეთი -> Kakheti (index 9)
-        "GE-KK": 10, // ქვემო ქართლი -> Kvemo Kartli (index 10)
-        "GE-SJ": 11, // სამცხე-ჯავახეთი -> Samtskhe-Javakheti (index 11)
-      };
+      // Create a mapping of our region IDs to API category IDs based on substance type
+      const getCurrentApiId = () => substanceToApiId[selectedSubstance] || "felled-timber-volume";
+      const currentApiId = getCurrentApiId();
+      
+      // Different mapping logic for different APIs
+      let regionIdMapping = {};
+      
+      if (currentApiId === "forest-planting-recovery") {
+        // For forest-planting-recovery API, map regions to category pairs
+        // Each region has two categories: one for planting (even) and one for recovery (odd)
+        regionIdMapping = {
+          "GE-TB": { planting: 2, recovery: 3 },   // Tbilisi categories
+          "GE-AJ": { planting: 4, recovery: 5 },   // Adjara AR categories  
+          "GE-GU": { planting: 6, recovery: 7 },   // Guria categories
+          "GE-IM": { planting: 8, recovery: 9 },   // Imereti categories
+          "GE-KA": { planting: 10, recovery: 11 }, // Kakheti categories
+          "GE-MM": { planting: 12, recovery: 13 }, // Mtskheta-Mtianeti categories
+          "GE-RL": { planting: 14, recovery: 15 }, // Racha-Lechkhumi and Kvemo Svaneti categories
+          "GE-SZ": { planting: 16, recovery: 17 }, // Samegrelo-Zemo Svaneti categories
+          "GE-SJ": { planting: 18, recovery: 19 }, // Samtskhe-Javakheti categories
+          "GE-KK": { planting: 20, recovery: 21 }, // Kvemo Kartli categories
+          "GE-SK": { planting: 22, recovery: 23 }, // Shida Kartli categories
+          "GE-AB": { planting: 0, recovery: 1 },   // Georgia total (Abkhazia placeholder)
+        };
+      } else {
+        // For regular APIs (felled-timber-volume, illegal-logging)
+        regionIdMapping = {
+          "GE-TB": 1, // თბილისი -> Tbilisi (index 1)
+          "GE-AB": 0, // აფხაზეთი -> Georgia total
+          "GE-AJ": 2, // აჭარა -> Adjara A/R (index 2)
+          "GE-SZ": 3, // სამეგრელო-ზემო სვანეთი -> Samegrelo-Zemo Svaneti (index 3)
+          "GE-GU": 4, // გურია -> Guria (index 4)
+          "GE-IM": 5, // იმერეთი -> Imereti (index 5)
+          "GE-RL": 6, // რაჭა-ლეჩხუმი და ქვემო სვანეთი -> Racha-Lechkhumi and Kvemo Svaneti (index 6)
+          "GE-SK": 7, // შიდა ქართლი -> Shida Kartli (index 7)
+          "GE-MM": 8, // მცხეთა-მთიანეთი -> Mtskheta-Mtianeti (index 8)
+          "GE-KA": 9, // კახეთი -> Kakheti (index 9)
+          "GE-KK": 10, // ქვემო ქართლი -> Kvemo Kartli (index 10)
+          "GE-SJ": 11, // სამცხე-ჯავახეთი -> Samtskhe-Javakheti (index 11)
+        };
+      }
 
 
 
@@ -132,17 +157,40 @@ const GeorgiaMap = ({ selectedYear = 2023, selectedSubstance = null }) => {
         if (yearData) {
           const apiRegionId = regionIdMapping[region.id];
           if (apiRegionId !== undefined) {
-            // The yearData object has keys like "0", "1", "2", etc. representing region IDs
-            const stringKey = apiRegionId.toString();
-            const numberKey = apiRegionId;
+            
+            if (currentApiId === "forest-planting-recovery") {
+              // Handle forest-planting-recovery API structure
+              let categoryKey;
+              
+              if (selectedSubstance === "ტყის თესვა და დარგვა") {
+                // Forest planting - use planting category
+                categoryKey = apiRegionId.planting;
+              } else if (selectedSubstance === "ტყის ბუნებრივი განახლებისთვის ხელშეწყობა") {
+                // Forest recovery - use recovery category
+                categoryKey = apiRegionId.recovery;
+              }
+              
+              if (categoryKey !== undefined) {
+                const stringKey = categoryKey.toString();
+                const numberKey = categoryKey;
+                
+                if (yearData[stringKey] !== undefined) {
+                  value = parseFloat(yearData[stringKey]) || 0;
+                } else if (yearData[numberKey] !== undefined) {
+                  value = parseFloat(yearData[numberKey]) || 0;
+                }
+              }
+            } else {
+              // Handle regular API structure (felled-timber-volume, illegal-logging)
+              const stringKey = apiRegionId.toString();
+              const numberKey = apiRegionId;
 
-            if (yearData[stringKey] !== undefined) {
-              value = parseFloat(yearData[stringKey]) || 0;
-            } else if (yearData[numberKey] !== undefined) {
-              value = parseFloat(yearData[numberKey]) || 0;
+              if (yearData[stringKey] !== undefined) {
+                value = parseFloat(yearData[stringKey]) || 0;
+              } else if (yearData[numberKey] !== undefined) {
+                value = parseFloat(yearData[numberKey]) || 0;
+              }
             }
-
-
           }
         }
         return { ...region, value };
@@ -151,7 +199,7 @@ const GeorgiaMap = ({ selectedYear = 2023, selectedSubstance = null }) => {
       console.error("Error processing API data:", error);
       return regionMapping.map((region) => ({ ...region, value: 0 }));
     }
-  }, [apiData, selectedYear, regionMapping]);
+  }, [apiData, selectedYear, regionMapping, selectedSubstance, substanceToApiId]);
 
   // Get current hovered region data for dynamic tooltip
   const currentRegionData = useMemo(() => {
