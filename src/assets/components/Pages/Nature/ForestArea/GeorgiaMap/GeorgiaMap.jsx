@@ -130,13 +130,13 @@ const GeorgiaMap = ({ selectedYear = 2023, selectedSubstance = null }) => {
           "GE-SJ": { planting: 18, recovery: 19 }, // Samtskhe-Javakheti categories
           "GE-KK": { planting: 20, recovery: 21 }, // Kvemo Kartli categories
           "GE-SK": { planting: 22, recovery: 23 }, // Shida Kartli categories
-          "GE-AB": { planting: 0, recovery: 1 },   // Georgia total (Abkhazia placeholder)
+          "GE-AB": { planting: -2, recovery: -2 },   // Georgia total (Abkhazia placeholder)
         };
       } else {
         // For regular APIs (felled-timber-volume, illegal-logging)
         regionIdMapping = {
           "GE-TB": 1, // თბილისი -> Tbilisi (index 1)
-          "GE-AB": 0, // აფხაზეთი -> Georgia total
+          "GE-AB": -2, // აფხაზეთი -> Georgia total (0)
           "GE-AJ": 2, // აჭარა -> Adjara A/R (index 2)
           "GE-SZ": 3, // სამეგრელო-ზემო სვანეთი -> Samegrelo-Zemo Svaneti (index 3)
           "GE-GU": 4, // გურია -> Guria (index 4)
@@ -424,7 +424,7 @@ const GeorgiaMap = ({ selectedYear = 2023, selectedSubstance = null }) => {
                 lineHeight: "1.2",
               }}
             >
-              {currentRegionData.value.toLocaleString()} მ³
+              {currentRegionData.id === "GE-AB" && currentRegionData.value === 0 ? "-" : `${currentRegionData.value.toLocaleString()} მ³`}
             </div>
           </div>
 
