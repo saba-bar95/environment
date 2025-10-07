@@ -75,7 +75,7 @@ const GeorgiaMap = ({ selectedYear = 2023, selectedSubstance = null }) => {
     };
 
     getApiData();
-  }, [language, selectedSubstance, substanceToApiId]);
+  }, [language, selectedSubstance, substanceToApiId, selectedYear]);
 
   // Process regions data with API values
   const regions = useMemo(() => {
@@ -85,11 +85,6 @@ const GeorgiaMap = ({ selectedYear = 2023, selectedSubstance = null }) => {
     }
 
     try {
-      const yearList =
-        apiData.metadata.data.metadata.variables[1].valueTexts.map(
-          (year, id) => ({ year, id })
-        );
-
       // The actual data is in apiData.data.data.data (apiData.data is the response, apiData.data.data is the actual data array)
       let yearData = null;
       const dataArray = apiData.data.data.data; // Correct path to the data array
@@ -97,10 +92,7 @@ const GeorgiaMap = ({ selectedYear = 2023, selectedSubstance = null }) => {
       if (dataArray && Array.isArray(dataArray)) {
         // Find the year object that matches selectedYear
         const yearObj = dataArray.find((item) => {
-          const yearName = yearList.find(
-            (y) => y.id === parseInt(item.year)
-          )?.year;
-          return parseInt(yearName) === selectedYear;
+          return parseInt(item.year) === selectedYear;
         });
 
         if (yearObj) {

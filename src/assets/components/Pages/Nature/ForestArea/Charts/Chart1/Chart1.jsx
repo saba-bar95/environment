@@ -25,7 +25,7 @@ const Chart1 = ({ chartInfo }) => {
   const [activeLines, setActiveLines] = useState(["forestData"]);
 
   const [year, setYear] = useState(2023);
-  const years = null;
+  const [years, setYears] = useState([]);
 
   const info = useMemo(
     () => ({
@@ -128,6 +128,11 @@ const Chart1 = ({ chartInfo }) => {
       }
       
       setForestData(allData);
+      
+      // Extract unique years from the data for YearDropdown
+      const uniqueYears = [...new Set(allData.map(item => item.year))]
+        .sort((a, b) => b - a); // Sort descending (newest first)
+      setYears(uniqueYears);
     };
 
     getForestData();
