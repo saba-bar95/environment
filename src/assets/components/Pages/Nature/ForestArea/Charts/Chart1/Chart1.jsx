@@ -41,11 +41,17 @@ const Chart1 = ({ chartInfo }) => {
         "forest-planting-recovery",
       ],
       types: ["data", "metadata"],
-      substanceTitles: [
+      substanceTitles_ge: [
         "ტყის ჭრით მიღებული ხე-ტყის მოცულობა",
         "ტყის უკანონო ჭრა",
         "ტყის თესვა და დარგვა",
         "ტყის ბუნებრივი განახლებისთვის ხელშეწყობა",
+      ],
+      substanceTitles_en: [
+        "Felled Timber Volume",
+        "Illegal Logging",
+        "Forest Planting",
+        "Forest Recovery Support",
       ],
     }),
     [chartInfo]
@@ -55,11 +61,12 @@ const Chart1 = ({ chartInfo }) => {
   useEffect(() => {
     const getForestData = async () => {
       // Create substance list - include all 4 forest data types
+      const substanceTitles = language === 'en' ? info.substanceTitles_en : info.substanceTitles_ge;
       const substanceHeaders = [
-        { name: info.substanceTitles[0], id: 0, apiIndex: 0 }, // Felled timber
-        { name: info.substanceTitles[1], id: 1, apiIndex: 1 }, // Illegal logging
-        { name: info.substanceTitles[2], id: 2, apiIndex: 2 }, // Forest planting
-        { name: info.substanceTitles[3], id: 3, apiIndex: 2 }, // Forest recovery
+        { name: substanceTitles[0], id: 0, apiIndex: 0 }, // Felled timber
+        { name: substanceTitles[1], id: 1, apiIndex: 1 }, // Illegal logging
+        { name: substanceTitles[2], id: 2, apiIndex: 2 }, // Forest planting
+        { name: substanceTitles[3], id: 3, apiIndex: 2 }, // Forest recovery
       ];
 
       // Always set substance headers first so UI elements appear
@@ -180,7 +187,7 @@ const Chart1 = ({ chartInfo }) => {
     };
 
     getForestData();
-  }, [info.apiIds, language, info.types, info.substanceTitles]);
+  }, [info.apiIds, language, info.types, info.substanceTitles_ge, info.substanceTitles_en]);
 
   // Combined and filtered data for chart
   const chartData = useMemo(() => {

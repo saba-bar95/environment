@@ -12,32 +12,43 @@ const GeorgiaMap = ({ selectedYear = 2023, selectedSubstance = null }) => {
   const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
   const [apiData, setApiData] = useState(null);
 
-  // Static region mapping with names
+  // Static region mapping with names in both languages
   const regionMapping = useMemo(
     () => [
-      { id: "GE-TB", name: "თბილისი" },
-      { id: "GE-AB", name: "აფხაზეთი" },
-      { id: "GE-AJ", name: "აჭარა" },
-      { id: "GE-KA", name: "კახეთი" },
-      { id: "GE-IM", name: "იმერეთი" },
-      { id: "GE-RL", name: "რაჭა-ლეჩხუმი და ქვემო სვანეთი" },
-      { id: "GE-GU", name: "გურია" },
-      { id: "GE-SJ", name: "სამცხე-ჯავახეთი" },
-      { id: "GE-MM", name: "მცხეთა-მთიანეთი" },
-      { id: "GE-KK", name: "ქვემო ქართლი" },
-      { id: "GE-SK", name: "შიდა ქართლი" },
-      { id: "GE-SZ", name: "სამეგრელო-ზემო სვანეთი" },
+      { id: "GE-TB", name_ge: "თბილისი", name_en: "Tbilisi" },
+      { id: "GE-AB", name_ge: "აფხაზეთი", name_en: "Abkhazia" },
+      { id: "GE-AJ", name_ge: "აჭარა", name_en: "Adjara" },
+      { id: "GE-KA", name_ge: "კახეთი", name_en: "Kakheti" },
+      { id: "GE-IM", name_ge: "იმერეთი", name_en: "Imereti" },
+      { id: "GE-RL", name_ge: "რაჭა-ლეჩხუმი და ქვემო სვანეთი", name_en: "Racha-Lechkhumi and Kvemo Svaneti" },
+      { id: "GE-GU", name_ge: "გურია", name_en: "Guria" },
+      { id: "GE-SJ", name_ge: "სამცხე-ჯავახეთი", name_en: "Samtskhe-Javakheti" },
+      { id: "GE-MM", name_ge: "მცხეთა-მთიანეთი", name_en: "Mtskheta-Mtianeti" },
+      { id: "GE-KK", name_ge: "ქვემო ქართლი", name_en: "Kvemo Kartli" },
+      { id: "GE-SK", name_ge: "შიდა ქართლი", name_en: "Shida Kartli" },
+      { id: "GE-SZ", name_ge: "სამეგრელო-ზემო სვანეთი", name_en: "Samegrelo-Zemo Svaneti" },
     ],
     []
   );
 
   // Map substance names to API IDs
-  const substanceToApiId = useMemo(() => ({
-    "ტყის ჭრით მიღებული ხე-ტყის მოცულობა": "felled-timber-volume",
-    "ტყის უკანონო ჭრა": "illegal-logging",
-    "ტყის თესვა და დარგვა": "forest-planting-recovery",
-    "ტყის ბუნებრივი განახლებისთვის ხელშეწყობა": "forest-planting-recovery"
-  }), []);
+  const substanceToApiId = useMemo(() => {
+    if (language === 'en') {
+      return {
+        "Felled Timber Volume": "felled-timber-volume",
+        "Illegal Logging": "illegal-logging",
+        "Forest Planting": "forest-planting-recovery",
+        "Forest Recovery Support": "forest-planting-recovery"
+      };
+    } else {
+      return {
+        "ტყის ჭრით მიღებული ხე-ტყის მოცულობა": "felled-timber-volume",
+        "ტყის უკანონო ჭრა": "illegal-logging",
+        "ტყის თესვა და დარგვა": "forest-planting-recovery",
+        "ტყის ბუნებრივი განახლებისთვის ხელშეწყობა": "forest-planting-recovery"
+      };
+    }
+  }, [language]);
 
   // Fetch API data based on selected substance
   useEffect(() => {
@@ -81,7 +92,11 @@ const GeorgiaMap = ({ selectedYear = 2023, selectedSubstance = null }) => {
   const regions = useMemo(() => {
     if (!apiData) {
       // Return regions with default values while loading
-      return regionMapping.map((region) => ({ ...region, value: 0 }));
+      return regionMapping.map((region) => ({ 
+        ...region, 
+        value: 0,
+        name: language === 'en' ? region.name_en : region.name_ge
+      }));
     }
 
     try {
@@ -162,10 +177,10 @@ const GeorgiaMap = ({ selectedYear = 2023, selectedSubstance = null }) => {
               // Handle forest-planting-recovery API structure
               let categoryKey;
               
-              if (selectedSubstance === "ტყის თესვა და დარგვა") {
+              if (selectedSubstance === "ტყის თესვა და დარგვა" || selectedSubstance === "Forest Planting") {
                 // Forest planting - use planting category
                 categoryKey = apiRegionId.planting;
-              } else if (selectedSubstance === "ტყის ბუნებრივი განახლებისთვის ხელშეწყობა") {
+              } else if (selectedSubstance === "ტყის ბუნებრივი განახლებისთვის ხელშეწყობა" || selectedSubstance === "Forest Recovery Support") {
                 // Forest recovery - use recovery category
                 categoryKey = apiRegionId.recovery;
               }
@@ -193,13 +208,21 @@ const GeorgiaMap = ({ selectedYear = 2023, selectedSubstance = null }) => {
             }
           }
         }
-        return { ...region, value };
+        return { 
+          ...region, 
+          value,
+          name: language === 'en' ? region.name_en : region.name_ge
+        };
       });
     } catch (error) {
       console.error("Error processing API data:", error);
-      return regionMapping.map((region) => ({ ...region, value: 0 }));
+      return regionMapping.map((region) => ({ 
+        ...region, 
+        value: 0,
+        name: language === 'en' ? region.name_en : region.name_ge
+      }));
     }
-  }, [apiData, selectedYear, regionMapping, selectedSubstance, substanceToApiId]);
+  }, [apiData, selectedYear, regionMapping, selectedSubstance, substanceToApiId, language]);
 
   // Get current hovered region data for dynamic tooltip
   const currentRegionData = useMemo(() => {
@@ -424,7 +447,9 @@ const GeorgiaMap = ({ selectedYear = 2023, selectedSubstance = null }) => {
                 lineHeight: "1.2",
               }}
             >
-              {currentRegionData.id === "GE-AB" && currentRegionData.value === 0 ? "-" : `${currentRegionData.value.toLocaleString()} მ³`}
+              {currentRegionData.id === "GE-AB" && currentRegionData.value === 0 
+                ? "-" 
+                : `${currentRegionData.value.toLocaleString()} ${language === 'en' ? 'm³' : 'მ³'}`}
             </div>
           </div>
 
