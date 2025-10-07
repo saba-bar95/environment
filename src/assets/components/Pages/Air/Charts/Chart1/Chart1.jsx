@@ -22,6 +22,8 @@ const Chart1 = ({ chartInfo }) => {
   const [activeBars, setActiveBars] = useState([]);
   const [year, setYear] = useState(2023);
   const [years, setYears] = useState(null);
+  const [isLoading, setIsLoading] = useState(true); // Add loading state
+  const [error, setError] = useState(null); // Add error state
 
   const totalText = language === "ge" ? "წარმოქმნილი" : "Generated";
 
@@ -48,6 +50,9 @@ const Chart1 = ({ chartInfo }) => {
 
   useEffect(() => {
     const getData = async () => {
+      setIsLoading(true); // Set loading to true when starting fetch
+      setError(null); // Reset error state
+
       try {
         const [dataResult, metaDataResult] = await Promise.all([
           commonData(info.id, info.types[0], language),
@@ -113,13 +118,16 @@ const Chart1 = ({ chartInfo }) => {
         setChartData(transformedData);
       } catch (error) {
         console.log("Error fetching data or metadata:", error);
+        setError("Failed to load chart data. Please try again.");
+      } finally {
+        setIsLoading(false); // Set loading to false when done
       }
     };
 
     getData();
   }, [info.id, language, info.types]);
 
-  // Filter data for 2023 and sort in ascending order by pollution_0 (Total)
+  // Filter data for selected year and sort in ascending order by pollution_0 (Total)
   const sortedData = useMemo(() => {
     const filteredData = chartData?.filter((d) => +d.year === year) || [];
     return filteredData.sort(
@@ -128,10 +136,17 @@ const Chart1 = ({ chartInfo }) => {
   }, [chartData, year]);
 
   // Pollution labels for display (in language)
-  const pollutionLabels = pollution?.reduce((acc, p) => {
-    acc[p.id] = p.pollution;
-    return acc;
-  }, {}) || { 0: "Total", 1: "Captured", 2: "Emitted" };
+  const pollutionLabels = useMemo(() => {
+    return (
+      pollution?.reduce(
+        (acc, p) => {
+          acc[p.id] = p.pollution;
+          return acc;
+        },
+        { 0: totalText }
+      ) || { 0: totalText }
+    );
+  }, [pollution, totalText]);
 
   // Toggle bar visibility
   const toggleBar = (dataKey) => {
@@ -147,8 +162,112 @@ const Chart1 = ({ chartInfo }) => {
     });
   };
 
+  // Show loading state
+  if (isLoading) {
+    return (
+      <div className="chart-wrapper" id={chartInfo.chartID}>
+        <div className="header">
+          <div className="right">
+            <div className="ll">
+              <Svg />
+            </div>
+            <div className="rr">
+              <h1>{language === "ge" ? info.title_ge : info.title_en}</h1>
+              <p>{language === "ge" ? info.unit_ge : info.unit_en}</p>
+            </div>
+          </div>
+          <div className="left">
+            <div className="download-placeholder">
+              <span className="loading-spinner"></span>
+              <span>{language === "ge" ? "ჩატვირთვა..." : "Loading..."}</span>
+            </div>
+          </div>
+        </div>
+        <div className="loading-container">
+          <div className="loading-content">
+            <div className="spinner"></div>
+            <p>
+              {language === "ge"
+                ? "მონაცემების ჩატვირთვა..."
+                : "Loading data..."}
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <div className="chart-wrapper" id={chartInfo.chartID}>
+        <div className="header">
+          <div className="right">
+            <div className="ll">
+              <Svg />
+            </div>
+            <div className="rr">
+              <h1>{language === "ge" ? info.title_ge : info.title_en}</h1>
+              <p>{language === "ge" ? info.unit_ge : info.unit_en}</p>
+            </div>
+          </div>
+          <div className="left">
+            <button
+              className="retry-btn"
+              onClick={() => window.location.reload()}>
+              {language === "ge" ? "ხელახლა ცდა" : "Retry"}
+            </button>
+          </div>
+        </div>
+        <div className="error-container">
+          <div className="error-content">
+            <div className="error-icon">⚠️</div>
+            <p>{error}</p>
+            <button
+              className="retry-btn"
+              onClick={() => window.location.reload()}>
+              {language === "ge" ? "ხელახლა ჩატვირთვა" : "Reload Chart"}
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show empty state if no data
+  if (!chartData || chartData.length === 0) {
+    return (
+      <div className="chart-wrapper" id={chartInfo.chartID}>
+        <div className="header">
+          <div className="right">
+            <div className="ll">
+              <Svg />
+            </div>
+            <div className="rr">
+              <h1>{language === "ge" ? info.title_ge : info.title_en}</h1>
+              <p>{language === "ge" ? info.unit_ge : info.unit_en}</p>
+            </div>
+          </div>
+          <div className="left">
+            <YearDropdown years={years} year={year} setYear={setYear} />
+            <div className="download-placeholder">
+              {language === "ge"
+                ? "მონაცემები არ მოიძებნა"
+                : "No data to download"}
+            </div>
+          </div>
+        </div>
+        <div className="empty-state">
+          <p>
+            {language === "ge" ? "მონაცემები არ მოიძებნა" : "No data available"}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   // Custom Tooltip Component
-  const CustomTooltip = ({ active, payload, label, pollutionLabels }) => {
+  const CustomTooltip = ({ active, payload, label }) => {
     if (!active || !payload || !payload.length) return null;
 
     // Calculate total of visible payload values
@@ -164,7 +283,14 @@ const Chart1 = ({ chartInfo }) => {
             return (
               <p key={`item-${index}`} className="text">
                 <span
-                  style={{ backgroundColor: fill }}
+                  style={{
+                    backgroundColor: fill,
+                    flexShrink: 0,
+                    width: 12,
+                    height: 12,
+                    display: "inline-block",
+                    marginRight: 8,
+                  }}
                   className="before-span"></span>
                 {displayName} :
                 <span style={{ fontWeight: 900, marginLeft: "5px" }}>
@@ -175,7 +301,14 @@ const Chart1 = ({ chartInfo }) => {
           })}
           <p className="text">
             <span
-              style={{ backgroundColor: "#148664ff" }} // Black for total, or choose another color
+              style={{
+                backgroundColor: "#148664ff",
+                flexShrink: 0,
+                width: 12,
+                height: 12,
+                display: "inline-block",
+                marginRight: 8,
+              }}
               className="before-span"></span>
             {totalText} :
             <span style={{ fontWeight: 900, marginLeft: "5px" }}>
@@ -187,7 +320,8 @@ const Chart1 = ({ chartInfo }) => {
     );
   };
 
-  const CustomLegend = ({ payload, onClick, activeBars, pollutionLabels }) => (
+  // Custom Legend Component
+  const CustomLegend = ({ payload }) => (
     <ul className="recharts-default-legend">
       {payload.map((entry, index) => (
         <li
@@ -195,10 +329,21 @@ const Chart1 = ({ chartInfo }) => {
           className={`recharts-legend-item legend-item-${index} ${
             activeBars.includes(entry.dataKey) ? "active" : "inactive"
           }`}
-          onClick={() => onClick(entry.dataKey)}>
+          onClick={() => toggleBar(entry.dataKey)}
+          style={{
+            cursor: "pointer",
+            opacity: activeBars.includes(entry.dataKey) ? 1 : 0.5,
+          }}>
           <span
             className="recharts-legend-item-icon"
-            style={{ backgroundColor: entry.color }}></span>
+            style={{
+              backgroundColor: entry.color,
+              flexShrink: 0,
+              width: 12,
+              height: 12,
+              display: "inline-block",
+              marginRight: 8,
+            }}></span>
           <span className="recharts-legend-item-text">
             {pollutionLabels[entry.dataKey.replace("pollution_", "")] ||
               entry.dataKey}
@@ -243,18 +388,10 @@ const Chart1 = ({ chartInfo }) => {
             tickLine={false}
           />
 
-          <Tooltip
-            content={<CustomTooltip pollutionLabels={pollutionLabels} />}
-          />
+          <Tooltip content={<CustomTooltip />} />
           <Legend
             wrapperStyle={{ marginBottom: -10 }}
-            content={
-              <CustomLegend
-                onClick={toggleBar}
-                activeBars={activeBars}
-                pollutionLabels={pollutionLabels}
-              />
-            }
+            content={<CustomLegend />}
             verticalAlign="bottom"
             align="center"
           />

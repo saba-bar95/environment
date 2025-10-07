@@ -25,6 +25,8 @@ const Chart3 = ({ chartInfo }) => {
   const [selectedStationarySource, setSelectedStationarySource] =
     useState(null);
   const [activeLines, setActiveLines] = useState(["mobile", "stationary"]);
+  const [isLoading, setIsLoading] = useState(true); // Add loading state
+  const [error, setError] = useState(null); // Add error state
 
   const mobileLabel =
     language === "ge" ? "მობილური წყაროები" : "Mobile Sources";
@@ -48,7 +50,7 @@ const Chart3 = ({ chartInfo }) => {
 
   // Fetch mobile data (transport-emissions)
   useEffect(() => {
-    const getMobileData = async () => {
+    const fetchMobileData = async () => {
       try {
         const [dataResult, metaDataResult] = await Promise.all([
           commonData(info.mobileId, info.types[0], language),
@@ -97,15 +99,16 @@ const Chart3 = ({ chartInfo }) => {
         setMobileData(transformed);
       } catch (error) {
         console.log("Error fetching mobile data:", error);
+        setError("Failed to load mobile data. Please try again.");
       }
     };
 
-    getMobileData();
+    fetchMobileData();
   }, [info.mobileId, language, info.types]);
 
   // Fetch stationary data (stationary-source-pollution)
   useEffect(() => {
-    const getStationaryData = async () => {
+    const fetchStationaryData = async () => {
       try {
         const [dataResult, metaDataResult] = await Promise.all([
           commonData(info.stationaryId, info.types[0], language),
@@ -159,11 +162,26 @@ const Chart3 = ({ chartInfo }) => {
         setStationaryData(transformed);
       } catch (error) {
         console.log("Error fetching stationary data:", error);
+        setError("Failed to load stationary data. Please try again.");
       }
     };
 
-    getStationaryData();
+    fetchStationaryData();
   }, [info.stationaryId, language, info.types]);
+
+  // Handle loading state management
+  useEffect(() => {
+    if (mobileData !== null && stationaryData !== null) {
+      setIsLoading(false);
+    }
+  }, [mobileData, stationaryData]);
+
+  // Initialize activeLines when data is loaded
+  useEffect(() => {
+    if (mobileData && stationaryData) {
+      setActiveLines(["mobile", "stationary"]);
+    }
+  }, [mobileData, stationaryData]);
 
   // Combined and filtered data for chart
   const chartData = useMemo(() => {
@@ -220,6 +238,129 @@ const Chart3 = ({ chartInfo }) => {
     });
   };
 
+  // Show loading state
+  if (isLoading) {
+    return (
+      <div className="chart-wrapper" id={chartInfo.chartID}>
+        <div className="header">
+          <div className="right">
+            <div className="ll">
+              <Svg />
+            </div>
+            <div className="rr">
+              <h1>{language === "ge" ? info.title_ge : info.title_en}</h1>
+              <p>{language === "ge" ? info.unit_ge : info.unit_en}</p>
+            </div>
+          </div>
+          <div className="left">
+            <div className="download-placeholder">
+              <span className="loading-spinner"></span>
+              <span>{language === "ge" ? "ჩატვირთვა..." : "Loading..."}</span>
+            </div>
+          </div>
+        </div>
+        <div className="loading-container">
+          <div className="loading-content">
+            <div className="spinner"></div>
+            <p>
+              {language === "ge"
+                ? "მონაცემების ჩატვირთვა..."
+                : "Loading data..."}
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <div className="chart-wrapper" id={chartInfo.chartID}>
+        <div className="header">
+          <div className="right">
+            <div className="ll">
+              <Svg />
+            </div>
+            <div className="rr">
+              <h1>{language === "ge" ? info.title_ge : info.title_en}</h1>
+              <p>{language === "ge" ? info.unit_ge : info.unit_en}</p>
+            </div>
+          </div>
+          <div className="left">
+            <button
+              className="retry-btn"
+              onClick={() => window.location.reload()}>
+              {language === "ge" ? "ხელახლა ცდა" : "Retry"}
+            </button>
+          </div>
+        </div>
+        <div className="error-container">
+          <div className="error-content">
+            <div className="error-icon">⚠️</div>
+            <p>{error}</p>
+            <button
+              className="retry-btn"
+              onClick={() => window.location.reload()}>
+              {language === "ge" ? "ხელახლა ჩატვირთვა" : "Reload Chart"}
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show empty state if no data or no substances/sources
+  if (
+    !mobileData ||
+    mobileData.length === 0 ||
+    !stationaryData ||
+    stationaryData.length === 0 ||
+    mobileSubstances.length === 0 ||
+    stationarySources.length === 0 ||
+    chartData.length === 0
+  ) {
+    return (
+      <div className="chart-wrapper" id={chartInfo.chartID}>
+        <div className="header">
+          <div className="right">
+            <div className="ll">
+              <Svg />
+            </div>
+            <div className="rr">
+              <h1>{language === "ge" ? info.title_ge : info.title_en}</h1>
+              <p>{language === "ge" ? info.unit_ge : info.unit_en}</p>
+            </div>
+          </div>
+          <div className="left">
+            <div className="download-placeholder">
+              {language === "ge"
+                ? "მონაცემები არ მოიძებნა"
+                : "No data to download"}
+            </div>
+          </div>
+        </div>
+        <div className="city-list">
+          {mobileSubstances.map((s) => (
+            <span
+              key={`mobile-${s.id}`}
+              className={`city-item ${
+                selectedMobileSubstance === s.name ? "active" : ""
+              }`}
+              onClick={() => handleMobileSelection(s.name)}>
+              {s.name}
+            </span>
+          ))}
+        </div>
+        <div className="empty-state">
+          <p>
+            {language === "ge" ? "მონაცემები არ მოიძებნა" : "No data available"}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   const CustomLegend = ({ payload }) => (
     <ul className="recharts-default-legend">
       {payload.map((entry, index) => (
@@ -228,10 +369,21 @@ const Chart3 = ({ chartInfo }) => {
           className={`recharts-legend-item legend-item-${index} ${
             activeLines.includes(entry.dataKey) ? "active" : "inactive"
           }`}
-          onClick={() => toggleLine(entry.dataKey)}>
+          onClick={() => toggleLine(entry.dataKey)}
+          style={{
+            cursor: "pointer",
+            opacity: activeLines.includes(entry.dataKey) ? 1 : 0.5,
+          }}>
           <span
             className="recharts-legend-item-icon"
-            style={{ backgroundColor: entry.color }}></span>
+            style={{
+              backgroundColor: entry.color,
+              flexShrink: 0,
+              width: 12,
+              height: 12,
+              display: "inline-block",
+              marginRight: 8,
+            }}></span>
           <span className="recharts-legend-item-text">{entry.value}</span>
         </li>
       ))}
@@ -245,14 +397,21 @@ const Chart3 = ({ chartInfo }) => {
       <div className="custom-tooltip">
         <div className="tooltip-container">
           <p className="tooltip-label">
-            {label} {language === "en" ? "Year" : "წელი"}{" "}
+            {label} {language === "en" ? "Year" : "წელი"}
           </p>
           {payload.map(({ name, value, stroke }, index) => (
             <p key={`item-${index}`} className="text">
               <span
-                style={{ backgroundColor: stroke }}
+                style={{
+                  backgroundColor: stroke,
+                  flexShrink: 0,
+                  width: 12,
+                  height: 12,
+                  display: "inline-block",
+                  marginRight: 8,
+                }}
                 className="before-span"></span>
-              {name} :
+              {name}:
               <span style={{ fontWeight: 900, marginLeft: "5px" }}>
                 {value.toFixed(1)}
               </span>

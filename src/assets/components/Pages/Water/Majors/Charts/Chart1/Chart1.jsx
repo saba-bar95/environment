@@ -18,6 +18,8 @@ import Info from "../../../../../Info/Info";
 const Chart1 = ({ chartInfo }) => {
   const { language } = useParams();
   const [chartData, setChartData] = useState(null);
+  const [isLoading, setIsLoading] = useState(true); // Add loading state
+  const [error, setError] = useState(null); // Add error state
 
   const infoText = {
     ge: "დიაგრამაზე წარმოდგენილია საქართველოს უდიდესი მდინარეები მათი სიგრძის მიხედვით. გადაატარეთ მაუსი თითოეულ ზოლზე დეტალური ინფორმაციის სანახავად.",
@@ -37,21 +39,153 @@ const Chart1 = ({ chartInfo }) => {
 
   useEffect(() => {
     const getData = async () => {
+      setIsLoading(true); // Set loading to true when starting fetch
+      setError(null); // Reset error state
+
       try {
         const response = await riversAndLakes(info.id, language);
+
+        // Check if response has data
+        if (!response?.data?.rivers || response.data.rivers.length === 0) {
+          throw new Error("No river data available");
+        }
+
         // Sort data by length in descending order and clean mainUse
-        const sortedData = response?.data?.rivers
+        const sortedData = response.data.rivers
           ?.slice()
           .sort((a, b) => b.length - a.length);
 
         setChartData({ data: { rivers: sortedData } });
       } catch (error) {
-        console.log(error);
+        console.log("Error fetching river data:", error);
+        setError("Failed to load river data. Please try again.");
+      } finally {
+        setIsLoading(false); // Set loading to false when done
       }
     };
 
     getData();
   }, [info, language]);
+
+  // Show loading state
+  if (isLoading) {
+    return (
+      <div
+        className="chart-wrapper"
+        id={chartInfo.chartID}
+        style={{ height: "700px", width: "100%", margin: "auto" }}>
+        <div className="header">
+          <div className="right">
+            <div className="ll">
+              <Svg />
+            </div>
+            <div className="rr">
+              <h1 style={{ width: "100%" }}>
+                {language === "ge" ? info.title_ge : info.title_en}
+              </h1>
+            </div>
+          </div>
+          <div className="left">
+            <Info text={infoText} />
+            <div className="download-placeholder">
+              <span className="loading-spinner"></span>
+              <span>{language === "ge" ? "ჩატვირთვა..." : "Loading..."}</span>
+            </div>
+          </div>
+        </div>
+        <div className="loading-container">
+          <div className="loading-content">
+            <div className="spinner"></div>
+            <p>
+              {language === "ge"
+                ? "მონაცემების ჩატვირთვა..."
+                : "Loading river data..."}
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <div
+        className="chart-wrapper"
+        id={chartInfo.chartID}
+        style={{ height: "700px", width: "100%", margin: "auto" }}>
+        <div className="header">
+          <div className="right">
+            <div className="ll">
+              <Svg />
+            </div>
+            <div className="rr">
+              <h1 style={{ width: "100%" }}>
+                {language === "ge" ? info.title_ge : info.title_en}
+              </h1>
+            </div>
+          </div>
+          <div className="left">
+            <Info text={infoText} />
+            <button
+              className="retry-btn"
+              onClick={() => window.location.reload()}>
+              {language === "ge" ? "ხელახლა ცდა" : "Retry"}
+            </button>
+          </div>
+        </div>
+        <div className="error-container">
+          <div className="error-content">
+            <div className="error-icon">⚠️</div>
+            <p>{error}</p>
+            <button
+              className="retry-btn"
+              onClick={() => window.location.reload()}>
+              {language === "ge" ? "ხელახლა ჩატვირთვა" : "Reload Chart"}
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show empty state if no data
+  if (!chartData?.data?.rivers || chartData.data.rivers.length === 0) {
+    return (
+      <div
+        className="chart-wrapper"
+        id={chartInfo.chartID}
+        style={{ height: "700px", width: "100%", margin: "auto" }}>
+        <div className="header">
+          <div className="right">
+            <div className="ll">
+              <Svg />
+            </div>
+            <div className="rr">
+              <h1 style={{ width: "100%" }}>
+                {language === "ge" ? info.title_ge : info.title_en}
+              </h1>
+            </div>
+          </div>
+          <div className="left">
+            <Info text={infoText} />
+            <div className="download-placeholder">
+              {language === "ge"
+                ? "მონაცემები არ მოიძებნა"
+                : "No data to download"}
+            </div>
+          </div>
+        </div>
+        <div className="empty-state">
+          <p>
+            {language === "ge"
+              ? "მონაცემები არ მოიძებნა"
+              : "No river data available"}
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   // Custom Tooltip Component
   const CustomTooltip = ({ active, payload, label }) => {
