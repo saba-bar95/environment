@@ -4,7 +4,7 @@ import * as am5map from "@amcharts/amcharts5/map";
 import * as am5geodata_georgiaHigh from "@amcharts/amcharts5-geodata/georgiaLow";
 
 const GeorgiaMap = () => {
-  const [highlightedRegion, setHighlightedRegion] = useState("GE-RL"); // Default to Racha-Lechkhumi with correct ID
+  const [highlightedRegion, setHighlightedRegion] = useState(null); // No default highlighting
   const [hoveredRegion, setHoveredRegion] = useState(null);
 
   // Region data for easy access - memoized to prevent re-renders
@@ -21,16 +21,15 @@ const GeorgiaMap = () => {
       { id: "GE-MM", value: 6800, name: "მცხეთა-მთიანეთი" },
       { id: "GE-KK", value: 5900, name: "ქვემო ქართლი" },
       { id: "GE-SK", value: 8200, name: "შიდა ქართლი" },
+      { id: "GE-SZ", value: 11300, name: "სამეგრელო-ზემო სვანეთი" },
     ],
     []
   );
 
-  // Get current highlighted region data
+  // Get current hovered region data for dynamic tooltip
   const currentRegionData = useMemo(() => {
-    return (
-      regions.find((region) => region.id === highlightedRegion) || regions[5]
-    );
-  }, [regions, highlightedRegion]);
+    return hoveredRegion ? regions.find((region) => region.id === hoveredRegion) : null;
+  }, [regions, hoveredRegion]);
 
   console.log(am5geodata_georgiaHigh.default);
 
@@ -186,68 +185,70 @@ const GeorgiaMap = () => {
         }}
       ></div>
 
-      {/* Dynamic Tooltip showing current highlighted region */}
-      <div
-        style={{
-          position: "absolute",
-          left: "400px",
-          top: "80px",
-          background: "#2D3748",
-          borderRadius: "12px",
-          padding: "16px 20px",
-          boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
-          display: "block",
-          zIndex: 1000,
-          minWidth: "280px",
-        }}
-      >
+      {/* Dynamic Tooltip - only shows when hovering over a region */}
+      {currentRegionData && (
         <div
           style={{
-            display: "flex",
-            flexDirection: "column",
-            gap: "8px",
+            position: "absolute",
+            left: "400px",
+            top: "80px",
+            background: "#2D3748",
+            borderRadius: "12px",
+            padding: "16px 20px",
+            boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+            display: "block",
+            zIndex: 1000,
+            minWidth: "280px",
           }}
         >
           <div
             style={{
-              fontFamily: "'FiraGO', Arial, sans-serif",
-              fontSize: "14px",
-              fontWeight: 400,
-              color: "#FFFFFF",
-              lineHeight: "1.4",
-              marginBottom: "4px",
+              display: "flex",
+              flexDirection: "column",
+              gap: "8px",
             }}
           >
-            {currentRegionData.name}
+            <div
+              style={{
+                fontFamily: "'FiraGO', Arial, sans-serif",
+                fontSize: "14px",
+                fontWeight: 400,
+                color: "#FFFFFF",
+                lineHeight: "1.4",
+                marginBottom: "4px",
+              }}
+            >
+              {currentRegionData.name}
+            </div>
+            <div
+              style={{
+                fontFamily: "'FiraGO', Arial, sans-serif",
+                fontSize: "24px",
+                fontWeight: 600,
+                color: "#48BB78",
+                lineHeight: "1.2",
+              }}
+            >
+              {currentRegionData.value.toLocaleString()} მ³
+            </div>
           </div>
+
+          {/* Tooltip Arrow */}
           <div
             style={{
-              fontFamily: "'FiraGO', Arial, sans-serif",
-              fontSize: "24px",
-              fontWeight: 600,
-              color: "#48BB78",
-              lineHeight: "1.2",
+              position: "absolute",
+              top: "50%",
+              left: "-8px",
+              transform: "translateY(-50%)",
+              width: 0,
+              height: 0,
+              borderTop: "8px solid transparent",
+              borderBottom: "8px solid transparent",
+              borderRight: "8px solid #2D3748",
             }}
-          >
-            {currentRegionData.value.toLocaleString()} მ³
-          </div>
+          ></div>
         </div>
-
-        {/* Tooltip Arrow */}
-        <div
-          style={{
-            position: "absolute",
-            top: "50%",
-            left: "-8px",
-            transform: "translateY(-50%)",
-            width: 0,
-            height: 0,
-            borderTop: "8px solid transparent",
-            borderBottom: "8px solid transparent",
-            borderRight: "8px solid #2D3748",
-          }}
-        ></div>
-      </div>
+      )}
 
       {/* Hover Tooltip (hidden by default) */}
       <div
