@@ -35,14 +35,10 @@ const GeorgiaMap = ({ selectedYear = 2023 }) => {
   useEffect(() => {
     const getFelledTimberData = async () => {
       try {
-        console.log("Fetching felled timber data for map...");
         const [dataResult, metaDataResult] = await Promise.all([
           commonData("felled-timber-volume", "data", language),
           commonData("felled-timber-volume", "metadata", language),
         ]);
-
-        console.log("Felled timber data result:", dataResult);
-        console.log("Felled timber metadata result:", metaDataResult);
 
         setApiData({ data: dataResult, metadata: metaDataResult });
       } catch (error) {
@@ -57,59 +53,88 @@ const GeorgiaMap = ({ selectedYear = 2023 }) => {
   const regions = useMemo(() => {
     if (!apiData) {
       // Return regions with default values while loading
-      return regionMapping.map(region => ({ ...region, value: 0 }));
+      return regionMapping.map((region) => ({ ...region, value: 0 }));
     }
 
     try {
-      const yearList = apiData.metadata.data.metadata.variables[1].valueTexts.map(
-        (year, id) => ({ year, id })
-      );
+      const yearList =
+        apiData.metadata.data.metadata.variables[1].valueTexts.map(
+          (year, id) => ({ year, id })
+        );
 
-      const regionList = apiData.metadata.data.metadata.variables[0].valueTexts.map(
-        (region, id) => ({ name: region, id })
-      );
+      // The actual data is in apiData.data.data.data (apiData.data is the response, apiData.data.data is the actual data array)
+      let yearData = null;
+      const dataArray = apiData.data.data.data; // Correct path to the data array
 
-      console.log("Available years:", yearList);
-      console.log("Available regions from API:", regionList);
+      if (dataArray && Array.isArray(dataArray)) {
+        // Find the year object that matches selectedYear
+        const yearObj = dataArray.find((item) => {
+          const yearName = yearList.find(
+            (y) => y.id === parseInt(item.year)
+          )?.year;
+          return parseInt(yearName) === selectedYear;
+        });
 
-      // Find data for selected year
-      const yearData = apiData.data.data.data.find(yearObj => {
-        const yearId = parseInt(yearObj.year);
-        const yearName = yearList.find(y => y.id === yearId)?.year;
-        return parseInt(yearName) === selectedYear;
-      });
+        if (yearObj) {
+          yearData = yearObj;
+        } else {
+          // Use the most recent available year as fallback
+          const mostRecentObj = dataArray[dataArray.length - 1];
+          if (mostRecentObj) {
+            yearData = mostRecentObj;
+          }
+        }
+      } else {
+        console.error("Data array not found or not an array:", dataArray);
+      }
 
-      console.log("Data for selected year:", yearData);
+      // Create a mapping of our region IDs to API region IDs
+      // Based on the API categoryMapping structure you provided
+      const regionIdMapping = {
+        "GE-TB": 1, // თბილისი -> Tbilisi (index 1)
+        "GE-AB": 0, // აფხაზეთი -> This seems to map to Georgia total, let's check logs
+        "GE-AJ": 2, // აჭარა -> Adjara A/R (index 2)
+        "GE-SZ": 3, // სამეგრელო-ზემო სვანეთი -> Samegrelo-Zemo Svaneti (index 3)
+        "GE-GU": 4, // გურია -> Guria (index 4)
+        "GE-IM": 5, // იმერეთი -> Imereti (index 5)
+        "GE-RL": 6, // რაჭა-ლეჩხუმი და ქვემო სვანეთი -> Racha-Lechkhumi and Kvemo Svaneti (index 6)
+        "GE-SK": 7, // შიდა ქართლი -> Shida Kartli (index 7)
+        "GE-MM": 8, // მცხეთა-მთიანეთი -> Mtskheta-Mtianeti (index 8)
+        "GE-KA": 9, // კახეთი -> Kakheti (index 9)
+        "GE-KK": 10, // ქვემო ქართლი -> Kvemo Kartli (index 10)
+        "GE-SJ": 11, // სამცხე-ჯავახეთი -> Samtskhe-Javakheti (index 11)
+      };
 
-      return regionMapping.map(region => {
+      return regionMapping.map((region) => {
         let value = 0;
         if (yearData) {
-          // Try to find matching data for this region
-          Object.keys(yearData).forEach(key => {
-            if (key !== "year") {
-              const regionId = parseInt(key);
-              const apiRegionName = regionList.find(r => r.id === regionId)?.name;
-              // Simple matching - you might need to adjust this based on API region names
-              if (apiRegionName && apiRegionName.includes(region.name.split(" ")[0])) {
-                value = parseFloat(yearData[key]) || 0;
-              }
+          const apiRegionId = regionIdMapping[region.id];
+          if (apiRegionId !== undefined) {
+            // The yearData object has keys like "0", "1", "2", etc. representing region IDs
+            const stringKey = apiRegionId.toString();
+            const numberKey = apiRegionId;
+
+            if (yearData[stringKey] !== undefined) {
+              value = parseFloat(yearData[stringKey]) || 0;
+            } else if (yearData[numberKey] !== undefined) {
+              value = parseFloat(yearData[numberKey]) || 0;
             }
-          });
+          }
         }
         return { ...region, value };
       });
     } catch (error) {
       console.error("Error processing API data:", error);
-      return regionMapping.map(region => ({ ...region, value: 0 }));
+      return regionMapping.map((region) => ({ ...region, value: 0 }));
     }
   }, [apiData, selectedYear, regionMapping]);
 
   // Get current hovered region data for dynamic tooltip
   const currentRegionData = useMemo(() => {
-    return hoveredRegion ? regions.find((region) => region.id === hoveredRegion) : null;
+    return hoveredRegion
+      ? regions.find((region) => region.id === hoveredRegion)
+      : null;
   }, [regions, hoveredRegion]);
-
-  console.log(am5geodata_georgiaHigh.default);
 
   useLayoutEffect(() => {
     const root = am5.Root.new("georgia-map-container");
@@ -191,8 +216,6 @@ const GeorgiaMap = ({ selectedYear = 2023 }) => {
       polygonSeries.mapPolygons.each((polygon) => {
         polygon.events.on("pointerover", (event) => {
           const data = event.target.dataItem?.dataContext;
-          const name = data?.name || "Unknown";
-          const value = data?.value ?? 0;
           const regionId = data?.id;
 
           // Update highlighted region on hover
@@ -218,16 +241,7 @@ const GeorgiaMap = ({ selectedYear = 2023 }) => {
             }
           });
 
-          // Show custom tooltip
-          const tooltip = document.getElementById("custom-tooltip");
-          if (tooltip) {
-            tooltip.style.display = "block";
-            const titleElement = tooltip.querySelector(".tooltip-title");
-            const valueElement = tooltip.querySelector(".tooltip-value");
-            if (titleElement) titleElement.textContent = name;
-            if (valueElement)
-              valueElement.textContent = `${value.toLocaleString()} მ³`;
-          }
+
         });
 
         // Track mouse movement for tooltip positioning
@@ -243,19 +257,13 @@ const GeorgiaMap = ({ selectedYear = 2023 }) => {
           // Clear hovered region state
           setHoveredRegion(null);
 
-          // Hide tooltip after a delay
-          setTimeout(() => {
-            const tooltip = document.getElementById("custom-tooltip");
-            if (tooltip) {
-              tooltip.style.display = "none";
-            }
-          }, 200);
+          // Tooltip will be hidden automatically when currentRegionData becomes null
         });
       });
     });
 
     return () => root.dispose();
-  }, [highlightedRegion, regions, hoveredRegion]);
+  }, [highlightedRegion, regions, hoveredRegion, tooltipPosition]);
 
   return (
     <div
@@ -270,8 +278,6 @@ const GeorgiaMap = ({ selectedYear = 2023 }) => {
         overflow: "hidden",
       }}
     >
-
-
       <div
         id="georgia-map-container"
         style={{

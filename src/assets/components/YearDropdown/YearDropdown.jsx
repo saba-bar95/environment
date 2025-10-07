@@ -44,7 +44,7 @@ const YearDropdown = ({ years, year, setYear }) => {
 
       {open && (
         <div className="dropdown-content" ref={dropdownRef}>
-          {years
+          {years && years.length > 0 && years
             .slice()
             .reverse()
             .map(

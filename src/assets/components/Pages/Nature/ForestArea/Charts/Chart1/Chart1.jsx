@@ -25,7 +25,7 @@ const Chart1 = ({ chartInfo }) => {
   const [activeLines, setActiveLines] = useState(["forestData"]);
 
   const [year, setYear] = useState(2023);
-  const [years, setYears] = useState(null);
+  const years = null;
 
   const info = useMemo(
     () => ({
@@ -54,25 +54,25 @@ const Chart1 = ({ chartInfo }) => {
   // Fetch forest data from multiple APIs
   useEffect(() => {
     const getForestData = async () => {
-      try {
-        // Test direct API call for felled-timber-volume
-        console.log("Fetching data from:", `http://192.168.1.27:3000/api/datasets/felled-timber-volume/data`);
-        const testResponse = await fetch(`http://192.168.1.27:3000/api/datasets/felled-timber-volume/data`);
-        const testData = await testResponse.json();
-        console.log("Direct API response for felled-timber-volume:", testData);
-        // Create substance list with the 4 specific titles
-        const substanceHeaders = [
-          { name: info.substanceTitles[0], id: 0, apiIndex: 0 }, // Felled timber
-          { name: info.substanceTitles[1], id: 1, apiIndex: 1 }, // Illegal logging
-          { name: info.substanceTitles[2], id: 2, apiIndex: 2 }, // Forest planting
-          { name: info.substanceTitles[3], id: 3, apiIndex: 2 }, // Forest recovery
-        ];
+      // Create substance list with the 4 specific titles
+      const substanceHeaders = [
+        { name: info.substanceTitles[0], id: 0, apiIndex: 0 }, // Felled timber
+        { name: info.substanceTitles[1], id: 1, apiIndex: 1 }, // Illegal logging
+        { name: info.substanceTitles[2], id: 2, apiIndex: 2 }, // Forest planting
+        { name: info.substanceTitles[3], id: 3, apiIndex: 2 }, // Forest recovery
+      ];
 
-        // Fetch data from all 3 APIs
-        const allData = [];
+      // Always set substance headers first so UI elements appear
+      setSubstanceList(substanceHeaders);
+      setSelectedSubstance(substanceHeaders[0]?.name || null);
 
-        for (let i = 0; i < info.apiIds.length; i++) {
-          const apiId = info.apiIds[i];
+      // Fetch data from all 3 APIs with individual error handling
+      const allData = [];
+
+      for (let i = 0; i < info.apiIds.length; i++) {
+        const apiId = info.apiIds[i];
+        
+        try {
           const [dataResult, metaDataResult] = await Promise.all([
             commonData(apiId, info.types[0], language),
             commonData(apiId, info.types[1], language),
@@ -96,7 +96,6 @@ const Chart1 = ({ chartInfo }) => {
               // Map data to substance headers based on API
               if (i === 0) {
                 // felled-timber-volume - ტყის ჭრით მიღებული ხე-ტყის მოცულობა
-                console.log(`Felled timber data - Year: ${yearName}, Key: ${key}, Value: ${value}`);
                 allData.push({
                   substance: substanceHeaders[0].name,
                   year: parseInt(yearName),
@@ -134,17 +133,13 @@ const Chart1 = ({ chartInfo }) => {
               }
             });
           });
+        } catch (error) {
+          console.error(`Error fetching data for ${apiId}:`, error);
+          // Continue with other APIs even if one fails
         }
-
-        console.log("All fetched forest data:", allData);
-        console.log("Substance headers:", substanceHeaders);
-        
-        setSubstanceList(substanceHeaders);
-        setSelectedSubstance(substanceHeaders[0]?.name || null);
-        setForestData(allData);
-      } catch (error) {
-        console.log("Error fetching forest data:", error);
       }
+      
+      setForestData(allData);
     };
 
     getForestData();
