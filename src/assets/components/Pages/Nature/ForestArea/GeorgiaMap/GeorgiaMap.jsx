@@ -218,49 +218,69 @@ const GeorgiaMap = ({ selectedYear = 2023 }) => {
           const data = event.target.dataItem?.dataContext;
           const regionId = data?.id;
 
-          // Update highlighted region on hover
-          setHighlightedRegion(regionId);
-          setHoveredRegion(regionId);
+          if (regionId) {
+            // Update both highlighted and hovered region states
+            setHighlightedRegion(regionId);
+            setHoveredRegion(regionId);
 
-          // Get mouse position relative to the map container
-          if (event.point) {
-            const x = event.point.x;
-            const y = event.point.y;
-            setTooltipPosition({ x: x + 20, y: y - 50 }); // Offset tooltip from cursor
-          }
-
-          // Force refresh the map styling
-          polygonSeries.mapPolygons.each((mapPolygon) => {
-            const polygonData = mapPolygon.dataItem?.dataContext;
-            if (polygonData?.id === regionId) {
-              mapPolygon.set("fill", am5.color(0x084e99));
-              mapPolygon.set("fillOpacity", 1.0);
-            } else {
-              mapPolygon.set("fill", am5.color(0x6ba3d6));
-              mapPolygon.set("fillOpacity", 0.6);
+            // Get mouse position relative to the map container
+            if (event.point) {
+              const x = event.point.x;
+              const y = event.point.y;
+              setTooltipPosition({ x: x + 20, y: y - 50 });
             }
-          });
-
-
+          }
         });
 
-        // Track mouse movement for tooltip positioning
-        polygon.events.on("pointermove", (event) => {
-          if (event.point && hoveredRegion) {
-            const x = event.point.x;
-            const y = event.point.y;
-            setTooltipPosition({ x: x + 20, y: y - 50 });
+
+
+        polygon.events.on("click", (event) => {
+          const data = event.target.dataItem?.dataContext;
+          const regionId = data?.id;
+          
+          if (regionId) {
+            // Toggle selection - if already highlighted, clear it; otherwise highlight it
+            setHighlightedRegion(prev => prev === regionId ? null : regionId);
           }
         });
 
         polygon.events.on("pointerout", () => {
-          // Clear hovered region state
+          // Only clear hovered state, keep highlighted state if region was clicked
           setHoveredRegion(null);
-
-          // Tooltip will be hidden automatically when currentRegionData becomes null
         });
       });
     });
+
+    // Add global mouse move handler for smooth tooltip tracking
+    polygonSeries.events.on("globalpointermove", (event) => {
+      if (event.point && hoveredRegion) {
+        const x = event.point.x;
+        const y = event.point.y;
+        setTooltipPosition({ x: x + 20, y: y - 50 });
+      }
+    });
+
+    // Handle styling updates based on highlight state
+    if (polygonSeries) {
+      polygonSeries.mapPolygons.each((mapPolygon) => {
+        const polygonData = mapPolygon.dataItem?.dataContext;
+        const regionId = polygonData?.id;
+        
+        if (regionId === highlightedRegion || regionId === hoveredRegion) {
+          // Highlighted/hovered region - darker blue
+          mapPolygon.set("fill", am5.color(0x084e99));
+          mapPolygon.set("fillOpacity", 1.0);
+          mapPolygon.set("stroke", am5.color(0xffffff));
+          mapPolygon.set("strokeWidth", 2);
+        } else {
+          // Normal region - lighter blue
+          mapPolygon.set("fill", am5.color(0x6ba3d6));
+          mapPolygon.set("fillOpacity", 0.6);
+          mapPolygon.set("stroke", am5.color(0xffffff));
+          mapPolygon.set("strokeWidth", 1);
+        }
+      });
+    }
 
     return () => root.dispose();
   }, [highlightedRegion, regions, hoveredRegion, tooltipPosition]);
