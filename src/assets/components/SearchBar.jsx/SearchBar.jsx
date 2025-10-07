@@ -66,8 +66,8 @@ const SearchBar = ({ onSelectChart }) => {
     setQuery("");
     setSuggestions([]);
     setIsFocused(false);
-    navigate(`/${language}/${chart.path}#${chart.id}`);
-    onSelectChart?.(chart.id);
+    navigate(`/${language}/${chart.path}#${chart.chartID}`);
+    onSelectChart?.(chart.chartID);
   };
 
   useEffect(() => {
@@ -99,7 +99,7 @@ const SearchBar = ({ onSelectChart }) => {
         <ul className="absolute top-8 w-full bg-white border border-gray-300 rounded-lg shadow-md">
           {suggestions.map((chart) => (
             <li
-              key={chart.id}
+              key={chart.chartID}
               className="px-4 py-2 text-sm text-gray-800 cursor-pointer hover:bg-blue-100"
               onClick={() => handleSelect(chart)}>
               {chart[`title_${language}`]}

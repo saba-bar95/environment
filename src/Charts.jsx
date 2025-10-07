@@ -72,11 +72,124 @@ const rawCharts = {
     {
       protection: [],
     },
+    {
+      supplyandlosses: [
+        {
+          title_ge: "წყალმომარაგების სისტემაში გაშვებული და მიწოდებული წყალი",
+          title_en: "Water supply released and delivered to the supply system",
+          path_ge:
+            "წყალმომარაგება, დანაკარგები და შინამეურნეობების მიერ წყლის მოხმარება",
+          path_en: "Water supply, losses and household water consumption",
+        },
+        {
+          title_ge: "წყლის დანაკარგის პროცენტი ტრანსპორტირებისას",
+          title_en: "Water loss percentage during transportation",
+          path_ge:
+            "წყალმომარაგება, დანაკარგები და შინამეურნეობების მიერ წყლის მოხმარება",
+          path_en: "Water supply, losses and household water consumption",
+        },
+        {
+          title_ge:
+            "წყალმომარაგების სისტემაზე მიერთებული მოსახლეობა vs. მოსახლეობა თვითმიწოდებით",
+          title_en:
+            "Population connected to the water supply system vs. population with self-supply",
+          path_ge:
+            "წყალმომარაგება, დანაკარგები და შინამეურნეობების მიერ წყლის მოხმარება",
+          path_en: "Water supply, losses and household water consumption",
+        },
+        {
+          title_ge: "წყალმომარაგების სისტემაზე მიერთებული მოსახლეობის %",
+          title_en:
+            "Percentage of population connected to the water supply system",
+          path_ge:
+            "წყალმომარაგება, დანაკარგები და შინამეურნეობების მიერ წყლის მოხმარება",
+          path_en: "Water supply, losses and household water consumption",
+        },
+        {
+          title_ge: "შინამეურნეობების მიერ წყლის მოხმარება ერთ სულზე (მ³/წელი)",
+          title_en: "Water consumption per capita by households (m³/year)",
+          path_ge:
+            "წყალმომარაგება, დანაკარგები და შინამეურნეობების მიერ წყლის მოხმარება",
+          path_en: "Water supply, losses and household water consumption",
+        },
+        {
+          title_ge: "შინამეურნეობების მიერ წყლის მოხმარების წყაროები (მლნ მ³)",
+          title_en: "Water consumption sources by households (million m³)",
+          path_ge:
+            "წყალმომარაგება, დანაკარგები და შინამეურნეობების მიერ წყლის მოხმარება",
+          path_en: "Water supply, losses and household water consumption",
+        },
+        {
+          title_ge:
+            "შინამეურნეობებისთვის მიწოდებული წყალი და მიერთებული მოსახლეობა",
+          title_en: "Water supplied to households and connected population",
+          path_ge:
+            "წყალმომარაგება, დანაკარგები და შინამეურნეობების მიერ წყლის მოხმარება",
+          path_en: "Water supply, losses and household water consumption",
+        },
+        {
+          title_ge:
+            "წყალმომარაგების სისტემაზე მიერთებული მოსახლეობის განაწილება (მლნ)",
+          title_en:
+            "Distribution of population connected to the water supply system (million)",
+          path_ge:
+            "წყალმომარაგება, დანაკარგები და შინამეურნეობების მიერ წყლის მოხმარება",
+          path_en: "Water supply, losses and household water consumption",
+        },
+        {
+          title_ge:
+            "წყალარინებაზე და ჩამდინარე წყლის გაწმენდაზე მიერთებული მოსახლეობის %",
+          title_en:
+            "Distribution of population connected to wastewater treatment and sewage systems (%)",
+          path_ge:
+            "წყალმომარაგება, დანაკარგები და შინამეურნეობების მიერ წყლის მოხმარება",
+          path_en: "Water supply, losses and household water consumption",
+        },
+        {
+          title_ge:
+            "ჩამდინარე წყლების გაწმენდის ტიპის მიხედვით მოსახლეობის რაოდენობა (მლნ)",
+          title_en:
+            "Distribution of population connected to wastewater treatment and sewage systems by type (million)",
+          path_ge:
+            "წყალმომარაგება, დანაკარგები და შინამეურნეობების მიერ წყლის მოხმარება",
+          path_en: "Water supply, losses and household water consumption",
+        },
+        {
+          title_ge:
+            "ჩამდინარე წყლების გაწმენდის ტიპის მიხედვით მოსახლეობის რაოდენობა (%)",
+          title_en:
+            "Distribution of population connected to wastewater treatment and sewage systems by type (%)",
+          path_ge:
+            "წყალმომარაგება, დანაკარგები და შინამეურნეობების მიერ წყლის მოხმარება",
+          path_en: "Water supply, losses and household water consumption",
+        },
+        {
+          title_ge:
+            "წყალარინების ქსელზე მიერთებული მოსახლეობა, ჩამდინარე წყლის გაწმენდის გარეშე",
+          title_en:
+            "Distribution of population connected to wastewater treatment and sewage systems without treatment",
+          path_ge:
+            "წყალმომარაგება, დანაკარგები და შინამეურნეობების მიერ წყლის მოხმარება",
+          path_en: "Water supply, losses and household water consumption",
+        },
+        {
+          title_ge:
+            "წყალმომარაგების სისტემაზე მიერთებული მოსახლეობა, წყალარინების ქსელზე მიერთების გარეშე",
+          title_en:
+            "Distribution of population connected to wastewater treatment and sewage systems without treatment",
+          path_ge:
+            "წყალმომარაგება, დანაკარგები და შინამეურნეობების მიერ წყლის მოხმარება",
+          path_en: "Water supply, losses and household water consumption",
+        },
+      ],
+    },
   ],
 };
 
 // Recursively normalize chart objects
 function normalizeCharts(data, fallbackPrefix = "chart") {
+  const usedIds = new Set();
+
   if (Array.isArray(data)) {
     return data.map((item, index) => {
       const keys = Object.keys(item);
@@ -87,9 +200,21 @@ function normalizeCharts(data, fallbackPrefix = "chart") {
         };
       }
 
+      // Generate cleaned chartID from title_en
+      let rawId = item.title_en || `${fallbackPrefix}-${index}`;
+      let chartID = cleanId(rawId, fallbackPrefix, index);
+
+      // Ensure uniqueness
+      let uniqueID = chartID;
+      let suffix = 1;
+      while (usedIds.has(uniqueID)) {
+        uniqueID = `${chartID}-${suffix++}`;
+      }
+      usedIds.add(uniqueID);
+
       return {
         ...item,
-        id: item.id ?? cleanId(item.title_en, fallbackPrefix, index),
+        chartID: uniqueID,
       };
     });
   }
