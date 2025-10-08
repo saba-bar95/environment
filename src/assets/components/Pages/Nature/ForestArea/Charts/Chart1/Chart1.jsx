@@ -5,6 +5,7 @@ import commonData from "../../../../../../fetchFunctions/commonData";
 import YearDropdown from "../../../../../YearDropdown/YearDropdown";
 import Download from "../Download/Download";
 import GeorgiaMap from "../../GeorgiaMap/GeorgiaMap";
+import "../../../../../../../assets/styles/SpinnerAndError.scss";
 
 const Chart1 = ({ chartInfo }) => {
   const { language } = useParams();
@@ -13,6 +14,8 @@ const Chart1 = ({ chartInfo }) => {
   const [selectedSubstance, setSelectedSubstance] = useState(null);
   const [year, setYear] = useState(2023);
   const [years, setYears] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const info = useMemo(
     () => ({
@@ -47,22 +50,26 @@ const Chart1 = ({ chartInfo }) => {
   // Fetch forest data from multiple APIs
   useEffect(() => {
     const getForestData = async () => {
-      // Create substance list - include all 4 forest data types
-      const substanceTitles =
-        language === "en" ? info.substanceTitles_en : info.substanceTitles_ge;
-      const substanceHeaders = [
-        { name: substanceTitles[0], id: 0, apiIndex: 0 }, // Felled timber
-        { name: substanceTitles[1], id: 1, apiIndex: 1 }, // Illegal logging
-        { name: substanceTitles[2], id: 2, apiIndex: 2 }, // Forest planting
-        { name: substanceTitles[3], id: 3, apiIndex: 2 }, // Forest recovery
-      ];
+      try {
+        setIsLoading(true);
+        setError(null);
 
-      // Always set substance headers first so UI elements appear
-      setSubstanceList(substanceHeaders);
-      setSelectedSubstance(substanceHeaders[0]?.name || null);
+        // Create substance list - include all 4 forest data types
+        const substanceTitles =
+          language === "en" ? info.substanceTitles_en : info.substanceTitles_ge;
+        const substanceHeaders = [
+          { name: substanceTitles[0], id: 0, apiIndex: 0 }, // Felled timber
+          { name: substanceTitles[1], id: 1, apiIndex: 1 }, // Illegal logging
+          { name: substanceTitles[2], id: 2, apiIndex: 2 }, // Forest planting
+          { name: substanceTitles[3], id: 3, apiIndex: 2 }, // Forest recovery
+        ];
 
-      // Fetch data from all 3 APIs with individual error handling
-      const allData = [];
+        // Always set substance headers first so UI elements appear
+        setSubstanceList(substanceHeaders);
+        setSelectedSubstance(substanceHeaders[0]?.name || null);
+
+        // Fetch data from all 3 APIs with individual error handling
+        const allData = [];
 
       for (let i = 0; i < info.apiIds.length; i++) {
         const apiId = info.apiIds[i];
@@ -178,9 +185,18 @@ const Chart1 = ({ chartInfo }) => {
 
       // Extract unique years from the data for YearDropdown
       const uniqueYears = [...new Set(allData.map((item) => item.year))].sort(
-        (a, b) => b - a
-      ); // Sort descending (newest first)
+        (a, b) => a - b
+      ); // Sort ascending (YearDropdown will reverse to show newest first)
       setYears(uniqueYears);
+
+      setIsLoading(false);
+      } catch (error) {
+        console.error('Error fetching forest data:', error);
+        setError(language === "ge" 
+          ? "მონაცემების ჩატვირთვისას მოხდა შეცდომა" 
+          : "Error loading data");
+        setIsLoading(false);
+      }
     };
 
     getForestData();
@@ -333,6 +349,82 @@ const Chart1 = ({ chartInfo }) => {
   const handleSubstanceSelection = (substanceName) => {
     setSelectedSubstance(substanceName);
   };
+
+  // Show loading state
+  if (isLoading) {
+    return (
+      <div className="chart-wrapper" id={chartInfo.id}>
+        <div className="header">
+          <div className="right">
+            <div className="ll">
+              <Svg />
+            </div>
+            <div className="rr">
+              <h1>
+                {language === "ge" ? info.title_ge : info.title_en}
+              </h1>
+              <p>{language === "ge" ? info.unit_ge : info.unit_en}</p>
+            </div>
+          </div>
+          <div className="left">
+            <div className="download-placeholder">
+              <span className="loading-spinner"></span>
+              <span>{language === "ge" ? "ჩატვირთვა..." : "Loading..."}</span>
+            </div>
+          </div>
+        </div>
+        <div className="loading-container">
+          <div className="loading-content">
+            <div className="spinner"></div>
+            <p>
+              {language === "ge"
+                ? "მონაცემების ჩატვირთვა..."
+                : "Loading data..."}
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <div className="chart-wrapper" id={chartInfo.id}>
+        <div className="header">
+          <div className="right">
+            <div className="ll">
+              <Svg />
+            </div>
+            <div className="rr">
+              <h1>
+                {language === "ge" ? info.title_ge : info.title_en}
+              </h1>
+              <p>{language === "ge" ? info.unit_ge : info.unit_en}</p>
+            </div>
+          </div>
+          <div className="left">
+            <button
+              className="retry-btn"
+              onClick={() => window.location.reload()}>
+              {language === "ge" ? "ხელახლა ცდა" : "Retry"}
+            </button>
+          </div>
+        </div>
+        <div className="error-container">
+          <div className="error-content">
+            <div className="error-icon">⚠️</div>
+            <p>{error}</p>
+            <button
+              className="retry-btn"
+              onClick={() => window.location.reload()}>
+              {language === "ge" ? "ხელახლა ჩატვირთვა" : "Reload Chart"}
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="chart-wrapper" id={chartInfo.id}>
