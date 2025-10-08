@@ -1,0 +1,77 @@
+@use "/src/assets/styles/_breakpoints.scss" as *;
+
+.supply-and-losses {
+  .header-container1 {
+    background-color: #f4f4f7;
+    padding-top: 30px;
+
+    h1.title-text {
+      font-size: 26px;
+      color: #1e1e1e;
+      font-feature-settings: "case" on;
+      text-align: center; /* Changed to center as per your code */
+      font-family: FiraGORegular;
+      margin: 0 auto; /* Simplified margin: auto */
+    }
+  }
+
+  .chart-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    width: 100%;
+    max-width: 1400px;
+  }
+
+  /* Tablet to Mid breakpoint */
+  @media (min-width: calc($tablet + 1px)) and (max-width: $mid) {
+    .header-container1 {
+      h1.title-text {
+        font-size: 24px;
+      }
+    }
+
+    .chart-container {
+      .chart-wrapper {
+        max-width: 800px;
+        margin: auto;
+      }
+    }
+  }
+
+  /* Mobile to Tablet breakpoint */
+  @media (min-width: calc($mobile + 1px)) and (max-width: $tablet) {
+    .header-container1 {
+      h1.title-text {
+        font-size: 20px;
+      }
+    }
+
+    .chart-container {
+      grid-template-columns: 1fr;
+
+      .chart-wrapper {
+        max-width: 70%;
+        margin: auto;
+      }
+    }
+  }
+
+  /* Mobile and below */
+  @media (max-width: $mobile) {
+    .header-container1 {
+      h1.title-text {
+        font-size: 18px; /* Example adjustment for mobile */
+      }
+    }
+
+    .chart-container {
+      grid-template-columns: 1fr;
+
+      .chart-wrapper {
+        margin: auto;
+        max-width: 500px;
+      }
+    }
+  }
+}
