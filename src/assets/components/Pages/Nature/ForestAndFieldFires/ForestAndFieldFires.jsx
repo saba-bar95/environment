@@ -1,5 +1,7 @@
 import { useParams } from "react-router-dom";
 import backgroundImg from "./Background/background.jpg";
+import Charts from "../../../../../Charts";
+import Chart1 from "./Charts/Chart1/Chart1";
 
 const ForestAndFieldFires = () => {
   const { language } = useParams();
@@ -10,7 +12,8 @@ const ForestAndFieldFires = () => {
         className="background-container"
         style={{
           backgroundImage: `url(${backgroundImg})`,
-        }}>
+        }}
+      >
         <div className="overlay"></div> {/* New overlay div */}
         <h1>
           {language === "en"
@@ -23,6 +26,11 @@ const ForestAndFieldFires = () => {
             ? "Data on fires and damaged areas"
             : "მონაცემები ხანძრების და დაზიანებული ტერიტორიების შესახებ"}{" "}
         </h2>
+      </div>
+      <div className="charts-section">
+        <div className="chart-container">
+          <Chart1 chartInfo={Charts.nature[0].forestandfieldfires[0]} />
+        </div>
       </div>
     </div>
   );
