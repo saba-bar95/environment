@@ -1,0 +1,48 @@
+/* Georgia Map Responsive Styles */
+.georgia-map-wrapper {
+  /* Mobile phones */
+  @media (max-width: 480px) {
+    border-radius: 8px !important;
+    margin: 0 10px !important;
+  }
+
+  /* Small tablets */
+  @media (max-width: 768px) {
+    border-radius: 12px !important;
+    margin: 0 15px !important;
+    max-width: calc(100% - 30px) !important;
+  }
+
+  /* Large tablets */
+  @media (max-width: 1024px) {
+    max-width: 900px !important;
+  }
+
+  /* Ensure tooltip positioning works on small screens */
+  .tooltip {
+    @media (max-width: 768px) {
+      font-size: 14px !important;
+      padding: 8px 12px !important;
+      max-width: 200px !important;
+    }
+
+    @media (max-width: 480px) {
+      font-size: 12px !important;
+      padding: 6px 10px !important;
+      max-width: 160px !important;
+    }
+  }
+}
+
+/* Responsive text sizing for map tooltips */
+@media (max-width: 768px) {
+  .georgia-map-wrapper .custom-tooltip {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .georgia-map-wrapper .custom-tooltip {
+    font-size: 12px;
+  }
+}

@@ -4,6 +4,7 @@ import * as am5 from "@amcharts/amcharts5";
 import * as am5map from "@amcharts/amcharts5/map";
 import * as am5geodata_georgiaHigh from "@amcharts/amcharts5-geodata/georgiaLow";
 import commonData from "../../../../../fetchFunctions/commonData";
+import "./GeorgiaMap.scss";
 
 const GeorgiaMap = ({ selectedYear = 2023, selectedSubstance = null }) => {
   const { language } = useParams();
@@ -263,10 +264,10 @@ const GeorgiaMap = ({ selectedYear = 2023, selectedSubstance = null }) => {
       root._logo.dispose();
     }
 
-    // Set root container size
+    // Set root container size - responsive
     root.container.setAll({
-      width: 1104,
-      height: 468,
+      width: am5.percent(100),
+      height: am5.percent(100),
       layout: root.verticalLayout,
     });
 
@@ -277,6 +278,12 @@ const GeorgiaMap = ({ selectedYear = 2023, selectedSubstance = null }) => {
         panY: "none",
         wheelX: "none",
         wheelY: "none",
+        width: am5.percent(100),
+        height: am5.percent(100),
+        paddingTop: 15,
+        paddingBottom: 15,
+        paddingLeft: 20,
+        paddingRight: 20,
       })
     );
     chartRef.current = chart;
@@ -430,13 +437,31 @@ const GeorgiaMap = ({ selectedYear = 2023, selectedSubstance = null }) => {
     }
   }, [hoveredRegion]);
 
+  // Handle window resize for responsive map
+  useEffect(() => {
+    const handleResize = () => {
+      if (rootRef.current) {
+        // Trigger amCharts resize
+        rootRef.current.resize();
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
   return (
     <div
       className="georgia-map-wrapper"
       style={{
         position: "relative",
-        width: "1104px",
-        height: "468px",
+        width: "100%",
+        maxWidth: "1104px",
+        height: "0",
+        paddingBottom: "42.4%", // Aspect ratio: 468/1104 = 0.424
         background: "#ECF5FF",
         borderRadius: "16px",
         margin: "0 auto",
@@ -445,25 +470,29 @@ const GeorgiaMap = ({ selectedYear = 2023, selectedSubstance = null }) => {
       <div
         id="georgia-map-container"
         style={{
+          position: "absolute",
+          top: "0",
+          left: "0",
           width: "100%",
           height: "100%",
-          position: "relative",
         }}></div>
 
       {/* Dynamic Tooltip - only shows when hovering over a region */}
       {currentRegionData && hoveredRegion && (
         <div
+          className="custom-tooltip"
           style={{
             position: "absolute",
-            left: `${tooltipPosition.x}px`,
-            top: `${tooltipPosition.y}px`,
+            left: `${Math.min(tooltipPosition.x, window.innerWidth - 320)}px`,
+            top: `${Math.max(tooltipPosition.y, 10)}px`,
             background: "#2D3748",
-            borderRadius: "12px",
-            padding: "16px 20px",
+            borderRadius: window.innerWidth <= 480 ? "8px" : "12px",
+            padding: window.innerWidth <= 480 ? "12px 16px" : "16px 20px",
             boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
             display: "block",
             zIndex: 1000,
-            minWidth: "280px",
+            minWidth: window.innerWidth <= 480 ? "200px" : window.innerWidth <= 768 ? "240px" : "280px",
+            maxWidth: window.innerWidth <= 480 ? "250px" : "320px",
             pointerEvents: "none",
           }}>
           <div
@@ -475,7 +504,7 @@ const GeorgiaMap = ({ selectedYear = 2023, selectedSubstance = null }) => {
             <div
               style={{
                 fontFamily: "'FiraGO', Arial, sans-serif",
-                fontSize: "14px",
+                fontSize: window.innerWidth <= 480 ? "12px" : "14px",
                 fontWeight: 400,
                 color: "#FFFFFF",
                 lineHeight: "1.4",
@@ -486,7 +515,7 @@ const GeorgiaMap = ({ selectedYear = 2023, selectedSubstance = null }) => {
             <div
               style={{
                 fontFamily: "'FiraGO', Arial, sans-serif",
-                fontSize: "24px",
+                fontSize: window.innerWidth <= 480 ? "18px" : window.innerWidth <= 768 ? "20px" : "24px",
                 fontWeight: 600,
                 color: "#48BB78",
                 lineHeight: "1.2",
