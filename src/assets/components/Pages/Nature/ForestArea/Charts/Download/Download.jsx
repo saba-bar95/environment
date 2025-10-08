@@ -11,7 +11,7 @@ import PDF from "../../../../../Download/Svgs/PDF";
 import JPG from "../../../../../Download/Svgs/JPG";
 import PNG from "../../../../../Download/Svgs/PNG";
 
-const Download = ({ data, year, unit, filename }) => {
+const Download = ({ data, mapData, year, unit, filename, isMapData }) => {
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef(null); // Create a ref for the dropdown
   const { language } = useParams();
@@ -59,7 +59,7 @@ const Download = ({ data, year, unit, filename }) => {
             <div
               className="wrapper"
               onClick={() => {
-                downloadExcel(data, year, unit, filename, language);
+                downloadExcel(data, year, unit, filename, language, false, mapData, isMapData);
                 setOpen(false); // Close dropdown
               }}>
               <Excel />
@@ -68,7 +68,7 @@ const Download = ({ data, year, unit, filename }) => {
             <div
               className="wrapper"
               onClick={() => {
-                downloadPDF(data, year, unit, filename, language);
+                downloadPDF(data, year, unit, filename, language, false, false, false, null, mapData, isMapData);
                 setOpen(false); // Close dropdown
               }}>
               <PDF />

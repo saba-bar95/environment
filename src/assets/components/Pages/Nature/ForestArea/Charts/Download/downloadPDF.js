@@ -11,9 +11,60 @@ const downloadPDF = (
   isChart1,
   isChart2,
   isChart3,
-  source
+  source,
+  mapData,
+  isMapData
 ) => {
   const isGeorgian = language === "ge";
+
+  if (isMapData && mapData && Array.isArray(mapData) && mapData.length > 0) {
+    // Handle map data PDF download
+    const doc = new jsPDF();
+
+    // Load Georgian font if needed
+    if (isGeorgian) {
+      doc.addFont(georgianFont, "NotoSansGeorgian", "normal");
+      doc.addFont(georgianFont, "NotoSansGeorgian", "bold");
+      doc.setFont("NotoSansGeorgian");
+    }
+
+    const yearHeader = isGeorgian ? "წელი" : "Year";
+    const regionHeader = isGeorgian ? "რეგიონი" : "Region";
+    const valueHeader = isGeorgian ? "მნიშვნელობა" : "Value";
+    const substanceHeader = isGeorgian ? "ტიპი" : "Type";
+    
+    const tableHead = [[regionHeader, yearHeader, valueHeader, substanceHeader]];
+    
+    // Map the comprehensive data to table format
+    const tableBody = mapData.map(item => [
+      item.region,
+      item.year,
+      item.value,
+      item.substance
+    ]);
+
+    autoTable(doc, {
+      head: tableHead,
+      body: tableBody,
+      styles: {
+        font: isGeorgian ? "NotoSansGeorgian" : "helvetica",
+        fontStyle: "bold",
+        fontSize: 8, // Smaller font to fit more data
+      },
+      headStyles: {
+        fillColor: [66, 139, 202], // Blue header
+        textColor: [255, 255, 255],
+        fontStyle: 'bold'
+      },
+      margin: { top: 20 },
+      pageBreak: 'auto',
+    });
+
+    const firstItem = mapData[0];
+    const finalFilename = `${filename} - ${firstItem.substance} (${firstItem.unit}).pdf`;
+    doc.save(finalFilename);
+    return;
+  }
 
   if (!data || !Array.isArray(data) || data.length === 0) {
     console.warn("No valid data provided for PDF download");

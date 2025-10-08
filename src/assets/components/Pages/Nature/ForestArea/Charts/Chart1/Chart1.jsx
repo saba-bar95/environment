@@ -212,7 +212,124 @@ const Chart1 = ({ chartInfo }) => {
     return merged;
   }, [forestData, selectedSubstance]);
 
-  // Toggle line visibility
+  // Prepare comprehensive map data for download
+  const [mapDataForDownload, setMapDataForDownload] = useState([]);
+
+  // Fetch comprehensive regional data for download
+  useEffect(() => {
+    if (!selectedSubstance) return;
+
+    const fetchMapData = async () => {
+      const regionMapping = [
+        { id: "GE-TB", name_ge: "თბილისი", name_en: "Tbilisi" },
+        { id: "GE-AB", name_ge: "აფხაზეთი", name_en: "Abkhazia" },
+        { id: "GE-AJ", name_ge: "აჭარა", name_en: "Adjara" },
+        { id: "GE-KA", name_ge: "კახეთი", name_en: "Kakheti" },
+        { id: "GE-IM", name_ge: "იმერეთი", name_en: "Imereti" },
+        { id: "GE-RL", name_ge: "რაჭა-ლეჩხუმი და ქვემო სვანეთი", name_en: "Racha-Lechkhumi and Kvemo Svaneti" },
+        { id: "GE-GU", name_ge: "გურია", name_en: "Guria" },
+        { id: "GE-SJ", name_ge: "სამცხე-ჯავახეთი", name_en: "Samtskhe-Javakheti" },
+        { id: "GE-MM", name_ge: "მცხეთა-მთიანეთი", name_en: "Mtskheta-Mtianeti" },
+        { id: "GE-KK", name_ge: "ქვემო ქართლი", name_en: "Kvemo Kartli" },
+        { id: "GE-SK", name_ge: "შიდა ქართლი", name_en: "Shida Kartli" },
+        { id: "GE-SZ", name_ge: "სამეგრელო-ზემო სვანეთი", name_en: "Samegrelo-Zemo Svaneti" },
+      ];
+
+      // Get API ID for the selected substance
+      const substanceToApiId = {
+        "ტყის ჭრით მიღებული ხე-ტყის მოცულობა": "felled-timber-volume",
+        "ტყის უკანონო ჭრა": "illegal-logging",
+        "ტყის თესვა და დარგვა": "forest-planting-recovery",
+        "ტყის ბუნებრივი განახლებისთვის ხელშეწყობა": "forest-planting-recovery",
+        "Felled Timber Volume": "felled-timber-volume",
+        "Illegal Logging": "illegal-logging",
+        "Forest Planting": "forest-planting-recovery",
+        "Forest Recovery Support": "forest-planting-recovery"
+      };
+
+      const apiId = substanceToApiId[selectedSubstance];
+      if (!apiId) return;
+
+      try {
+        const [dataResult] = await Promise.all([
+          commonData(apiId, "data", language)
+        ]);
+
+        const comprehensiveData = [];
+        
+        // Process data for each year and region
+        if (dataResult?.data?.data) {
+          const dataArray = dataResult.data.data;
+          
+          dataArray.forEach(yearData => {
+            const yearValue = yearData.year;
+            
+            regionMapping.forEach(region => {
+              let value = 0;
+              
+              // Regional mapping logic (same as in GeorgiaMap)
+              if (apiId === "forest-planting-recovery") {
+                const regionIdMapping = {
+                  "GE-TB": { planting: 2, recovery: 3 },
+                  "GE-AJ": { planting: 4, recovery: 5 },
+                  "GE-GU": { planting: 6, recovery: 7 },
+                  "GE-IM": { planting: 8, recovery: 9 },
+                  "GE-KA": { planting: 10, recovery: 11 },
+                  "GE-MM": { planting: 12, recovery: 13 },
+                  "GE-RL": { planting: 14, recovery: 15 },
+                  "GE-SZ": { planting: 16, recovery: 17 },
+                  "GE-SJ": { planting: 18, recovery: 19 },
+                  "GE-KK": { planting: 20, recovery: 21 },
+                  "GE-SK": { planting: 22, recovery: 23 },
+                  "GE-AB": { planting: -2, recovery: -2 },
+                };
+                
+                const mappingKey = regionIdMapping[region.id];
+                if (mappingKey) {
+                  let categoryKey;
+                  if (selectedSubstance === "ტყის თესვა და დარგვა" || selectedSubstance === "Forest Planting") {
+                    categoryKey = mappingKey.planting;
+                  } else if (selectedSubstance === "ტყის ბუნებრივი განახლებისთვის ხელშეწყობა" || selectedSubstance === "Forest Recovery Support") {
+                    categoryKey = mappingKey.recovery;
+                  }
+                  
+                  if (categoryKey >= 0) {
+                    value = parseFloat(yearData[categoryKey.toString()]) || 0;
+                  }
+                }
+              } else {
+                // Regular APIs (felled-timber-volume, illegal-logging)
+                const regionIdMapping = {
+                  "GE-TB": 1, "GE-AB": -2, "GE-AJ": 2, "GE-SZ": 3,
+                  "GE-GU": 4, "GE-IM": 5, "GE-RL": 6, "GE-SK": 7,
+                  "GE-MM": 8, "GE-KA": 9, "GE-KK": 10, "GE-SJ": 11,
+                };
+                
+                const apiRegionId = regionIdMapping[region.id];
+                if (apiRegionId >= 0) {
+                  value = parseFloat(yearData[apiRegionId.toString()]) || 0;
+                }
+              }
+              
+              comprehensiveData.push({
+                region: language === 'en' ? region.name_en : region.name_ge,
+                year: yearValue,
+                value: value,
+                substance: selectedSubstance,
+                unit: language === "ge" ? info.unit_ge : info.unit_en
+              });
+            });
+          });
+        }
+        
+        setMapDataForDownload(comprehensiveData);
+      } catch (error) {
+        console.error("Error fetching map data for download:", error);
+      }
+    };
+
+    fetchMapData();
+  }, [selectedSubstance, language, info.unit_ge, info.unit_en]);
 
   // Handle substance selection
   const handleSubstanceSelection = (substanceName) => {
@@ -235,10 +352,13 @@ const Chart1 = ({ chartInfo }) => {
           <YearDropdown years={years} year={year} setYear={setYear} />
           <Download
             data={chartData}
+            mapData={mapDataForDownload}
             unit={info[`unit_${language}`]}
             filename={info[`title_${language}`]}
             isChart1={true}
+            isMapData={true}
             source={selectedSubstance}
+            year={year}
           />
         </div>
       </div>
