@@ -1,5 +1,9 @@
 import { useParams } from "react-router-dom";
 import backgroundImg from "./Background/background.jpg";
+import Charts from "../../../../../Charts";
+import Chart1 from "./Charts/Chart1/Chart1";
+
+
 
 const ForestArea = () => {
   const { language } = useParams();
@@ -19,6 +23,11 @@ const ForestArea = () => {
             ? "Statistics on forest cover and forest use trends"
             : "ტყის საფარის და ტყითსარგებლობის ტენდენციების სტატისტიკა"}{" "}
         </h2>
+      </div>
+      <div className="charts-section">
+        <div className="chart-container">
+          <Chart1 chartInfo={Charts.nature[0].forestarea[0]} />
+        </div>
       </div>
     </div>
   );
