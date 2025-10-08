@@ -81,20 +81,15 @@ const downloadPDF = (
 
   if (isChart1) {
     const yearHeader = !isGeorgian ? "Year" : "წელი";
-    const regionHeader = isGeorgian ? "რეგიონი" : "Region";
-    const rowHeaders = isGeorgian
-      ? ["წარმოქმნილი", "დაჭერილი", "გაფრქვეული"]
-      : ["Generated", "Captured", "Emitted"];
+    const valueHeader = !isGeorgian ? "Value" : "მნიშვნელობა";
 
     const tableHead = [
-      [regionHeader, rowHeaders[1], rowHeaders[2], rowHeaders[0]],
+      [yearHeader, valueHeader],
     ];
 
     const tableBody = data.map((item) => [
-      item.region,
-      item.pollution_1,
-      item.pollution_2,
-      item.pollution_0,
+      item.year,
+      item.forestData,
     ]);
 
     autoTable(doc, {
@@ -108,8 +103,8 @@ const downloadPDF = (
     });
 
     const finalFilename = isGeorgian
-      ? `${filename} (${unit}) (${year}toLowerCase() ${yearHeader}).pdf`
-      : `${filename} (${unit.toLowerCase()}) (${year} ${yearHeader.toLowerCase()}).pdf`;
+      ? `${filename} (${unit}) - ${year} წელი.pdf`
+      : `${filename} (${unit.toLowerCase()}) - ${year}.pdf`;
 
     doc.save(finalFilename);
 
