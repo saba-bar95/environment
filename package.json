@@ -12,6 +12,8 @@
   "dependencies": {
     "@amcharts/amcharts5": "^5.14.2",
     "@amcharts/amcharts5-geodata": "^5.1.5",
+    "exceljs": "^4.4.0",
+    "file-saver": "^2.0.5",
     "html2canvas": "^1.4.1",
     "jspdf": "^3.0.3",
     "jspdf-autotable": "^5.0.2",

@@ -57,8 +57,8 @@ const Download = ({ data, mapData, year, unit, filename, isMapData }) => {
           <div className="upper">
             <div
               className="wrapper"
-              onClick={() => {
-                downloadExcel(
+              onClick={async () => {
+                await downloadExcel(
                   data,
                   year,
                   unit,
