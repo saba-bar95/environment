@@ -222,7 +222,6 @@ const Chart1 = ({ chartInfo }) => {
     const fetchMapData = async () => {
       const regionMapping = [
         { id: "GE-TB", name_ge: "თბილისი", name_en: "Tbilisi" },
-        { id: "GE-AB", name_ge: "აფხაზეთი", name_en: "Abkhazia" },
         { id: "GE-AJ", name_ge: "აჭარა", name_en: "Adjara" },
         { id: "GE-KA", name_ge: "კახეთი", name_en: "Kakheti" },
         { id: "GE-IM", name_ge: "იმერეთი", name_en: "Imereti" },
@@ -281,7 +280,6 @@ const Chart1 = ({ chartInfo }) => {
                   "GE-SJ": { planting: 18, recovery: 19 },
                   "GE-KK": { planting: 20, recovery: 21 },
                   "GE-SK": { planting: 22, recovery: 23 },
-                  "GE-AB": { planting: -2, recovery: -2 },
                 };
                 
                 const mappingKey = regionIdMapping[region.id];
@@ -300,7 +298,7 @@ const Chart1 = ({ chartInfo }) => {
               } else {
                 // Regular APIs (felled-timber-volume, illegal-logging)
                 const regionIdMapping = {
-                  "GE-TB": 1, "GE-AB": -2, "GE-AJ": 2, "GE-SZ": 3,
+                  "GE-TB": 1, "GE-AJ": 2, "GE-SZ": 3,
                   "GE-GU": 4, "GE-IM": 5, "GE-RL": 6, "GE-SK": 7,
                   "GE-MM": 8, "GE-KA": 9, "GE-KK": 10, "GE-SJ": 11,
                 };

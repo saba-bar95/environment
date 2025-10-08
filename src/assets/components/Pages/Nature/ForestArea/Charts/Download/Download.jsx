@@ -16,8 +16,6 @@ const Download = ({ data, mapData, year, unit, filename, isMapData }) => {
   const dropdownRef = useRef(null); // Create a ref for the dropdown
   const { language } = useParams();
 
-  console.log(data);
-
   const handleToggle = () => {
     setOpen((prevOpen) => !prevOpen);
   };
@@ -50,7 +48,8 @@ const Download = ({ data, mapData, year, unit, filename, isMapData }) => {
         onClick={(event) => {
           event.stopPropagation();
           handleToggle();
-        }}>
+        }}
+      >
         <Dots />
       </div>
       {open && (
@@ -59,18 +58,41 @@ const Download = ({ data, mapData, year, unit, filename, isMapData }) => {
             <div
               className="wrapper"
               onClick={() => {
-                downloadExcel(data, year, unit, filename, language, false, mapData, isMapData);
+                downloadExcel(
+                  data,
+                  year,
+                  unit,
+                  filename,
+                  language,
+                  false,
+                  mapData,
+                  isMapData
+                );
                 setOpen(false); // Close dropdown
-              }}>
+              }}
+            >
               <Excel />
               <p>Excel</p>
             </div>
             <div
               className="wrapper"
               onClick={() => {
-                downloadPDF(data, year, unit, filename, language, false, false, false, null, mapData, isMapData);
+                downloadPDF(
+                  data,
+                  year,
+                  unit,
+                  filename,
+                  language,
+                  false,
+                  false,
+                  false,
+                  null,
+                  mapData,
+                  isMapData
+                );
                 setOpen(false); // Close dropdown
-              }}>
+              }}
+            >
               <PDF />
               <p>PDF</p>
             </div>
@@ -82,7 +104,8 @@ const Download = ({ data, mapData, year, unit, filename, isMapData }) => {
               onClick={(e) => {
                 downloadJPG(e);
                 setOpen(false); // Close dropdown
-              }}>
+              }}
+            >
               <JPG />
               <p>JPG</p>
             </div>
@@ -91,7 +114,8 @@ const Download = ({ data, mapData, year, unit, filename, isMapData }) => {
               onClick={(e) => {
                 downloadPNG(e);
                 setOpen(false); // Close dropdown
-              }}>
+              }}
+            >
               <PNG />
               <p>PNG</p>
             </div>
