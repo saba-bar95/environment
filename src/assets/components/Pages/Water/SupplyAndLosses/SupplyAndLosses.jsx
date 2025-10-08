@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 import { useRef, useEffect, useState } from "react";
 import backgroundImg from "./Background/background.jpg";
 import "./SupplyAndLosses.scss";
@@ -7,11 +7,20 @@ import image1 from "./images/image-1.png";
 import image2 from "./images/image-2.png";
 import image3 from "./images/image-3.png";
 import Clean from "./Svgs/Clean";
+import "./SupplyAndLosses2.scss";
+import Charts from "../../../../../Charts";
+import LineCharts from "./Charts/LineCharts";
+import StackedBarCharts from "./Charts/StackedBarCharts";
+import BarCharts from "./Charts/BarCharts";
+import AreaCharts from "./Charts/AreaCharts";
 
 const SupplyAndLosses = () => {
   const { language } = useParams();
+  const location = useLocation(); // Get the current location to access hash
+
   const wave1Ref = useRef(null);
   const [waveHeight, setWaveHeight] = useState(0);
+  const info = Charts.water[2].supplyandlosses;
 
   useEffect(() => {
     const waveElement = wave1Ref.current;
@@ -41,6 +50,137 @@ const SupplyAndLosses = () => {
       }
     };
   }, []);
+
+  // Scroll to the chart specified in the URL hash
+  useEffect(() => {
+    if (location.hash) {
+      const chartId = location.hash.replace("#", "");
+      const element = document.getElementById(chartId);
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }
+  }, [location.hash]); // Re-run when the hash changes
+
+  const ChartInfo = [
+    {
+      title_ge: info[0].title_ge,
+      title_en: info[0].title_en,
+      colors: ["#1678e7ff", "#63b8e9ff"],
+      id: "water-supply-population",
+      types: ["data", "metadata"],
+      selectedIndices: [0, 2],
+      chartID: info[0].chartID,
+    },
+    {
+      title_ge: info[1].title_ge,
+      title_en: info[1].title_en,
+      colors: ["#e94d74ff"],
+      id: "water-losses",
+      types: ["data", "metadata"],
+      selectedIndices: [3],
+      chartID: info[1].chartID,
+    },
+    {
+      title_ge: info[2].title_ge,
+      title_en: info[2].title_en,
+      colors: ["#4de9d4ff", "rgba(250, 208, 118, 1)"],
+      id: "water-use-households",
+      types: ["data", "metadata"],
+      selectedIndices: [1, 3],
+      chartID: info[2].chartID,
+    },
+    {
+      title_ge: info[3].title_ge,
+      title_en: info[3].title_en,
+      colors: ["#4de9d4ff"],
+      id: "water-supply-population",
+      types: ["data", "metadata"],
+      selectedIndices: [5],
+      chartID: info[3].chartID,
+    },
+    {
+      title_ge: info[4].title_ge,
+      title_en: info[4].title_en,
+      colors: ["#1464dbff"],
+      id: "water-use-households",
+      types: ["data", "metadata"],
+      selectedIndices: [2],
+      chartID: info[4].chartID,
+    },
+    {
+      title_ge: info[5].title_ge,
+      title_en: info[5].title_en,
+      colors: ["#4de9d4ff", "rgba(250, 208, 118, 1)"],
+      id: "water-use-households",
+      types: ["data", "metadata"],
+      selectedIndices: [0, 5],
+      chartID: info[5].chartID,
+    },
+    {
+      title_ge: info[6].title_ge,
+      title_en: info[6].title_en,
+      colors: ["#1464dbff", "#e94d74ff"],
+      id: "water-use-households",
+      types: ["data", "metadata"],
+      selectedIndices: [5, 0],
+      chartID: info[6].chartID,
+    },
+    {
+      title_ge: info[7].title_ge,
+      title_en: info[7].title_en,
+      colors: ["#555d69ff", "#1464dbff", "#4de9d4ff", "rgba(250, 208, 118, 1)"],
+      id: "sewerage-network-population",
+      types: ["data", "metadata"],
+      selectedIndices: [0, 1, 3, 5],
+      chartID: info[7].chartID,
+    },
+    {
+      title_ge: info[8].title_ge,
+      title_en: info[8].title_en,
+      colors: ["#4de9d4ff", "rgba(250, 208, 118, 1)"],
+      id: "sewerage-network-population",
+      types: ["data", "metadata"],
+      selectedIndices: [4, 6],
+      chartID: info[8].chartID,
+    },
+    {
+      title_ge: info[9].title_ge,
+      title_en: info[9].title_en,
+      colors: ["#1464dbff", "rgba(250, 208, 118, 1)", "#4de9d4ff"],
+      id: "sewerage-network-population",
+      types: ["data", "metadata"],
+      selectedIndices: [7, 9, 11],
+      chartID: info[9].chartID,
+    },
+    {
+      title_ge: info[10].title_ge,
+      title_en: info[10].title_en,
+      colors: ["#1464dbff", "rgba(250, 208, 118, 1)", "#4de9d4ff"],
+      id: "sewerage-network-population",
+      types: ["data", "metadata"],
+      selectedIndices: [8, 10, 12],
+      chartID: info[10].chartID,
+    },
+    {
+      title_ge: info[11].title_ge,
+      title_en: info[11].title_en,
+      colors: ["#e94d74ff"],
+      id: "sewerage-network-population",
+      types: ["data", "metadata"],
+      selectedIndices: [13],
+      chartID: info[11].chartID,
+    },
+    {
+      title_ge: info[12].title_ge,
+      title_en: info[12].title_en,
+      colors: ["#e94d74ff"],
+      id: "sewerage-network-population",
+      types: ["data", "metadata"],
+      selectedIndices: [15],
+      chartID: info[12].chartID,
+    },
+  ];
 
   return (
     <div className="section-container supply-and-losses">
@@ -175,7 +315,30 @@ const SupplyAndLosses = () => {
         </section>
         <div className="divider wave-3"></div>
       </div>
-      <div className="charts-section"></div>
+      <div className="header-container1">
+        <h1 className="title-text">
+          {language === "en"
+            ? "Detailed Water Statistics (2015-2023)"
+            : "წყლის დეტალური სტატისტიკა (2015-2023)"}
+        </h1>
+      </div>
+      <div className="charts-section">
+        <div className="chart-container">
+          <LineCharts chartInfo={ChartInfo[0]} />
+          <LineCharts chartInfo={ChartInfo[1]} />
+          <StackedBarCharts chartInfo={ChartInfo[2]} />
+          <LineCharts chartInfo={ChartInfo[3]} />
+          <LineCharts chartInfo={ChartInfo[4]} />
+          <StackedBarCharts chartInfo={ChartInfo[5]} />
+          <LineCharts chartInfo={ChartInfo[6]} />
+          <LineCharts chartInfo={ChartInfo[7]} />
+          <BarCharts chartInfo={ChartInfo[8]} />
+          <StackedBarCharts chartInfo={ChartInfo[9]} />
+          <StackedBarCharts chartInfo={ChartInfo[10]} />
+          <LineCharts chartInfo={ChartInfo[11]} />
+          <AreaCharts chartInfo={ChartInfo[12]} />
+        </div>
+      </div>
     </div>
   );
 };
