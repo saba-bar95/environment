@@ -7,7 +7,7 @@ import commonData from "../../../../../fetchFunctions/commonData";
 
 const GeorgiaMap = ({ selectedYear = 2023, selectedSubstance = null }) => {
   const { language } = useParams();
-  const [selectedRegion, setSelectedRegion] = useState(null); // Single state for clicked selection
+  const selectedRegion = null; // Click functionality disabled - no region selection
   const [hoveredRegion, setHoveredRegion] = useState(null); // Only for hover tracking
   const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
   const [apiData, setApiData] = useState(null);
@@ -301,7 +301,7 @@ const GeorgiaMap = ({ selectedYear = 2023, selectedSubstance = null }) => {
     // Define base appearance
     polygonSeries.mapPolygons.template.setAll({
       tooltipText: "",
-      interactive: true,
+      interactive: true, // Keep hover effects but click is disabled
       fill: am5.color(0x6ba3d6),
       stroke: am5.color(0xffffff),
       strokeWidth: 0.5,
@@ -357,16 +357,17 @@ const GeorgiaMap = ({ selectedYear = 2023, selectedSubstance = null }) => {
       setHoveredRegion(null);
     });
 
-    polygonSeries.mapPolygons.template.events.on("click", (event) => {
-      const data = event.target.dataItem?.dataContext;
-      const regionId = data?.id;
+    // Click functionality disabled to prevent regions staying highlighted
+    // polygonSeries.mapPolygons.template.events.on("click", (event) => {
+    //   const data = event.target.dataItem?.dataContext;
+    //   const regionId = data?.id;
 
-      if (regionId) {
-        // Toggle selection
-        setSelectedRegion((prev) => (prev === regionId ? null : regionId));
-        setHoveredRegion(null); // Clear hover when clicking
-      }
-    });
+    //   if (regionId) {
+    //     // Toggle selection
+    //     setSelectedRegion((prev) => (prev === regionId ? null : regionId));
+    //     setHoveredRegion(null); // Clear hover when clicking
+    //   }
+    // });
 
     // Global mouse move for tooltip tracking
     polygonSeries.onPrivate("globalpointermove", (event) => {
