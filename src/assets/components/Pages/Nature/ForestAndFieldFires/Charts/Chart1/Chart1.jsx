@@ -25,9 +25,7 @@ const Chart1 = ({ chartInfo }) => {
       unit_en: "Units / Hectares",
       colors: ["#63b8e9ff", "#e75816ff"],
       svg: Svg(),
-      apiIds: [
-        "forest-fires",
-      ],
+      apiIds: ["forest-fires"],
       types: ["data", "metadata"],
       substanceTitles_ge: [
         "ხანძრის შემთხვევათა რაოდენობა, ერთეული",
@@ -77,14 +75,16 @@ const Chart1 = ({ chartInfo }) => {
             console.warn(`Invalid metadata structure for ${apiId}`);
           } else {
             // Get year list from metadata
-            const yearList = metaDataResult.data.metadata.variables[1].valueTexts.map(
-              (year, id) => ({ year, id })
-            );
+            const yearList =
+              metaDataResult.data.metadata.variables[1].valueTexts.map(
+                (year, id) => ({ year, id })
+              );
 
             // Process forest-fires data structure
             dataResult.data.data.forEach((yearObj) => {
               const yearId = parseInt(yearObj.year);
-              const yearName = yearList.find((y) => y.id === yearId)?.year || yearId;
+              const yearName =
+                yearList.find((y) => y.id === yearId)?.year || yearId;
 
               // Calculate totals for fire incidents (category 0) and fire area (category 1)
               let fireIncidents = 0;
@@ -127,20 +127,22 @@ const Chart1 = ({ chartInfo }) => {
           console.error(`Error fetching data for ${apiId}:`, error);
         }
 
-      setForestData(allData);
+        setForestData(allData);
 
-      // Extract unique years from the data for YearDropdown
-      const uniqueYears = [...new Set(allData.map((item) => item.year))].sort(
-        (a, b) => a - b
-      ); // Sort ascending (YearDropdown will reverse to show newest first)
-      setYears(uniqueYears);
+        // Extract unique years from the data for YearDropdown
+        const uniqueYears = [...new Set(allData.map((item) => item.year))].sort(
+          (a, b) => a - b
+        ); // Sort ascending (YearDropdown will reverse to show newest first)
+        setYears(uniqueYears);
 
-      setIsLoading(false);
+        setIsLoading(false);
       } catch (error) {
-        console.error('Error fetching forest data:', error);
-        setError(language === "ge" 
-          ? "მონაცემების ჩატვირთვისას მოხდა შეცდომა" 
-          : "Error loading data");
+        console.error("Error fetching forest data:", error);
+        setError(
+          language === "ge"
+            ? "მონაცემების ჩატვირთვისას მოხდა შეცდომა"
+            : "Error loading data"
+        );
         setIsLoading(false);
       }
     };
@@ -187,13 +189,29 @@ const Chart1 = ({ chartInfo }) => {
         { id: "GE-AJ", name_ge: "აჭარა", name_en: "Adjara" },
         { id: "GE-KA", name_ge: "კახეთი", name_en: "Kakheti" },
         { id: "GE-IM", name_ge: "იმერეთი", name_en: "Imereti" },
-        { id: "GE-RL", name_ge: "რაჭა-ლეჩხუმი და ქვემო სვანეთი", name_en: "Racha-Lechkhumi and Kvemo Svaneti" },
+        {
+          id: "GE-RL",
+          name_ge: "რაჭა-ლეჩხუმი და ქვემო სვანეთი",
+          name_en: "Racha-Lechkhumi and Kvemo Svaneti",
+        },
         { id: "GE-GU", name_ge: "გურია", name_en: "Guria" },
-        { id: "GE-SJ", name_ge: "სამცხე-ჯავახეთი", name_en: "Samtskhe-Javakheti" },
-        { id: "GE-MM", name_ge: "მცხეთა-მთიანეთი", name_en: "Mtskheta-Mtianeti" },
+        {
+          id: "GE-SJ",
+          name_ge: "სამცხე-ჯავახეთი",
+          name_en: "Samtskhe-Javakheti",
+        },
+        {
+          id: "GE-MM",
+          name_ge: "მცხეთა-მთიანეთი",
+          name_en: "Mtskheta-Mtianeti",
+        },
         { id: "GE-KK", name_ge: "ქვემო ქართლი", name_en: "Kvemo Kartli" },
         { id: "GE-SK", name_ge: "შიდა ქართლი", name_en: "Shida Kartli" },
-        { id: "GE-SZ", name_ge: "სამეგრელო-ზემო სვანეთი", name_en: "Samegrelo-Zemo Svaneti" },
+        {
+          id: "GE-SZ",
+          name_ge: "სამეგრელო-ზემო სვანეთი",
+          name_en: "Samegrelo-Zemo Svaneti",
+        },
       ];
 
       // Get API ID for the selected substance - all use forest-fires
@@ -201,7 +219,7 @@ const Chart1 = ({ chartInfo }) => {
         "ხანძრის შემთხვევათა რაოდენობა, ერთეული": "forest-fires",
         "ხანძრის მოცული ფართობი, ჰექტარი": "forest-fires",
         "Number of Fire Incidents, Units": "forest-fires",
-        "Fire Covered Area, Hectares": "forest-fires"
+        "Fire Covered Area, Hectares": "forest-fires",
       };
 
       const apiId = substanceToApiId[selectedSubstance];
@@ -209,21 +227,21 @@ const Chart1 = ({ chartInfo }) => {
 
       try {
         const [dataResult] = await Promise.all([
-          commonData(apiId, "data", language)
+          commonData(apiId, "data", language),
         ]);
 
         const comprehensiveData = [];
-        
+
         // Process data for each year and region
         if (dataResult?.data?.data) {
           const dataArray = dataResult.data.data;
-          
-          dataArray.forEach(yearData => {
+
+          dataArray.forEach((yearData) => {
             const yearValue = yearData.year;
-            
-            regionMapping.forEach(region => {
+
+            regionMapping.forEach((region) => {
               let value = 0;
-              
+
               // Forest-fires API regional mapping logic
               const regionIdMapping = {
                 "GE-TB": { incidents: "1 - 0", area: "1 - 1" }, // Tbilisi
@@ -239,32 +257,39 @@ const Chart1 = ({ chartInfo }) => {
                 "GE-KK": { incidents: "11 - 0", area: "11 - 1" }, // Kvemo Kartli
                 "GE-SJ": { incidents: "9 - 0", area: "9 - 1" }, // Samtskhe-Javakheti
               };
-              
+
               const mappingKey = regionIdMapping[region.id];
               if (mappingKey && mappingKey.incidents !== "-2") {
                 let dataKey;
-                if (selectedSubstance === "ხანძრის შემთხვევათა რაოდენობა, ერთეული" || selectedSubstance === "Number of Fire Incidents, Units") {
+                if (
+                  selectedSubstance ===
+                    "ხანძრის შემთხვევათა რაოდენობა, ერთეული" ||
+                  selectedSubstance === "Number of Fire Incidents, Units"
+                ) {
                   dataKey = mappingKey.incidents;
-                } else if (selectedSubstance === "ხანძრის მოცული ფართობი, ჰექტარი" || selectedSubstance === "Fire Covered Area, Hectares") {
+                } else if (
+                  selectedSubstance === "ხანძრის მოცული ფართობი, ჰექტარი" ||
+                  selectedSubstance === "Fire Covered Area, Hectares"
+                ) {
                   dataKey = mappingKey.area;
                 }
-                
+
                 if (dataKey && yearData[dataKey] !== undefined) {
                   value = parseFloat(yearData[dataKey]) || 0;
                 }
               }
-              
+
               comprehensiveData.push({
-                region: language === 'en' ? region.name_en : region.name_ge,
+                region: language === "en" ? region.name_en : region.name_ge,
                 year: yearValue,
                 value: value,
                 substance: selectedSubstance,
-                unit: language === "ge" ? info.unit_ge : info.unit_en
+                unit: language === "ge" ? info.unit_ge : info.unit_en,
               });
             });
           });
         }
-        
+
         setMapDataForDownload(comprehensiveData);
       } catch (error) {
         console.error("Error fetching map data for download:", error);
@@ -282,16 +307,18 @@ const Chart1 = ({ chartInfo }) => {
   // Show loading state
   if (isLoading) {
     return (
-      <div className="chart-wrapper" id={chartInfo.id}>
+      <div
+        className="chart-wrapper"
+        id={chartInfo.id}
+        style={{ minWidth: "1000px" }}
+      >
         <div className="header">
           <div className="right">
             <div className="ll">
               <Svg />
             </div>
             <div className="rr">
-              <h1>
-                {language === "ge" ? info.title_ge : info.title_en}
-              </h1>
+              <h1>{language === "ge" ? info.title_ge : info.title_en}</h1>
               <p>{language === "ge" ? info.unit_ge : info.unit_en}</p>
             </div>
           </div>
@@ -319,23 +346,22 @@ const Chart1 = ({ chartInfo }) => {
   // Show error state
   if (error) {
     return (
-      <div className="chart-wrapper" id={chartInfo.id}>
+      <div className="chart-wrapper" id={chartInfo.id} style={{ minWidth: "1000px" }}>
         <div className="header">
           <div className="right">
             <div className="ll">
               <Svg />
             </div>
             <div className="rr">
-              <h1>
-                {language === "ge" ? info.title_ge : info.title_en}
-              </h1>
+              <h1>{language === "ge" ? info.title_ge : info.title_en}</h1>
               <p>{language === "ge" ? info.unit_ge : info.unit_en}</p>
             </div>
           </div>
           <div className="left">
             <button
               className="retry-btn"
-              onClick={() => window.location.reload()}>
+              onClick={() => window.location.reload()}
+            >
               {language === "ge" ? "ხელახლა ცდა" : "Retry"}
             </button>
           </div>
@@ -346,7 +372,8 @@ const Chart1 = ({ chartInfo }) => {
             <p>{error}</p>
             <button
               className="retry-btn"
-              onClick={() => window.location.reload()}>
+              onClick={() => window.location.reload()}
+            >
               {language === "ge" ? "ხელახლა ჩატვირთვა" : "Reload Chart"}
             </button>
           </div>
@@ -356,7 +383,7 @@ const Chart1 = ({ chartInfo }) => {
   }
 
   return (
-    <div className="chart-wrapper" id={chartInfo.id}>
+    <div className="chart-wrapper" id={chartInfo.id} style={{ minWidth: "1000px" }}>
       <div className="header">
         <div className="right">
           <div className="ll">
@@ -390,7 +417,8 @@ const Chart1 = ({ chartInfo }) => {
             className={`city-item ${
               selectedSubstance === s.name ? "active" : ""
             }`}
-            onClick={() => handleSubstanceSelection(s.name)}>
+            onClick={() => handleSubstanceSelection(s.name)}
+          >
             {s.name}
           </span>
         ))}
@@ -404,7 +432,8 @@ const Chart1 = ({ chartInfo }) => {
           display: "flex",
           justifyContent: "center",
           width: "100%",
-        }}>
+        }}
+      >
         <GeorgiaMap selectedYear={year} selectedSubstance={selectedSubstance} />
       </div>
     </div>
