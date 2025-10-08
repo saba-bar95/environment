@@ -11,19 +11,12 @@ import PDF from "../../../../../Download/Svgs/PDF";
 import JPG from "../../../../../Download/Svgs/JPG";
 import PNG from "../../../../../Download/Svgs/PNG";
 
-const Download = ({
-  data,
-  year,
-  unit,
-  filename,
-  isChart1,
-  isChart2,
-  isChart3,
-  source,
-}) => {
+const Download = ({ data, year, unit, filename }) => {
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef(null); // Create a ref for the dropdown
   const { language } = useParams();
+
+  console.log(data);
 
   const handleToggle = () => {
     setOpen((prevOpen) => !prevOpen);
@@ -66,17 +59,7 @@ const Download = ({
             <div
               className="wrapper"
               onClick={() => {
-                downloadExcel(
-                  data,
-                  year,
-                  unit,
-                  filename,
-                  language,
-                  isChart1,
-                  isChart2,
-                  isChart3,
-                  source
-                );
+                downloadExcel(data, year, unit, filename, language);
                 setOpen(false); // Close dropdown
               }}>
               <Excel />
@@ -85,17 +68,7 @@ const Download = ({
             <div
               className="wrapper"
               onClick={() => {
-                downloadPDF(
-                  data,
-                  year,
-                  unit,
-                  filename,
-                  language,
-                  isChart1,
-                  isChart2,
-                  isChart3,
-                  source
-                );
+                downloadPDF(data, year, unit, filename, language);
                 setOpen(false); // Close dropdown
               }}>
               <PDF />

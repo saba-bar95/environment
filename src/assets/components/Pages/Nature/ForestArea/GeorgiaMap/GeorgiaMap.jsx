@@ -1,4 +1,4 @@
-import { useLayoutEffect, useState, useMemo, useEffect } from "react";
+import { useLayoutEffect, useState, useMemo, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import * as am5 from "@amcharts/amcharts5";
 import * as am5map from "@amcharts/amcharts5/map";
@@ -7,10 +7,16 @@ import commonData from "../../../../../fetchFunctions/commonData";
 
 const GeorgiaMap = ({ selectedYear = 2023, selectedSubstance = null }) => {
   const { language } = useParams();
-  const [highlightedRegion, setHighlightedRegion] = useState(null);
-  const [hoveredRegion, setHoveredRegion] = useState(null);
+  const [selectedRegion, setSelectedRegion] = useState(null); // Single state for clicked selection
+  const [hoveredRegion, setHoveredRegion] = useState(null); // Only for hover tracking
   const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
   const [apiData, setApiData] = useState(null);
+
+  // Refs to store amCharts objects and prevent unnecessary re-renders
+  const rootRef = useRef(null);
+  const chartRef = useRef(null);
+  const polygonSeriesRef = useRef(null);
+  const isInitializedRef = useRef(false);
 
   // Static region mapping with names in both languages
   const regionMapping = useMemo(
@@ -20,32 +26,44 @@ const GeorgiaMap = ({ selectedYear = 2023, selectedSubstance = null }) => {
       { id: "GE-AJ", name_ge: "აჭარა", name_en: "Adjara" },
       { id: "GE-KA", name_ge: "კახეთი", name_en: "Kakheti" },
       { id: "GE-IM", name_ge: "იმერეთი", name_en: "Imereti" },
-      { id: "GE-RL", name_ge: "რაჭა-ლეჩხუმი და ქვემო სვანეთი", name_en: "Racha-Lechkhumi and Kvemo Svaneti" },
+      {
+        id: "GE-RL",
+        name_ge: "რაჭა-ლეჩხუმი და ქვემო სვანეთი",
+        name_en: "Racha-Lechkhumi and Kvemo Svaneti",
+      },
       { id: "GE-GU", name_ge: "გურია", name_en: "Guria" },
-      { id: "GE-SJ", name_ge: "სამცხე-ჯავახეთი", name_en: "Samtskhe-Javakheti" },
+      {
+        id: "GE-SJ",
+        name_ge: "სამცხე-ჯავახეთი",
+        name_en: "Samtskhe-Javakheti",
+      },
       { id: "GE-MM", name_ge: "მცხეთა-მთიანეთი", name_en: "Mtskheta-Mtianeti" },
       { id: "GE-KK", name_ge: "ქვემო ქართლი", name_en: "Kvemo Kartli" },
       { id: "GE-SK", name_ge: "შიდა ქართლი", name_en: "Shida Kartli" },
-      { id: "GE-SZ", name_ge: "სამეგრელო-ზემო სვანეთი", name_en: "Samegrelo-Zemo Svaneti" },
+      {
+        id: "GE-SZ",
+        name_ge: "სამეგრელო-ზემო სვანეთი",
+        name_en: "Samegrelo-Zemo Svaneti",
+      },
     ],
     []
   );
 
   // Map substance names to API IDs
   const substanceToApiId = useMemo(() => {
-    if (language === 'en') {
+    if (language === "en") {
       return {
         "Felled Timber Volume": "felled-timber-volume",
         "Illegal Logging": "illegal-logging",
         "Forest Planting": "forest-planting-recovery",
-        "Forest Recovery Support": "forest-planting-recovery"
+        "Forest Recovery Support": "forest-planting-recovery",
       };
     } else {
       return {
         "ტყის ჭრით მიღებული ხე-ტყის მოცულობა": "felled-timber-volume",
         "ტყის უკანონო ჭრა": "illegal-logging",
         "ტყის თესვა და დარგვა": "forest-planting-recovery",
-        "ტყის ბუნებრივი განახლებისთვის ხელშეწყობა": "forest-planting-recovery"
+        "ტყის ბუნებრივი განახლებისთვის ხელშეწყობა": "forest-planting-recovery",
       };
     }
   }, [language]);
@@ -54,7 +72,6 @@ const GeorgiaMap = ({ selectedYear = 2023, selectedSubstance = null }) => {
   useEffect(() => {
     const getApiData = async () => {
       if (!selectedSubstance) {
-        // Default to felled timber if no substance selected
         try {
           const [dataResult, metaDataResult] = await Promise.all([
             commonData("felled-timber-volume", "data", language),
@@ -69,7 +86,9 @@ const GeorgiaMap = ({ selectedYear = 2023, selectedSubstance = null }) => {
 
       const apiId = substanceToApiId[selectedSubstance];
       if (!apiId) {
-        console.warn(`No API mapping found for substance: ${selectedSubstance}`);
+        console.warn(
+          `No API mapping found for substance: ${selectedSubstance}`
+        );
         return;
       }
 
@@ -78,7 +97,6 @@ const GeorgiaMap = ({ selectedYear = 2023, selectedSubstance = null }) => {
           commonData(apiId, "data", language),
           commonData(apiId, "metadata", language),
         ]);
-
         setApiData({ data: dataResult, metadata: metaDataResult });
       } catch (error) {
         console.error(`Error fetching data for ${apiId}:`, error);
@@ -88,24 +106,21 @@ const GeorgiaMap = ({ selectedYear = 2023, selectedSubstance = null }) => {
     getApiData();
   }, [language, selectedSubstance, substanceToApiId, selectedYear]);
 
-  // Process regions data with API values
+  // Process regions data with API values (unchanged)
   const regions = useMemo(() => {
     if (!apiData) {
-      // Return regions with default values while loading
-      return regionMapping.map((region) => ({ 
-        ...region, 
+      return regionMapping.map((region) => ({
+        ...region,
         value: 0,
-        name: language === 'en' ? region.name_en : region.name_ge
+        name: language === "en" ? region.name_en : region.name_ge,
       }));
     }
 
     try {
-      // The actual data is in apiData.data.data.data (apiData.data is the response, apiData.data.data is the actual data array)
       let yearData = null;
-      const dataArray = apiData.data.data.data; // Correct path to the data array
+      const dataArray = apiData.data.data.data;
 
       if (dataArray && Array.isArray(dataArray)) {
-        // Find the year object that matches selectedYear
         const yearObj = dataArray.find((item) => {
           return parseInt(item.year) === selectedYear;
         });
@@ -113,7 +128,6 @@ const GeorgiaMap = ({ selectedYear = 2023, selectedSubstance = null }) => {
         if (yearObj) {
           yearData = yearObj;
         } else {
-          // Use the most recent available year as fallback
           const mostRecentObj = dataArray[dataArray.length - 1];
           if (mostRecentObj) {
             yearData = mostRecentObj;
@@ -123,72 +137,69 @@ const GeorgiaMap = ({ selectedYear = 2023, selectedSubstance = null }) => {
         console.error("Data array not found or not an array:", dataArray);
       }
 
-      // Create a mapping of our region IDs to API category IDs based on substance type
-      const getCurrentApiId = () => substanceToApiId[selectedSubstance] || "felled-timber-volume";
+      const getCurrentApiId = () =>
+        substanceToApiId[selectedSubstance] || "felled-timber-volume";
       const currentApiId = getCurrentApiId();
-      
-      // Different mapping logic for different APIs
+
       let regionIdMapping = {};
-      
+
       if (currentApiId === "forest-planting-recovery") {
-        // For forest-planting-recovery API, map regions to category pairs
-        // Each region has two categories: one for planting (even) and one for recovery (odd)
         regionIdMapping = {
-          "GE-TB": { planting: 2, recovery: 3 },   // Tbilisi categories
-          "GE-AJ": { planting: 4, recovery: 5 },   // Adjara AR categories  
-          "GE-GU": { planting: 6, recovery: 7 },   // Guria categories
-          "GE-IM": { planting: 8, recovery: 9 },   // Imereti categories
-          "GE-KA": { planting: 10, recovery: 11 }, // Kakheti categories
-          "GE-MM": { planting: 12, recovery: 13 }, // Mtskheta-Mtianeti categories
-          "GE-RL": { planting: 14, recovery: 15 }, // Racha-Lechkhumi and Kvemo Svaneti categories
-          "GE-SZ": { planting: 16, recovery: 17 }, // Samegrelo-Zemo Svaneti categories
-          "GE-SJ": { planting: 18, recovery: 19 }, // Samtskhe-Javakheti categories
-          "GE-KK": { planting: 20, recovery: 21 }, // Kvemo Kartli categories
-          "GE-SK": { planting: 22, recovery: 23 }, // Shida Kartli categories
-          "GE-AB": { planting: -2, recovery: -2 },   // Georgia total (Abkhazia placeholder)
+          "GE-TB": { planting: 2, recovery: 3 },
+          "GE-AJ": { planting: 4, recovery: 5 },
+          "GE-GU": { planting: 6, recovery: 7 },
+          "GE-IM": { planting: 8, recovery: 9 },
+          "GE-KA": { planting: 10, recovery: 11 },
+          "GE-MM": { planting: 12, recovery: 13 },
+          "GE-RL": { planting: 14, recovery: 15 },
+          "GE-SZ": { planting: 16, recovery: 17 },
+          "GE-SJ": { planting: 18, recovery: 19 },
+          "GE-KK": { planting: 20, recovery: 21 },
+          "GE-SK": { planting: 22, recovery: 23 },
+          "GE-AB": { planting: -2, recovery: -2 },
         };
       } else {
-        // For regular APIs (felled-timber-volume, illegal-logging)
         regionIdMapping = {
-          "GE-TB": 1, // თბილისი -> Tbilisi (index 1)
-          "GE-AB": -2, // აფხაზეთი -> Georgia total (0)
-          "GE-AJ": 2, // აჭარა -> Adjara A/R (index 2)
-          "GE-SZ": 3, // სამეგრელო-ზემო სვანეთი -> Samegrelo-Zemo Svaneti (index 3)
-          "GE-GU": 4, // გურია -> Guria (index 4)
-          "GE-IM": 5, // იმერეთი -> Imereti (index 5)
-          "GE-RL": 6, // რაჭა-ლეჩხუმი და ქვემო სვანეთი -> Racha-Lechkhumi and Kvemo Svaneti (index 6)
-          "GE-SK": 7, // შიდა ქართლი -> Shida Kartli (index 7)
-          "GE-MM": 8, // მცხეთა-მთიანეთი -> Mtskheta-Mtianeti (index 8)
-          "GE-KA": 9, // კახეთი -> Kakheti (index 9)
-          "GE-KK": 10, // ქვემო ქართლი -> Kvemo Kartli (index 10)
-          "GE-SJ": 11, // სამცხე-ჯავახეთი -> Samtskhe-Javakheti (index 11)
+          "GE-TB": 1,
+          "GE-AB": -2,
+          "GE-AJ": 2,
+          "GE-SZ": 3,
+          "GE-GU": 4,
+          "GE-IM": 5,
+          "GE-RL": 6,
+          "GE-SK": 7,
+          "GE-MM": 8,
+          "GE-KA": 9,
+          "GE-KK": 10,
+          "GE-SJ": 11,
         };
       }
-
-
 
       return regionMapping.map((region) => {
         let value = 0;
         if (yearData) {
           const apiRegionId = regionIdMapping[region.id];
           if (apiRegionId !== undefined) {
-            
             if (currentApiId === "forest-planting-recovery") {
-              // Handle forest-planting-recovery API structure
               let categoryKey;
-              
-              if (selectedSubstance === "ტყის თესვა და დარგვა" || selectedSubstance === "Forest Planting") {
-                // Forest planting - use planting category
+
+              if (
+                selectedSubstance === "ტყის თესვა და დარგვა" ||
+                selectedSubstance === "Forest Planting"
+              ) {
                 categoryKey = apiRegionId.planting;
-              } else if (selectedSubstance === "ტყის ბუნებრივი განახლებისთვის ხელშეწყობა" || selectedSubstance === "Forest Recovery Support") {
-                // Forest recovery - use recovery category
+              } else if (
+                selectedSubstance ===
+                  "ტყის ბუნებრივი განახლებისთვის ხელშეწყობა" ||
+                selectedSubstance === "Forest Recovery Support"
+              ) {
                 categoryKey = apiRegionId.recovery;
               }
-              
+
               if (categoryKey !== undefined) {
                 const stringKey = categoryKey.toString();
                 const numberKey = categoryKey;
-                
+
                 if (yearData[stringKey] !== undefined) {
                   value = parseFloat(yearData[stringKey]) || 0;
                 } else if (yearData[numberKey] !== undefined) {
@@ -196,7 +207,6 @@ const GeorgiaMap = ({ selectedYear = 2023, selectedSubstance = null }) => {
                 }
               }
             } else {
-              // Handle regular API structure (felled-timber-volume, illegal-logging)
               const stringKey = apiRegionId.toString();
               const numberKey = apiRegionId;
 
@@ -208,21 +218,28 @@ const GeorgiaMap = ({ selectedYear = 2023, selectedSubstance = null }) => {
             }
           }
         }
-        return { 
-          ...region, 
+        return {
+          ...region,
           value,
-          name: language === 'en' ? region.name_en : region.name_ge
+          name: language === "en" ? region.name_en : region.name_ge,
         };
       });
     } catch (error) {
       console.error("Error processing API data:", error);
-      return regionMapping.map((region) => ({ 
-        ...region, 
+      return regionMapping.map((region) => ({
+        ...region,
         value: 0,
-        name: language === 'en' ? region.name_en : region.name_ge
+        name: language === "en" ? region.name_en : region.name_ge,
       }));
     }
-  }, [apiData, selectedYear, regionMapping, selectedSubstance, substanceToApiId, language]);
+  }, [
+    apiData,
+    selectedYear,
+    regionMapping,
+    selectedSubstance,
+    substanceToApiId,
+    language,
+  ]);
 
   // Get current hovered region data for dynamic tooltip
   const currentRegionData = useMemo(() => {
@@ -231,10 +248,22 @@ const GeorgiaMap = ({ selectedYear = 2023, selectedSubstance = null }) => {
       : null;
   }, [regions, hoveredRegion]);
 
+  // Initialize map only once, update data and states separately
   useLayoutEffect(() => {
-    const root = am5.Root.new("georgia-map-container");
+    // Cleanup previous instance
+    if (rootRef.current) {
+      rootRef.current.dispose();
+    }
 
-    // Set root container size to match design specifications
+    const root = am5.Root.new("georgia-map-container");
+    rootRef.current = root;
+
+    // Remove logo (ensure you have proper licensing)
+    if (root._logo) {
+      root._logo.dispose();
+    }
+
+    // Set root container size
     root.container.setAll({
       width: 1104,
       height: 468,
@@ -244,12 +273,13 @@ const GeorgiaMap = ({ selectedYear = 2023, selectedSubstance = null }) => {
     const chart = root.container.children.push(
       am5map.MapChart.new(root, {
         projection: am5map.geoMercator(),
-        panX: "none", // disable horizontal panning
-        panY: "none", // disable vertical panning
-        wheelX: "none", // disable horizontal wheel interaction
-        wheelY: "none", // disable vertical zooming on wheel
+        panX: "none",
+        panY: "none",
+        wheelX: "none",
+        wheelY: "none",
       })
     );
+    chartRef.current = chart;
 
     const polygonSeries = chart.series.push(
       am5map.MapPolygonSeries.new(root, {
@@ -258,44 +288,46 @@ const GeorgiaMap = ({ selectedYear = 2023, selectedSubstance = null }) => {
         calculateAggregates: true,
       })
     );
+    polygonSeriesRef.current = polygonSeries;
 
-    // Region values with dynamic highlighting
-    const data = regions.map((region) => ({
+    // Set initial data
+    const initialData = regions.map((region) => ({
       ...region,
-      highlighted: region.id === highlightedRegion,
-      opacity: region.id === highlightedRegion ? 1.0 : 0.6,
+      isSelected: region.id === selectedRegion,
+      isHovered: region.id === hoveredRegion,
     }));
+    polygonSeries.data.setAll(initialData);
 
-    polygonSeries.data.setAll(data);
-
+    // Define base appearance
     polygonSeries.mapPolygons.template.setAll({
-      tooltipText: "", // We'll handle tooltips manually
+      tooltipText: "",
       interactive: true,
-      fill: am5.color(0x6ba3d6), // Lighter blue base color
+      fill: am5.color(0x6ba3d6),
       stroke: am5.color(0xffffff),
       strokeWidth: 0.5,
       strokeOpacity: 0.8,
     });
 
-    // Apply different colors and opacity based on data
-    polygonSeries.mapPolygons.template.adapters.add("fill", (fill, target) => {
-      const dataContext = target.dataItem?.dataContext;
-      if (dataContext?.id === highlightedRegion) {
-        return am5.color(0x084e99); // Darker blue for highlighted region - using exact hex
-      }
-      return am5.color(0x6ba3d6); // Light blue for other regions
+    // Create hover, focus, and selected states using amCharts built-in states
+    // Remove the state variable declarations and apply directly
+    polygonSeries.mapPolygons.template.states.create("hover", {
+      fill: am5.color(0x084e99), // Darker blue on hover
+      fillOpacity: 1.0,
+      strokeWidth: 2,
     });
 
-    polygonSeries.mapPolygons.template.adapters.add(
-      "fillOpacity",
-      (opacity, target) => {
-        const dataContext = target.dataItem?.dataContext;
-        if (dataContext?.id === highlightedRegion) {
-          return 1.0; // Full opacity for highlighted region
-        }
-        return 0.6; // Reduced opacity for other regions
-      }
-    );
+    polygonSeries.mapPolygons.template.states.create("selected", {
+      fill: am5.color(0x084e99), // Darker blue for selected
+      fillOpacity: 1.0,
+      strokeWidth: 3,
+      stroke: am5.color(0xffffff),
+    });
+
+    polygonSeries.mapPolygons.template.states.create("default", {
+      fill: am5.color(0x6ba3d6),
+      fillOpacity: 0.6,
+      strokeWidth: 1,
+    });
 
     // Show value label on each region
     polygonSeries.mapPolygons.template.adapters.add(
@@ -306,79 +338,96 @@ const GeorgiaMap = ({ selectedYear = 2023, selectedSubstance = null }) => {
       }
     );
 
-    // Custom tooltip and interaction functionality
-    polygonSeries.events.on("datavalidated", () => {
-      polygonSeries.mapPolygons.each((polygon) => {
-        polygon.events.on("pointerover", (event) => {
-          const data = event.target.dataItem?.dataContext;
-          const regionId = data?.id;
+    // Setup interactions - only once
+    polygonSeries.mapPolygons.template.events.on("pointerover", (event) => {
+      const data = event.target.dataItem?.dataContext;
+      const regionId = data?.id;
 
-          if (regionId) {
-            // Update both highlighted and hovered region states
-            setHighlightedRegion(regionId);
-            setHoveredRegion(regionId);
+      if (regionId && regionId !== selectedRegion) {
+        setHoveredRegion(regionId);
 
-            // Get mouse position relative to the map container
-            if (event.point) {
-              const x = event.point.x;
-              const y = event.point.y;
-              setTooltipPosition({ x: x + 20, y: y - 50 });
-            }
-          }
-        });
-
-
-
-        polygon.events.on("click", (event) => {
-          const data = event.target.dataItem?.dataContext;
-          const regionId = data?.id;
-          
-          if (regionId) {
-            // Toggle selection - if already highlighted, clear it; otherwise highlight it
-            setHighlightedRegion(prev => prev === regionId ? null : regionId);
-          }
-        });
-
-        polygon.events.on("pointerout", () => {
-          // Only clear hovered state, keep highlighted state if region was clicked
-          setHoveredRegion(null);
-        });
-      });
-    });
-
-    // Add global mouse move handler for smooth tooltip tracking
-    polygonSeries.events.on("globalpointermove", (event) => {
-      if (event.point && hoveredRegion) {
-        const x = event.point.x;
-        const y = event.point.y;
-        setTooltipPosition({ x: x + 20, y: y - 50 });
+        // Update tooltip position
+        if (event.point) {
+          setTooltipPosition({ x: event.point.x + 20, y: event.point.y - 50 });
+        }
       }
     });
 
-    // Handle styling updates based on highlight state
-    if (polygonSeries) {
-      polygonSeries.mapPolygons.each((mapPolygon) => {
-        const polygonData = mapPolygon.dataItem?.dataContext;
-        const regionId = polygonData?.id;
-        
-        if (regionId === highlightedRegion || regionId === hoveredRegion) {
-          // Highlighted/hovered region - darker blue
-          mapPolygon.set("fill", am5.color(0x084e99));
-          mapPolygon.set("fillOpacity", 1.0);
-          mapPolygon.set("stroke", am5.color(0xffffff));
-          mapPolygon.set("strokeWidth", 2);
-        } else {
-          // Normal region - lighter blue
-          mapPolygon.set("fill", am5.color(0x6ba3d6));
-          mapPolygon.set("fillOpacity", 0.6);
-          mapPolygon.set("stroke", am5.color(0xffffff));
-          mapPolygon.set("strokeWidth", 1);
-        }
-      });
-    }
+    polygonSeries.mapPolygons.template.events.on("pointerout", () => {
+      setHoveredRegion(null);
+    });
 
-    return () => root.dispose();
-  }, [highlightedRegion, regions, hoveredRegion, tooltipPosition]);
+    polygonSeries.mapPolygons.template.events.on("click", (event) => {
+      const data = event.target.dataItem?.dataContext;
+      const regionId = data?.id;
+
+      if (regionId) {
+        // Toggle selection
+        setSelectedRegion((prev) => (prev === regionId ? null : regionId));
+        setHoveredRegion(null); // Clear hover when clicking
+      }
+    });
+
+    // Global mouse move for tooltip tracking
+    polygonSeries.onPrivate("globalpointermove", (event) => {
+      if (event.point && hoveredRegion) {
+        setTooltipPosition({ x: event.point.x + 20, y: event.point.y - 50 });
+      }
+    });
+
+    isInitializedRef.current = true;
+
+    return () => {
+      if (root) {
+        root.dispose();
+        rootRef.current = null;
+        chartRef.current = null;
+        polygonSeriesRef.current = null;
+        isInitializedRef.current = false;
+      }
+    };
+  }, [regions, hoveredRegion, selectedRegion]); // Only recreate map when regions data changes
+
+  // Separate effect to update data and selection states without recreating the map
+  useLayoutEffect(() => {
+    if (!isInitializedRef.current || !polygonSeriesRef.current) return;
+
+    const currentData = regions.map((region) => ({
+      ...region,
+      isSelected: region.id === selectedRegion,
+      isHovered: region.id === hoveredRegion,
+    }));
+
+    // Update data without recreating series
+    polygonSeriesRef.current.data.setAll(currentData);
+
+    // Update states for visual feedback
+    polygonSeriesRef.current.mapPolygons.each((polygon) => {
+      const dataContext = polygon.dataItem?.dataContext;
+      const regionId = dataContext?.id;
+
+      if (regionId) {
+        if (regionId === selectedRegion) {
+          // Apply selected state
+          polygon.states.apply("selected");
+        } else if (regionId === hoveredRegion) {
+          // Apply hover state
+          polygon.states.apply("hover");
+        } else {
+          // Apply normal state
+          polygon.states.apply("default");
+        }
+      }
+    });
+  }, [selectedRegion, hoveredRegion, regions, polygonSeriesRef]); // Update states separately
+
+  // Debounce tooltip position updates to prevent excessive re-renders
+  useEffect(() => {
+    if (!hoveredRegion) {
+      setTooltipPosition({ x: 0, y: 0 });
+      return;
+    }
+  }, [hoveredRegion]);
 
   return (
     <div
@@ -391,19 +440,17 @@ const GeorgiaMap = ({ selectedYear = 2023, selectedSubstance = null }) => {
         borderRadius: "16px",
         margin: "0 auto",
         overflow: "hidden",
-      }}
-    >
+      }}>
       <div
         id="georgia-map-container"
         style={{
           width: "100%",
           height: "100%",
           position: "relative",
-        }}
-      ></div>
+        }}></div>
 
       {/* Dynamic Tooltip - only shows when hovering over a region */}
-      {currentRegionData && (
+      {currentRegionData && hoveredRegion && (
         <div
           style={{
             position: "absolute",
@@ -417,15 +464,13 @@ const GeorgiaMap = ({ selectedYear = 2023, selectedSubstance = null }) => {
             zIndex: 1000,
             minWidth: "280px",
             pointerEvents: "none",
-          }}
-        >
+          }}>
           <div
             style={{
               display: "flex",
               flexDirection: "column",
               gap: "8px",
-            }}
-          >
+            }}>
             <div
               style={{
                 fontFamily: "'FiraGO', Arial, sans-serif",
@@ -434,8 +479,7 @@ const GeorgiaMap = ({ selectedYear = 2023, selectedSubstance = null }) => {
                 color: "#FFFFFF",
                 lineHeight: "1.4",
                 marginBottom: "4px",
-              }}
-            >
+              }}>
               {currentRegionData.name}
             </div>
             <div
@@ -445,11 +489,12 @@ const GeorgiaMap = ({ selectedYear = 2023, selectedSubstance = null }) => {
                 fontWeight: 600,
                 color: "#48BB78",
                 lineHeight: "1.2",
-              }}
-            >
-              {currentRegionData.id === "GE-AB" && currentRegionData.value === 0 
-                ? "-" 
-                : `${currentRegionData.value.toLocaleString()} ${language === 'en' ? 'm³' : 'მ³'}`}
+              }}>
+              {currentRegionData.id === "GE-AB" && currentRegionData.value === 0
+                ? "-"
+                : `${currentRegionData.value.toLocaleString()} ${
+                    language === "en" ? "m³" : "მ³"
+                  }`}
             </div>
           </div>
 
@@ -465,55 +510,17 @@ const GeorgiaMap = ({ selectedYear = 2023, selectedSubstance = null }) => {
               borderTop: "8px solid transparent",
               borderBottom: "8px solid transparent",
               borderRight: "8px solid #2D3748",
-            }}
-          ></div>
+            }}></div>
         </div>
       )}
 
-      {/* Hover Tooltip (hidden by default) */}
+      {/* Unused hover tooltip - can be removed */}
       <div
         id="custom-tooltip"
         style={{
-          position: "absolute",
-          background: "#2D3748",
-          borderRadius: "8px",
-          padding: "12px 16px",
-          boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
           display: "none",
-          zIndex: 1001,
-          pointerEvents: "none",
-          minWidth: "200px",
         }}
-      >
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            gap: "4px",
-          }}
-        >
-          <div
-            className="tooltip-title"
-            style={{
-              fontFamily: "'FiraGO', Arial, sans-serif",
-              fontSize: "12px",
-              fontWeight: 400,
-              color: "#FFFFFF",
-              lineHeight: "1.3",
-            }}
-          ></div>
-          <div
-            className="tooltip-value"
-            style={{
-              fontFamily: "'FiraGO', Arial, sans-serif",
-              fontSize: "16px",
-              fontWeight: 600,
-              color: "#48BB78",
-              lineHeight: "1.2",
-            }}
-          ></div>
-        </div>
-      </div>
+      />
     </div>
   );
 };

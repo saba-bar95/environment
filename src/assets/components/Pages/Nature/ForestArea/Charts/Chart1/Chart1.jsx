@@ -1,15 +1,4 @@
 import { useEffect, useState, useMemo } from "react";
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-  Brush,
-} from "recharts";
 import Svg from "./Svg";
 import { useParams } from "react-router-dom";
 import commonData from "../../../../../../fetchFunctions/commonData";
@@ -22,8 +11,6 @@ const Chart1 = ({ chartInfo }) => {
   const [forestData, setForestData] = useState(null);
   const [substanceList, setSubstanceList] = useState([]);
   const [selectedSubstance, setSelectedSubstance] = useState(null);
-  const [activeLines, setActiveLines] = useState(["forestData"]);
-
   const [year, setYear] = useState(2023);
   const [years, setYears] = useState([]);
 
@@ -61,7 +48,8 @@ const Chart1 = ({ chartInfo }) => {
   useEffect(() => {
     const getForestData = async () => {
       // Create substance list - include all 4 forest data types
-      const substanceTitles = language === 'en' ? info.substanceTitles_en : info.substanceTitles_ge;
+      const substanceTitles =
+        language === "en" ? info.substanceTitles_en : info.substanceTitles_ge;
       const substanceHeaders = [
         { name: substanceTitles[0], id: 0, apiIndex: 0 }, // Felled timber
         { name: substanceTitles[1], id: 1, apiIndex: 1 }, // Illegal logging
@@ -78,7 +66,7 @@ const Chart1 = ({ chartInfo }) => {
 
       for (let i = 0; i < info.apiIds.length; i++) {
         const apiId = info.apiIds[i];
-        
+
         try {
           const [dataResult, metaDataResult] = await Promise.all([
             commonData(apiId, info.types[0], language),
@@ -95,7 +83,10 @@ const Chart1 = ({ chartInfo }) => {
           let yearList = [];
           if (apiId === "forest-planting-recovery") {
             // For forest-planting-recovery, years are directly in the data objects
-            yearList = dataResult.data.data.map(item => ({ year: item.year.toString(), id: item.year }));
+            yearList = dataResult.data.data.map((item) => ({
+              year: item.year.toString(),
+              id: item.year,
+            }));
           } else {
             // For other APIs, use metadata structure
             if (!metaDataResult?.data?.metadata) {
@@ -109,26 +100,31 @@ const Chart1 = ({ chartInfo }) => {
 
           dataResult.data.data.forEach((yearObj) => {
             const yearId = parseInt(yearObj.year);
-            const yearName = yearList.find((y) => y.id === yearId)?.year || yearId;
+            const yearName =
+              yearList.find((y) => y.id === yearId)?.year || yearId;
 
             if (apiId === "forest-planting-recovery") {
               // Handle forest-planting-recovery API structure
               // Process planting data (even categories: 0,2,4,6,8,10,12,14,16,18,20,22,24)
-              const plantingCategories = [0,2,4,6,8,10,12,14,16,18,20,22,24];
-              const recoveryCategories = [1,3,5,7,9,11,13,15,17,19,21,23,25];
-              
+              const plantingCategories = [
+                0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24,
+              ];
+              const recoveryCategories = [
+                1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25,
+              ];
+
               // Sum up all planting values for this year
               let plantingTotal = 0;
               let recoveryTotal = 0;
-              
-              plantingCategories.forEach(cat => {
+
+              plantingCategories.forEach((cat) => {
                 plantingTotal += parseFloat(yearObj[cat.toString()]) || 0;
               });
-              
-              recoveryCategories.forEach(cat => {
+
+              recoveryCategories.forEach((cat) => {
                 recoveryTotal += parseFloat(yearObj[cat.toString()]) || 0;
               });
-              
+
               // Add planting data
               allData.push({
                 substance: substanceHeaders[2].name, // ტყის თესვა და დარგვა
@@ -136,7 +132,7 @@ const Chart1 = ({ chartInfo }) => {
                 value: plantingTotal,
                 id: 2,
               });
-              
+
               // Add recovery data
               allData.push({
                 substance: substanceHeaders[3].name, // ტყის ბუნებრივი განახლებისთვის ხელშეწყობა
@@ -177,17 +173,24 @@ const Chart1 = ({ chartInfo }) => {
           // Continue with other APIs even if one fails
         }
       }
-      
+
       setForestData(allData);
-      
+
       // Extract unique years from the data for YearDropdown
-      const uniqueYears = [...new Set(allData.map(item => item.year))]
-        .sort((a, b) => b - a); // Sort descending (newest first)
+      const uniqueYears = [...new Set(allData.map((item) => item.year))].sort(
+        (a, b) => b - a
+      ); // Sort descending (newest first)
       setYears(uniqueYears);
     };
 
     getForestData();
-  }, [info.apiIds, language, info.types, info.substanceTitles_ge, info.substanceTitles_en]);
+  }, [
+    info.apiIds,
+    language,
+    info.types,
+    info.substanceTitles_ge,
+    info.substanceTitles_en,
+  ]);
 
   // Combined and filtered data for chart
   const chartData = useMemo(() => {
@@ -210,62 +213,6 @@ const Chart1 = ({ chartInfo }) => {
   }, [forestData, selectedSubstance]);
 
   // Toggle line visibility
-  const toggleLine = (dataKey) => {
-    setActiveLines((prev) => {
-      if (prev.length === 1 && prev.includes(dataKey)) {
-        return prev; // Prevent hiding the last visible line
-      }
-      return prev.includes(dataKey)
-        ? prev.filter((line) => line !== dataKey)
-        : [...prev, dataKey];
-    });
-  };
-
-  const CustomLegend = ({ payload }) => (
-    <ul className="recharts-default-legend">
-      {payload.map((entry, index) => (
-        <li
-          key={`legend-item-${index}`}
-          className={`recharts-legend-item legend-item-${index} ${
-            activeLines.includes(entry.dataKey) ? "active" : "inactive"
-          }`}
-          onClick={() => toggleLine(entry.dataKey)}
-        >
-          <span
-            className="recharts-legend-item-icon"
-            style={{ backgroundColor: entry.color }}
-          ></span>
-          <span className="recharts-legend-item-text">{entry.value}</span>
-        </li>
-      ))}
-    </ul>
-  );
-
-  const CustomTooltip = ({ active, payload, label }) => {
-    if (!active || !payload || !payload.length) return null;
-
-    return (
-      <div className="custom-tooltip">
-        <div className="tooltip-container">
-          <p className="tooltip-label">
-            {label} {language === "en" ? "Year" : "წელი"}{" "}
-          </p>
-          {payload.map(({ name, value, stroke }, index) => (
-            <p key={`item-${index}`} className="text">
-              <span
-                style={{ backgroundColor: stroke }}
-                className="before-span"
-              ></span>
-              {name} :
-              <span style={{ fontWeight: 900, marginLeft: "5px" }}>
-                {value.toFixed(1)}
-              </span>
-            </p>
-          ))}
-        </div>
-      </div>
-    );
-  };
 
   // Handle substance selection
   const handleSubstanceSelection = (substanceName) => {
@@ -304,8 +251,7 @@ const Chart1 = ({ chartInfo }) => {
             className={`city-item ${
               selectedSubstance === s.name ? "active" : ""
             }`}
-            onClick={() => handleSubstanceSelection(s.name)}
-          >
+            onClick={() => handleSubstanceSelection(s.name)}>
             {s.name}
           </span>
         ))}
@@ -319,8 +265,7 @@ const Chart1 = ({ chartInfo }) => {
           display: "flex",
           justifyContent: "center",
           width: "100%",
-        }}
-      >
+        }}>
         <GeorgiaMap selectedYear={year} selectedSubstance={selectedSubstance} />
       </div>
     </div>
