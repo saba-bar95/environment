@@ -1,8 +1,8 @@
 import "../../../../../Download/Download.scss";
 import { useState, useRef, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import downloadPNG from "../../../../../Download/downloadPNG";
-import downloadJPG from "../../../../../Download/downloadJPG";
+import downloadPNG from "./downloadPNG";
+import downloadJPG from "./downloadJPG";
 import downloadExcel from "./downloadExcel";
 import downloadPDF from "./downloadPDF";
 import Dots from "../../../../../Download/Svgs/Dots";
@@ -102,7 +102,7 @@ const Download = ({ data, mapData, year, unit, filename, isMapData }) => {
             <div
               className="wrapper"
               onClick={(e) => {
-                downloadJPG(e);
+                downloadJPG(e, filename, language);
                 setOpen(false); // Close dropdown
               }}
             >
@@ -112,7 +112,7 @@ const Download = ({ data, mapData, year, unit, filename, isMapData }) => {
             <div
               className="wrapper"
               onClick={(e) => {
-                downloadPNG(e);
+                downloadPNG(e, filename, language);
                 setOpen(false); // Close dropdown
               }}
             >
