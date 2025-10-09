@@ -22,7 +22,6 @@ const downloadExcel = (
   const unitHeader = unit || " "; // Use unit parameter as header
 
   if (bcwy) {
-    console.log(unit);
     // For BarChartsWithYears, data is an array with one object where keys are categories
     const worksheetData = Object.keys(data[0])
       .filter((key) => key !== "name") // Exclude 'name' (year)
