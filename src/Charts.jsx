@@ -120,6 +120,14 @@ const rawCharts = {
           path_en: "Forest Area",
         },
       ],
+      forestandfieldfires: [
+        {
+          title_ge: "ტყისა და ველის ხანძრები რეგიონების მიხედვით",
+          title_en: "Forest and Field Fires by Regions",
+          path_ge: "ტყისა და ველის ხანძრები",
+          path_en: "Forest and Field Fires",
+        },
+      ],
     },
   ],
   water: [

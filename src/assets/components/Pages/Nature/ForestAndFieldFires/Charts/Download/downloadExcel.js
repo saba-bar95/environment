@@ -105,26 +105,21 @@ const downloadExcel = async (data, year, unit, filename, language, isChart1, map
 
   if (isChart1) {
     const yearHeader = !isGeorgian ? "Year" : "წელი";
-    const regionHeader = !isGeorgian ? "Region" : "რეგიონი";
-    const rowHeaders = isGeorgian
-      ? ["წარმოქმნილი", "დაჭერილი", "გაფრქვეული"] // Georgian translations
-      : ["Generated", "Captured", "Emitted"]; // English
+    const valueHeader = !isGeorgian ? "Value" : "მნიშვნელობა";
 
     // Create new workbook
     const workbook = new ExcelJS.Workbook();
-    const worksheet = workbook.addWorksheet('Forest Data');
+    const worksheet = workbook.addWorksheet('Forest Fires Data');
     
-    // Add headers
-    const headers = [regionHeader, rowHeaders[1], rowHeaders[2], rowHeaders[0]];
+    // Add headers - simplified structure for forest fires time series data
+    const headers = [yearHeader, valueHeader];
     worksheet.addRow(headers);
     
-    // Add data rows
+    // Add data rows - forest fires data structure
     data.forEach(item => {
       worksheet.addRow([
-        item.region,
-        item.pollution_1,
-        item.pollution_2,
-        item.pollution_0
+        item.year,
+        item.forestData
       ]);
     });
     
@@ -136,7 +131,7 @@ const downloadExcel = async (data, year, unit, filename, language, isChart1, map
       cell.fill = {
         type: 'pattern',
         pattern: 'solid',
-        fgColor: { argb: 'FF28A745' } // Green background for chart data
+        fgColor: { argb: 'FFE75816' } // Orange background for forest fires data
       };
       cell.alignment = { horizontal: 'center', vertical: 'middle' };
       cell.border = {
@@ -151,7 +146,7 @@ const downloadExcel = async (data, year, unit, filename, language, isChart1, map
     for (let rowNum = 2; rowNum <= worksheet.rowCount; rowNum++) {
       const row = worksheet.getRow(rowNum);
       const isEvenRow = rowNum % 2 === 0;
-      const fillColor = isEvenRow ? 'FFE8F5E8' : 'FFFFFFFF'; // Light green alternating rows
+      const fillColor = isEvenRow ? 'FFFEF5F0' : 'FFFFFFFF'; // Light orange alternating rows
       
       row.eachCell((cell, colNumber) => {
         cell.font = { size: 11, color: { argb: 'FF000000' } };
@@ -161,7 +156,7 @@ const downloadExcel = async (data, year, unit, filename, language, isChart1, map
           fgColor: { argb: fillColor }
         };
         cell.alignment = { 
-          horizontal: colNumber > 1 ? 'right' : 'left', // Right align numeric values
+          horizontal: colNumber === 2 ? 'right' : 'left', // Right align values column (2nd column)
           vertical: 'middle' 
         };
         cell.border = {
@@ -172,7 +167,7 @@ const downloadExcel = async (data, year, unit, filename, language, isChart1, map
         };
         
         // Format numbers with thousands separator and decimals
-        if (colNumber > 1) {
+        if (colNumber === 2) {
           cell.numFmt = '#,##0.00';
         }
       });
@@ -194,8 +189,8 @@ const downloadExcel = async (data, year, unit, filename, language, isChart1, map
     });
 
     const finalFilename = isGeorgian
-      ? `${filename} (${unit}) (${year} ${yearHeader}).xlsx`
-      : `${filename} (${unit.toLowerCase()}) (${year} ${yearHeader.toLowerCase()}).xlsx`;
+      ? `${filename} (${unit}) - ${year} წელი.xlsx`
+      : `${filename} (${unit.toLowerCase()}) - ${year}.xlsx`;
 
     // Generate buffer and download
     const buffer = await workbook.xlsx.writeBuffer();

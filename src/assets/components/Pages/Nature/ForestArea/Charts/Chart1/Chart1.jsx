@@ -5,6 +5,7 @@ import commonData from "../../../../../../fetchFunctions/commonData";
 import YearDropdown from "../../../../../YearDropdown/YearDropdown";
 import Download from "../Download/Download";
 import GeorgiaMap from "../../GeorgiaMap/GeorgiaMap";
+import "../../../../../../../assets/styles/SpinnerAndError.scss";
 
 const Chart1 = ({ chartInfo }) => {
   const { language } = useParams();
@@ -13,6 +14,8 @@ const Chart1 = ({ chartInfo }) => {
   const [selectedSubstance, setSelectedSubstance] = useState(null);
   const [year, setYear] = useState(2023);
   const [years, setYears] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const info = useMemo(
     () => ({
@@ -47,22 +50,26 @@ const Chart1 = ({ chartInfo }) => {
   // Fetch forest data from multiple APIs
   useEffect(() => {
     const getForestData = async () => {
-      // Create substance list - include all 4 forest data types
-      const substanceTitles =
-        language === "en" ? info.substanceTitles_en : info.substanceTitles_ge;
-      const substanceHeaders = [
-        { name: substanceTitles[0], id: 0, apiIndex: 0 }, // Felled timber
-        { name: substanceTitles[1], id: 1, apiIndex: 1 }, // Illegal logging
-        { name: substanceTitles[2], id: 2, apiIndex: 2 }, // Forest planting
-        { name: substanceTitles[3], id: 3, apiIndex: 2 }, // Forest recovery
-      ];
+      try {
+        setIsLoading(true);
+        setError(null);
 
-      // Always set substance headers first so UI elements appear
-      setSubstanceList(substanceHeaders);
-      setSelectedSubstance(substanceHeaders[0]?.name || null);
+        // Create substance list - include all 4 forest data types
+        const substanceTitles =
+          language === "en" ? info.substanceTitles_en : info.substanceTitles_ge;
+        const substanceHeaders = [
+          { name: substanceTitles[0], id: 0, apiIndex: 0 }, // Felled timber
+          { name: substanceTitles[1], id: 1, apiIndex: 1 }, // Illegal logging
+          { name: substanceTitles[2], id: 2, apiIndex: 2 }, // Forest planting
+          { name: substanceTitles[3], id: 3, apiIndex: 2 }, // Forest recovery
+        ];
 
-      // Fetch data from all 3 APIs with individual error handling
-      const allData = [];
+        // Always set substance headers first so UI elements appear
+        setSubstanceList(substanceHeaders);
+        setSelectedSubstance(substanceHeaders[0]?.name || null);
+
+        // Fetch data from all 3 APIs with individual error handling
+        const allData = [];
 
       for (let i = 0; i < info.apiIds.length; i++) {
         const apiId = info.apiIds[i];
@@ -178,9 +185,18 @@ const Chart1 = ({ chartInfo }) => {
 
       // Extract unique years from the data for YearDropdown
       const uniqueYears = [...new Set(allData.map((item) => item.year))].sort(
-        (a, b) => b - a
-      ); // Sort descending (newest first)
+        (a, b) => a - b
+      ); // Sort ascending (YearDropdown will reverse to show newest first)
       setYears(uniqueYears);
+
+      setIsLoading(false);
+      } catch (error) {
+        console.error('Error fetching forest data:', error);
+        setError(language === "ge" 
+          ? "მონაცემების ჩატვირთვისას მოხდა შეცდომა" 
+          : "Error loading data");
+        setIsLoading(false);
+      }
     };
 
     getForestData();
@@ -212,12 +228,203 @@ const Chart1 = ({ chartInfo }) => {
     return merged;
   }, [forestData, selectedSubstance]);
 
-  // Toggle line visibility
+  // Prepare comprehensive map data for download
+  const [mapDataForDownload, setMapDataForDownload] = useState([]);
+
+  // Fetch comprehensive regional data for download
+  useEffect(() => {
+    if (!selectedSubstance) return;
+
+    const fetchMapData = async () => {
+      const regionMapping = [
+        { id: "GE-TB", name_ge: "თბილისი", name_en: "Tbilisi" },
+        { id: "GE-AJ", name_ge: "აჭარა", name_en: "Adjara" },
+        { id: "GE-KA", name_ge: "კახეთი", name_en: "Kakheti" },
+        { id: "GE-IM", name_ge: "იმერეთი", name_en: "Imereti" },
+        { id: "GE-RL", name_ge: "რაჭა-ლეჩხუმი და ქვემო სვანეთი", name_en: "Racha-Lechkhumi and Kvemo Svaneti" },
+        { id: "GE-GU", name_ge: "გურია", name_en: "Guria" },
+        { id: "GE-SJ", name_ge: "სამცხე-ჯავახეთი", name_en: "Samtskhe-Javakheti" },
+        { id: "GE-MM", name_ge: "მცხეთა-მთიანეთი", name_en: "Mtskheta-Mtianeti" },
+        { id: "GE-KK", name_ge: "ქვემო ქართლი", name_en: "Kvemo Kartli" },
+        { id: "GE-SK", name_ge: "შიდა ქართლი", name_en: "Shida Kartli" },
+        { id: "GE-SZ", name_ge: "სამეგრელო-ზემო სვანეთი", name_en: "Samegrelo-Zemo Svaneti" },
+      ];
+
+      // Get API ID for the selected substance
+      const substanceToApiId = {
+        "ტყის ჭრით მიღებული ხე-ტყის მოცულობა": "felled-timber-volume",
+        "ტყის უკანონო ჭრა": "illegal-logging",
+        "ტყის თესვა და დარგვა": "forest-planting-recovery",
+        "ტყის ბუნებრივი განახლებისთვის ხელშეწყობა": "forest-planting-recovery",
+        "Felled Timber Volume": "felled-timber-volume",
+        "Illegal Logging": "illegal-logging",
+        "Forest Planting": "forest-planting-recovery",
+        "Forest Recovery Support": "forest-planting-recovery"
+      };
+
+      const apiId = substanceToApiId[selectedSubstance];
+      if (!apiId) return;
+
+      try {
+        const [dataResult] = await Promise.all([
+          commonData(apiId, "data", language)
+        ]);
+
+        const comprehensiveData = [];
+        
+        // Process data for each year and region
+        if (dataResult?.data?.data) {
+          const dataArray = dataResult.data.data;
+          
+          dataArray.forEach(yearData => {
+            const yearValue = yearData.year;
+            
+            regionMapping.forEach(region => {
+              let value = 0;
+              
+              // Regional mapping logic (same as in GeorgiaMap)
+              if (apiId === "forest-planting-recovery") {
+                const regionIdMapping = {
+                  "GE-TB": { planting: 2, recovery: 3 },
+                  "GE-AJ": { planting: 4, recovery: 5 },
+                  "GE-GU": { planting: 6, recovery: 7 },
+                  "GE-IM": { planting: 8, recovery: 9 },
+                  "GE-KA": { planting: 10, recovery: 11 },
+                  "GE-MM": { planting: 12, recovery: 13 },
+                  "GE-RL": { planting: 14, recovery: 15 },
+                  "GE-SZ": { planting: 16, recovery: 17 },
+                  "GE-SJ": { planting: 18, recovery: 19 },
+                  "GE-KK": { planting: 20, recovery: 21 },
+                  "GE-SK": { planting: 22, recovery: 23 },
+                };
+                
+                const mappingKey = regionIdMapping[region.id];
+                if (mappingKey) {
+                  let categoryKey;
+                  if (selectedSubstance === "ტყის თესვა და დარგვა" || selectedSubstance === "Forest Planting") {
+                    categoryKey = mappingKey.planting;
+                  } else if (selectedSubstance === "ტყის ბუნებრივი განახლებისთვის ხელშეწყობა" || selectedSubstance === "Forest Recovery Support") {
+                    categoryKey = mappingKey.recovery;
+                  }
+                  
+                  if (categoryKey >= 0) {
+                    value = parseFloat(yearData[categoryKey.toString()]) || 0;
+                  }
+                }
+              } else {
+                // Regular APIs (felled-timber-volume, illegal-logging)
+                const regionIdMapping = {
+                  "GE-TB": 1, "GE-AJ": 2, "GE-SZ": 3,
+                  "GE-GU": 4, "GE-IM": 5, "GE-RL": 6, "GE-SK": 7,
+                  "GE-MM": 8, "GE-KA": 9, "GE-KK": 10, "GE-SJ": 11,
+                };
+                
+                const apiRegionId = regionIdMapping[region.id];
+                if (apiRegionId >= 0) {
+                  value = parseFloat(yearData[apiRegionId.toString()]) || 0;
+                }
+              }
+              
+              comprehensiveData.push({
+                region: language === 'en' ? region.name_en : region.name_ge,
+                year: yearValue,
+                value: value,
+                substance: selectedSubstance,
+                unit: language === "ge" ? info.unit_ge : info.unit_en
+              });
+            });
+          });
+        }
+        
+        setMapDataForDownload(comprehensiveData);
+      } catch (error) {
+        console.error("Error fetching map data for download:", error);
+      }
+    };
+
+    fetchMapData();
+  }, [selectedSubstance, language, info.unit_ge, info.unit_en]);
 
   // Handle substance selection
   const handleSubstanceSelection = (substanceName) => {
     setSelectedSubstance(substanceName);
   };
+
+  // Show loading state
+  if (isLoading) {
+    return (
+      <div className="chart-wrapper" id={chartInfo.id}>
+        <div className="header">
+          <div className="right">
+            <div className="ll">
+              <Svg />
+            </div>
+            <div className="rr">
+              <h1>
+                {language === "ge" ? info.title_ge : info.title_en}
+              </h1>
+              <p>{language === "ge" ? info.unit_ge : info.unit_en}</p>
+            </div>
+          </div>
+          <div className="left">
+            <div className="download-placeholder">
+              <span className="loading-spinner"></span>
+              <span>{language === "ge" ? "ჩატვირთვა..." : "Loading..."}</span>
+            </div>
+          </div>
+        </div>
+        <div className="loading-container">
+          <div className="loading-content">
+            <div className="spinner"></div>
+            <p>
+              {language === "ge"
+                ? "მონაცემების ჩატვირთვა..."
+                : "Loading data..."}
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <div className="chart-wrapper" id={chartInfo.id}>
+        <div className="header">
+          <div className="right">
+            <div className="ll">
+              <Svg />
+            </div>
+            <div className="rr">
+              <h1>
+                {language === "ge" ? info.title_ge : info.title_en}
+              </h1>
+              <p>{language === "ge" ? info.unit_ge : info.unit_en}</p>
+            </div>
+          </div>
+          <div className="left">
+            <button
+              className="retry-btn"
+              onClick={() => window.location.reload()}>
+              {language === "ge" ? "ხელახლა ცდა" : "Retry"}
+            </button>
+          </div>
+        </div>
+        <div className="error-container">
+          <div className="error-content">
+            <div className="error-icon">⚠️</div>
+            <p>{error}</p>
+            <button
+              className="retry-btn"
+              onClick={() => window.location.reload()}>
+              {language === "ge" ? "ხელახლა ჩატვირთვა" : "Reload Chart"}
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="chart-wrapper" id={chartInfo.id}>
@@ -235,10 +442,13 @@ const Chart1 = ({ chartInfo }) => {
           <YearDropdown years={years} year={year} setYear={setYear} />
           <Download
             data={chartData}
+            mapData={mapDataForDownload}
             unit={info[`unit_${language}`]}
             filename={info[`title_${language}`]}
             isChart1={true}
+            isMapData={true}
             source={selectedSubstance}
+            year={year}
           />
         </div>
       </div>

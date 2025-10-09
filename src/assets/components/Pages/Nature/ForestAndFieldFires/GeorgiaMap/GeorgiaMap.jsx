@@ -54,17 +54,13 @@ const GeorgiaMap = ({ selectedYear = 2023, selectedSubstance = null }) => {
   const substanceToApiId = useMemo(() => {
     if (language === "en") {
       return {
-        "Felled Timber Volume": "felled-timber-volume",
-        "Illegal Logging": "illegal-logging",
-        "Forest Planting": "forest-planting-recovery",
-        "Forest Recovery Support": "forest-planting-recovery",
+        "Number of Fire Incidents, Units": "forest-fires",
+        "Fire Covered Area, Hectares": "forest-fires",
       };
     } else {
       return {
-        "ტყის ჭრით მიღებული ხე-ტყის მოცულობა": "felled-timber-volume",
-        "ტყის უკანონო ჭრა": "illegal-logging",
-        "ტყის თესვა და დარგვა": "forest-planting-recovery",
-        "ტყის ბუნებრივი განახლებისთვის ხელშეწყობა": "forest-planting-recovery",
+        "ხანძრის შემთხვევათა რაოდენობა, ერთეული": "forest-fires",
+        "ხანძრის მოცული ფართობი, ჰექტარი": "forest-fires",
       };
     }
   }, [language]);
@@ -75,8 +71,8 @@ const GeorgiaMap = ({ selectedYear = 2023, selectedSubstance = null }) => {
       if (!selectedSubstance) {
         try {
           const [dataResult, metaDataResult] = await Promise.all([
-            commonData("felled-timber-volume", "data", language),
-            commonData("felled-timber-volume", "metadata", language),
+            commonData("forest-fires", "data", language),
+            commonData("forest-fires", "metadata", language),
           ]);
           setApiData({ data: dataResult, metadata: metaDataResult });
         } catch (error) {
@@ -138,84 +134,48 @@ const GeorgiaMap = ({ selectedYear = 2023, selectedSubstance = null }) => {
         console.error("Data array not found or not an array:", dataArray);
       }
 
-      const getCurrentApiId = () =>
-        substanceToApiId[selectedSubstance] || "felled-timber-volume";
-      const currentApiId = getCurrentApiId();
-
-      let regionIdMapping = {};
-
-      if (currentApiId === "forest-planting-recovery") {
-        regionIdMapping = {
-          "GE-TB": { planting: 2, recovery: 3 },
-          "GE-AJ": { planting: 4, recovery: 5 },
-          "GE-GU": { planting: 6, recovery: 7 },
-          "GE-IM": { planting: 8, recovery: 9 },
-          "GE-KA": { planting: 10, recovery: 11 },
-          "GE-MM": { planting: 12, recovery: 13 },
-          "GE-RL": { planting: 14, recovery: 15 },
-          "GE-SZ": { planting: 16, recovery: 17 },
-          "GE-SJ": { planting: 18, recovery: 19 },
-          "GE-KK": { planting: 20, recovery: 21 },
-          "GE-SK": { planting: 22, recovery: 23 },
-          "GE-AB": { planting: -2, recovery: -2 },
-        };
-      } else {
-        regionIdMapping = {
-          "GE-TB": 1,
-          "GE-AB": -2,
-          "GE-AJ": 2,
-          "GE-SZ": 3,
-          "GE-GU": 4,
-          "GE-IM": 5,
-          "GE-RL": 6,
-          "GE-SK": 7,
-          "GE-MM": 8,
-          "GE-KA": 9,
-          "GE-KK": 10,
-          "GE-SJ": 11,
-        };
-      }
+      // Forest fires API has special structure with region-category combinations
+      const regionIdMapping = {
+        "GE-TB": { incidents: "1 - 0", area: "1 - 1" }, // Tbilisi
+        "GE-AB": { incidents: "-2", area: "-2" }, // Abkhazia (no data)
+        "GE-AJ": { incidents: "2 - 0", area: "2 - 1" }, // Adjara
+        "GE-SZ": { incidents: "12 - 0", area: "12 - 1" }, // Samegrelo-Zemo Svaneti
+        "GE-GU": { incidents: "3 - 0", area: "3 - 1" }, // Guria
+        "GE-IM": { incidents: "4 - 0", area: "4 - 1" }, // Imereti
+        "GE-RL": { incidents: "7 - 0", area: "7 - 1" }, // Racha-Lechkhumi
+        "GE-SK": { incidents: "10 - 0", area: "10 - 1" }, // Shida Kartli
+        "GE-MM": { incidents: "6 - 0", area: "6 - 1" }, // Mtskheta-Mtianeti
+        "GE-KA": { incidents: "5 - 0", area: "5 - 1" }, // Kakheti
+        "GE-KK": { incidents: "11 - 0", area: "11 - 1" }, // Kvemo Kartli
+        "GE-SJ": { incidents: "9 - 0", area: "9 - 1" }, // Samtskhe-Javakheti
+      };
 
       return regionMapping.map((region) => {
         let value = 0;
         if (yearData) {
           const apiRegionId = regionIdMapping[region.id];
-          if (apiRegionId !== undefined) {
-            if (currentApiId === "forest-planting-recovery") {
-              let categoryKey;
+          if (apiRegionId && typeof apiRegionId === "object") {
+            let fireKey;
 
-              if (
-                selectedSubstance === "ტყის თესვა და დარგვა" ||
-                selectedSubstance === "Forest Planting"
-              ) {
-                categoryKey = apiRegionId.planting;
-              } else if (
-                selectedSubstance ===
-                  "ტყის ბუნებრივი განახლებისთვის ხელშეწყობა" ||
-                selectedSubstance === "Forest Recovery Support"
-              ) {
-                categoryKey = apiRegionId.recovery;
-              }
+            // Determine which data to show based on selected substance
+            if (
+              selectedSubstance === "ხანძრის შემთხვევათა რაოდენობა, ერთეული" ||
+              selectedSubstance === "Number of Fire Incidents, Units"
+            ) {
+              fireKey = apiRegionId.incidents;
+            } else if (
+              selectedSubstance === "ხანძრის მოცული ფართობი, ჰექტარი" ||
+              selectedSubstance === "Fire Covered Area, Hectares"
+            ) {
+              fireKey = apiRegionId.area;
+            }
 
-              if (categoryKey !== undefined) {
-                const stringKey = categoryKey.toString();
-                const numberKey = categoryKey;
-
-                if (yearData[stringKey] !== undefined) {
-                  value = parseFloat(yearData[stringKey]) || 0;
-                } else if (yearData[numberKey] !== undefined) {
-                  value = parseFloat(yearData[numberKey]) || 0;
-                }
-              }
-            } else {
-              const stringKey = apiRegionId.toString();
-              const numberKey = apiRegionId;
-
-              if (yearData[stringKey] !== undefined) {
-                value = parseFloat(yearData[stringKey]) || 0;
-              } else if (yearData[numberKey] !== undefined) {
-                value = parseFloat(yearData[numberKey]) || 0;
-              }
+            if (
+              fireKey &&
+              fireKey !== "-2" &&
+              yearData[fireKey] !== undefined
+            ) {
+              value = parseFloat(yearData[fireKey]) || 0;
             }
           }
         }
@@ -233,14 +193,7 @@ const GeorgiaMap = ({ selectedYear = 2023, selectedSubstance = null }) => {
         name: language === "en" ? region.name_en : region.name_ge,
       }));
     }
-  }, [
-    apiData,
-    selectedYear,
-    regionMapping,
-    selectedSubstance,
-    substanceToApiId,
-    language,
-  ]);
+  }, [apiData, selectedYear, regionMapping, selectedSubstance, language]);
 
   // Get current hovered region data for dynamic tooltip
   const currentRegionData = useMemo(() => {
@@ -446,10 +399,10 @@ const GeorgiaMap = ({ selectedYear = 2023, selectedSubstance = null }) => {
       }
     };
 
-    window.addEventListener('resize', handleResize);
-    
+    window.addEventListener("resize", handleResize);
+
     return () => {
-      window.removeEventListener('resize', handleResize);
+      window.removeEventListener("resize", handleResize);
     };
   }, []);
 
@@ -466,7 +419,8 @@ const GeorgiaMap = ({ selectedYear = 2023, selectedSubstance = null }) => {
         borderRadius: "16px",
         margin: "0 auto",
         overflow: "hidden",
-      }}>
+      }}
+    >
       <div
         id="georgia-map-container"
         style={{
@@ -475,7 +429,8 @@ const GeorgiaMap = ({ selectedYear = 2023, selectedSubstance = null }) => {
           left: "0",
           width: "100%",
           height: "100%",
-        }}></div>
+        }}
+      ></div>
 
       {/* Dynamic Tooltip - only shows when hovering over a region */}
       {currentRegionData && hoveredRegion && (
@@ -491,16 +446,23 @@ const GeorgiaMap = ({ selectedYear = 2023, selectedSubstance = null }) => {
             boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
             display: "block",
             zIndex: 1000,
-            minWidth: window.innerWidth <= 480 ? "200px" : window.innerWidth <= 768 ? "240px" : "280px",
+            minWidth:
+              window.innerWidth <= 480
+                ? "200px"
+                : window.innerWidth <= 768
+                ? "240px"
+                : "280px",
             maxWidth: window.innerWidth <= 480 ? "250px" : "320px",
             pointerEvents: "none",
-          }}>
+          }}
+        >
           <div
             style={{
               display: "flex",
               flexDirection: "column",
               gap: "8px",
-            }}>
+            }}
+          >
             <div
               style={{
                 fontFamily: "'FiraGO', Arial, sans-serif",
@@ -509,22 +471,44 @@ const GeorgiaMap = ({ selectedYear = 2023, selectedSubstance = null }) => {
                 color: "#FFFFFF",
                 lineHeight: "1.4",
                 marginBottom: "4px",
-              }}>
+              }}
+            >
               {currentRegionData.name}
             </div>
             <div
               style={{
                 fontFamily: "'FiraGO', Arial, sans-serif",
-                fontSize: window.innerWidth <= 480 ? "18px" : window.innerWidth <= 768 ? "20px" : "24px",
+                fontSize:
+                  window.innerWidth <= 480
+                    ? "18px"
+                    : window.innerWidth <= 768
+                    ? "20px"
+                    : "24px",
                 fontWeight: 600,
                 color: "#48BB78",
                 lineHeight: "1.2",
-              }}>
+              }}
+            >
               {currentRegionData.id === "GE-AB" && currentRegionData.value === 0
                 ? "-"
-                : `${currentRegionData.value.toLocaleString()} ${
-                    language === "en" ? "m³" : "მ³"
-                  }`}
+                : (() => {
+                    // Determine unit based on selected substance
+                    if (
+                      selectedSubstance ===
+                        "ხანძრის შემთხვევათა რაოდენობა, ერთეული" ||
+                      selectedSubstance === "Number of Fire Incidents, Units"
+                    ) {
+                      // Fire incidents - show units/cases
+                      return `${currentRegionData.value.toLocaleString()} ${
+                        language === "en" ? "cases" : "შემთხვევა"
+                      }`;
+                    } else {
+                      // Fire area - show hectares
+                      return `${currentRegionData.value.toLocaleString()} ${
+                        language === "en" ? "ha" : "ჰა"
+                      }`;
+                    }
+                  })()}
             </div>
           </div>
 
@@ -540,7 +524,8 @@ const GeorgiaMap = ({ selectedYear = 2023, selectedSubstance = null }) => {
               borderTop: "8px solid transparent",
               borderBottom: "8px solid transparent",
               borderRight: "8px solid #2D3748",
-            }}></div>
+            }}
+          ></div>
         </div>
       )}
 
