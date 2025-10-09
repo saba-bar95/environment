@@ -16,6 +16,7 @@ const Chart1 = ({ chartInfo }) => {
   const [years, setYears] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
   const info = useMemo(
     () => ({
@@ -299,6 +300,16 @@ const Chart1 = ({ chartInfo }) => {
     fetchMapData();
   }, [selectedSubstance, language, info.unit_ge, info.unit_en]);
 
+  // Track window width for responsive styling
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   // Handle substance selection
   const handleSubstanceSelection = (substanceName) => {
     setSelectedSubstance(substanceName);
@@ -383,7 +394,11 @@ const Chart1 = ({ chartInfo }) => {
   }
 
   return (
-    <div className="chart-wrapper" id={chartInfo.id} style={{ minWidth: "1000px" }}>
+    <div 
+      className="chart-wrapper" 
+      id={chartInfo.id} 
+      style={windowWidth > 1024 ? { minWidth: "1000px" } : {}}
+    >
       <div className="header">
         <div className="right">
           <div className="ll">
