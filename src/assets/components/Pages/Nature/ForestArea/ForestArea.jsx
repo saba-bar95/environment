@@ -3,8 +3,6 @@ import backgroundImg from "./Background/background.jpg";
 import Charts from "../../../../../Charts";
 import Chart1 from "./Charts/Chart1/Chart1";
 
-
-
 const ForestArea = () => {
   const { language } = useParams();
 
@@ -26,7 +24,7 @@ const ForestArea = () => {
       </div>
       <div className="charts-section">
         <div className="chart-container">
-          <Chart1 chartInfo={Charts.nature[0].forestarea[0]} />
+          <Chart1 chartInfo={Charts.nature[1].forestarea[0]} />
         </div>
       </div>
     </div>

@@ -12,8 +12,7 @@ const ForestAndFieldFires = () => {
         className="background-container"
         style={{
           backgroundImage: `url(${backgroundImg})`,
-        }}
-      >
+        }}>
         <div className="overlay"></div> {/* New overlay div */}
         <h1>
           {language === "en"
@@ -29,7 +28,7 @@ const ForestAndFieldFires = () => {
       </div>
       <div className="charts-section">
         <div className="chart-container">
-          <Chart1 chartInfo={Charts.nature[0].forestandfieldfires[0]} />
+          <Chart1 chartInfo={Charts.nature[2].forestandfieldfires[0]} />
         </div>
       </div>
     </div>

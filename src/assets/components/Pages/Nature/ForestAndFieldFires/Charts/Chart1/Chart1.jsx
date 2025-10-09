@@ -306,8 +306,8 @@ const Chart1 = ({ chartInfo }) => {
       setWindowWidth(window.innerWidth);
     };
 
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   // Handle substance selection
@@ -321,8 +321,7 @@ const Chart1 = ({ chartInfo }) => {
       <div
         className="chart-wrapper"
         id={chartInfo.id}
-        style={{ minWidth: "1000px" }}
-      >
+        style={{ minWidth: "1000px" }}>
         <div className="header">
           <div className="right">
             <div className="ll">
@@ -357,7 +356,10 @@ const Chart1 = ({ chartInfo }) => {
   // Show error state
   if (error) {
     return (
-      <div className="chart-wrapper" id={chartInfo.id} style={{ minWidth: "1000px" }}>
+      <div
+        className="chart-wrapper"
+        id={chartInfo.id}
+        style={{ minWidth: "1000px" }}>
         <div className="header">
           <div className="right">
             <div className="ll">
@@ -371,8 +373,7 @@ const Chart1 = ({ chartInfo }) => {
           <div className="left">
             <button
               className="retry-btn"
-              onClick={() => window.location.reload()}
-            >
+              onClick={() => window.location.reload()}>
               {language === "ge" ? "ხელახლა ცდა" : "Retry"}
             </button>
           </div>
@@ -383,8 +384,7 @@ const Chart1 = ({ chartInfo }) => {
             <p>{error}</p>
             <button
               className="retry-btn"
-              onClick={() => window.location.reload()}
-            >
+              onClick={() => window.location.reload()}>
               {language === "ge" ? "ხელახლა ჩატვირთვა" : "Reload Chart"}
             </button>
           </div>
@@ -394,11 +394,10 @@ const Chart1 = ({ chartInfo }) => {
   }
 
   return (
-    <div 
-      className="chart-wrapper" 
-      id={chartInfo.id} 
-      style={windowWidth > 1024 ? { minWidth: "1000px" } : {}}
-    >
+    <div
+      className="chart-wrapper"
+      id={chartInfo.chartID}
+      style={windowWidth > 1024 ? { minWidth: "1000px" } : {}}>
       <div className="header">
         <div className="right">
           <div className="ll">
@@ -432,8 +431,7 @@ const Chart1 = ({ chartInfo }) => {
             className={`city-item ${
               selectedSubstance === s.name ? "active" : ""
             }`}
-            onClick={() => handleSubstanceSelection(s.name)}
-          >
+            onClick={() => handleSubstanceSelection(s.name)}>
             {s.name}
           </span>
         ))}
@@ -447,8 +445,7 @@ const Chart1 = ({ chartInfo }) => {
           display: "flex",
           justifyContent: "center",
           width: "100%",
-        }}
-      >
+        }}>
         <GeorgiaMap selectedYear={year} selectedSubstance={selectedSubstance} />
       </div>
     </div>

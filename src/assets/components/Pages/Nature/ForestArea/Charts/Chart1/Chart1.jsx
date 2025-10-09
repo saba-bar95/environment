@@ -71,130 +71,133 @@ const Chart1 = ({ chartInfo }) => {
         // Fetch data from all 3 APIs with individual error handling
         const allData = [];
 
-      for (let i = 0; i < info.apiIds.length; i++) {
-        const apiId = info.apiIds[i];
+        for (let i = 0; i < info.apiIds.length; i++) {
+          const apiId = info.apiIds[i];
 
-        try {
-          const [dataResult, metaDataResult] = await Promise.all([
-            commonData(apiId, info.types[0], language),
-            commonData(apiId, info.types[1], language),
-          ]);
+          try {
+            const [dataResult, metaDataResult] = await Promise.all([
+              commonData(apiId, info.types[0], language),
+              commonData(apiId, info.types[1], language),
+            ]);
 
-          // Check if we got valid data
-          if (!dataResult?.data?.data) {
-            console.warn(`Invalid data structure for ${apiId}`);
-            continue;
-          }
-
-          // Handle different API structures
-          let yearList = [];
-          if (apiId === "forest-planting-recovery") {
-            // For forest-planting-recovery, years are directly in the data objects
-            yearList = dataResult.data.data.map((item) => ({
-              year: item.year.toString(),
-              id: item.year,
-            }));
-          } else {
-            // For other APIs, use metadata structure
-            if (!metaDataResult?.data?.metadata) {
-              console.warn(`Invalid metadata structure for ${apiId}`);
+            // Check if we got valid data
+            if (!dataResult?.data?.data) {
+              console.warn(`Invalid data structure for ${apiId}`);
               continue;
             }
-            yearList = metaDataResult.data.metadata.variables[1].valueTexts.map(
-              (year, id) => ({ year, id })
-            );
-          }
 
-          dataResult.data.data.forEach((yearObj) => {
-            const yearId = parseInt(yearObj.year);
-            const yearName =
-              yearList.find((y) => y.id === yearId)?.year || yearId;
-
+            // Handle different API structures
+            let yearList = [];
             if (apiId === "forest-planting-recovery") {
-              // Handle forest-planting-recovery API structure
-              // Process planting data (even categories: 0,2,4,6,8,10,12,14,16,18,20,22,24)
-              const plantingCategories = [
-                0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24,
-              ];
-              const recoveryCategories = [
-                1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25,
-              ];
-
-              // Sum up all planting values for this year
-              let plantingTotal = 0;
-              let recoveryTotal = 0;
-
-              plantingCategories.forEach((cat) => {
-                plantingTotal += parseFloat(yearObj[cat.toString()]) || 0;
-              });
-
-              recoveryCategories.forEach((cat) => {
-                recoveryTotal += parseFloat(yearObj[cat.toString()]) || 0;
-              });
-
-              // Add planting data
-              allData.push({
-                substance: substanceHeaders[2].name, // ტყის თესვა და დარგვა
-                year: parseInt(yearName),
-                value: plantingTotal,
-                id: 2,
-              });
-
-              // Add recovery data
-              allData.push({
-                substance: substanceHeaders[3].name, // ტყის ბუნებრივი განახლებისთვის ხელშეწყობა
-                year: parseInt(yearName),
-                value: recoveryTotal,
-                id: 3,
-              });
+              // For forest-planting-recovery, years are directly in the data objects
+              yearList = dataResult.data.data.map((item) => ({
+                year: item.year.toString(),
+                id: item.year,
+              }));
             } else {
-              // Handle regular API structure for felled-timber and illegal-logging
-              Object.keys(yearObj).forEach((key) => {
-                if (key === "year") return;
-
-                const value = parseFloat(yearObj[key]) || 0;
-
-                // Map data to substance headers based on API
-                if (i === 0) {
-                  // felled-timber-volume - ტყის ჭრით მიღებული ხე-ტყის მოცულობა
-                  allData.push({
-                    substance: substanceHeaders[0].name,
-                    year: parseInt(yearName),
-                    value: value,
-                    id: 0,
-                  });
-                } else if (i === 1) {
-                  // illegal-logging
-                  allData.push({
-                    substance: substanceHeaders[1].name,
-                    year: parseInt(yearName),
-                    value: value,
-                    id: 1,
-                  });
-                }
-              });
+              // For other APIs, use metadata structure
+              if (!metaDataResult?.data?.metadata) {
+                console.warn(`Invalid metadata structure for ${apiId}`);
+                continue;
+              }
+              yearList =
+                metaDataResult.data.metadata.variables[1].valueTexts.map(
+                  (year, id) => ({ year, id })
+                );
             }
-          });
-        } catch (error) {
-          console.error(`Error fetching data for ${apiId}:`, error);
-          // Continue with other APIs even if one fails
+
+            dataResult.data.data.forEach((yearObj) => {
+              const yearId = parseInt(yearObj.year);
+              const yearName =
+                yearList.find((y) => y.id === yearId)?.year || yearId;
+
+              if (apiId === "forest-planting-recovery") {
+                // Handle forest-planting-recovery API structure
+                // Process planting data (even categories: 0,2,4,6,8,10,12,14,16,18,20,22,24)
+                const plantingCategories = [
+                  0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24,
+                ];
+                const recoveryCategories = [
+                  1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25,
+                ];
+
+                // Sum up all planting values for this year
+                let plantingTotal = 0;
+                let recoveryTotal = 0;
+
+                plantingCategories.forEach((cat) => {
+                  plantingTotal += parseFloat(yearObj[cat.toString()]) || 0;
+                });
+
+                recoveryCategories.forEach((cat) => {
+                  recoveryTotal += parseFloat(yearObj[cat.toString()]) || 0;
+                });
+
+                // Add planting data
+                allData.push({
+                  substance: substanceHeaders[2].name, // ტყის თესვა და დარგვა
+                  year: parseInt(yearName),
+                  value: plantingTotal,
+                  id: 2,
+                });
+
+                // Add recovery data
+                allData.push({
+                  substance: substanceHeaders[3].name, // ტყის ბუნებრივი განახლებისთვის ხელშეწყობა
+                  year: parseInt(yearName),
+                  value: recoveryTotal,
+                  id: 3,
+                });
+              } else {
+                // Handle regular API structure for felled-timber and illegal-logging
+                Object.keys(yearObj).forEach((key) => {
+                  if (key === "year") return;
+
+                  const value = parseFloat(yearObj[key]) || 0;
+
+                  // Map data to substance headers based on API
+                  if (i === 0) {
+                    // felled-timber-volume - ტყის ჭრით მიღებული ხე-ტყის მოცულობა
+                    allData.push({
+                      substance: substanceHeaders[0].name,
+                      year: parseInt(yearName),
+                      value: value,
+                      id: 0,
+                    });
+                  } else if (i === 1) {
+                    // illegal-logging
+                    allData.push({
+                      substance: substanceHeaders[1].name,
+                      year: parseInt(yearName),
+                      value: value,
+                      id: 1,
+                    });
+                  }
+                });
+              }
+            });
+          } catch (error) {
+            console.error(`Error fetching data for ${apiId}:`, error);
+            // Continue with other APIs even if one fails
+          }
         }
-      }
 
-      setForestData(allData);
+        setForestData(allData);
 
-      // Extract unique years from the data for YearDropdown
-      const uniqueYears = [...new Set(allData.map((item) => item.year))].sort(
-        (a, b) => a - b
-      ); // Sort ascending (YearDropdown will reverse to show newest first)
-      setYears(uniqueYears);
+        // Extract unique years from the data for YearDropdown
+        const uniqueYears = [...new Set(allData.map((item) => item.year))].sort(
+          (a, b) => a - b
+        ); // Sort ascending (YearDropdown will reverse to show newest first)
+        setYears(uniqueYears);
 
-      setIsLoading(false);
+        setIsLoading(false);
       } catch (error) {
-        console.error('Error fetching forest data:', error);
-        setError(language === "ge" 
-          ? "მონაცემების ჩატვირთვისას მოხდა შეცდომა" 
-          : "Error loading data");
+        console.error("Error fetching forest data:", error);
+        setError(
+          language === "ge"
+            ? "მონაცემების ჩატვირთვისას მოხდა შეცდომა"
+            : "Error loading data"
+        );
         setIsLoading(false);
       }
     };
@@ -241,13 +244,29 @@ const Chart1 = ({ chartInfo }) => {
         { id: "GE-AJ", name_ge: "აჭარა", name_en: "Adjara" },
         { id: "GE-KA", name_ge: "კახეთი", name_en: "Kakheti" },
         { id: "GE-IM", name_ge: "იმერეთი", name_en: "Imereti" },
-        { id: "GE-RL", name_ge: "რაჭა-ლეჩხუმი და ქვემო სვანეთი", name_en: "Racha-Lechkhumi and Kvemo Svaneti" },
+        {
+          id: "GE-RL",
+          name_ge: "რაჭა-ლეჩხუმი და ქვემო სვანეთი",
+          name_en: "Racha-Lechkhumi and Kvemo Svaneti",
+        },
         { id: "GE-GU", name_ge: "გურია", name_en: "Guria" },
-        { id: "GE-SJ", name_ge: "სამცხე-ჯავახეთი", name_en: "Samtskhe-Javakheti" },
-        { id: "GE-MM", name_ge: "მცხეთა-მთიანეთი", name_en: "Mtskheta-Mtianeti" },
+        {
+          id: "GE-SJ",
+          name_ge: "სამცხე-ჯავახეთი",
+          name_en: "Samtskhe-Javakheti",
+        },
+        {
+          id: "GE-MM",
+          name_ge: "მცხეთა-მთიანეთი",
+          name_en: "Mtskheta-Mtianeti",
+        },
         { id: "GE-KK", name_ge: "ქვემო ქართლი", name_en: "Kvemo Kartli" },
         { id: "GE-SK", name_ge: "შიდა ქართლი", name_en: "Shida Kartli" },
-        { id: "GE-SZ", name_ge: "სამეგრელო-ზემო სვანეთი", name_en: "Samegrelo-Zemo Svaneti" },
+        {
+          id: "GE-SZ",
+          name_ge: "სამეგრელო-ზემო სვანეთი",
+          name_en: "Samegrelo-Zemo Svaneti",
+        },
       ];
 
       // Get API ID for the selected substance
@@ -259,7 +278,7 @@ const Chart1 = ({ chartInfo }) => {
         "Felled Timber Volume": "felled-timber-volume",
         "Illegal Logging": "illegal-logging",
         "Forest Planting": "forest-planting-recovery",
-        "Forest Recovery Support": "forest-planting-recovery"
+        "Forest Recovery Support": "forest-planting-recovery",
       };
 
       const apiId = substanceToApiId[selectedSubstance];
@@ -267,21 +286,21 @@ const Chart1 = ({ chartInfo }) => {
 
       try {
         const [dataResult] = await Promise.all([
-          commonData(apiId, "data", language)
+          commonData(apiId, "data", language),
         ]);
 
         const comprehensiveData = [];
-        
+
         // Process data for each year and region
         if (dataResult?.data?.data) {
           const dataArray = dataResult.data.data;
-          
-          dataArray.forEach(yearData => {
+
+          dataArray.forEach((yearData) => {
             const yearValue = yearData.year;
-            
-            regionMapping.forEach(region => {
+
+            regionMapping.forEach((region) => {
               let value = 0;
-              
+
               // Regional mapping logic (same as in GeorgiaMap)
               if (apiId === "forest-planting-recovery") {
                 const regionIdMapping = {
@@ -297,16 +316,23 @@ const Chart1 = ({ chartInfo }) => {
                   "GE-KK": { planting: 20, recovery: 21 },
                   "GE-SK": { planting: 22, recovery: 23 },
                 };
-                
+
                 const mappingKey = regionIdMapping[region.id];
                 if (mappingKey) {
                   let categoryKey;
-                  if (selectedSubstance === "ტყის თესვა და დარგვა" || selectedSubstance === "Forest Planting") {
+                  if (
+                    selectedSubstance === "ტყის თესვა და დარგვა" ||
+                    selectedSubstance === "Forest Planting"
+                  ) {
                     categoryKey = mappingKey.planting;
-                  } else if (selectedSubstance === "ტყის ბუნებრივი განახლებისთვის ხელშეწყობა" || selectedSubstance === "Forest Recovery Support") {
+                  } else if (
+                    selectedSubstance ===
+                      "ტყის ბუნებრივი განახლებისთვის ხელშეწყობა" ||
+                    selectedSubstance === "Forest Recovery Support"
+                  ) {
                     categoryKey = mappingKey.recovery;
                   }
-                  
+
                   if (categoryKey >= 0) {
                     value = parseFloat(yearData[categoryKey.toString()]) || 0;
                   }
@@ -314,28 +340,36 @@ const Chart1 = ({ chartInfo }) => {
               } else {
                 // Regular APIs (felled-timber-volume, illegal-logging)
                 const regionIdMapping = {
-                  "GE-TB": 1, "GE-AJ": 2, "GE-SZ": 3,
-                  "GE-GU": 4, "GE-IM": 5, "GE-RL": 6, "GE-SK": 7,
-                  "GE-MM": 8, "GE-KA": 9, "GE-KK": 10, "GE-SJ": 11,
+                  "GE-TB": 1,
+                  "GE-AJ": 2,
+                  "GE-SZ": 3,
+                  "GE-GU": 4,
+                  "GE-IM": 5,
+                  "GE-RL": 6,
+                  "GE-SK": 7,
+                  "GE-MM": 8,
+                  "GE-KA": 9,
+                  "GE-KK": 10,
+                  "GE-SJ": 11,
                 };
-                
+
                 const apiRegionId = regionIdMapping[region.id];
                 if (apiRegionId >= 0) {
                   value = parseFloat(yearData[apiRegionId.toString()]) || 0;
                 }
               }
-              
+
               comprehensiveData.push({
-                region: language === 'en' ? region.name_en : region.name_ge,
+                region: language === "en" ? region.name_en : region.name_ge,
                 year: yearValue,
                 value: value,
                 substance: selectedSubstance,
-                unit: language === "ge" ? info.unit_ge : info.unit_en
+                unit: language === "ge" ? info.unit_ge : info.unit_en,
               });
             });
           });
         }
-        
+
         setMapDataForDownload(comprehensiveData);
       } catch (error) {
         console.error("Error fetching map data for download:", error);
@@ -360,9 +394,7 @@ const Chart1 = ({ chartInfo }) => {
               <Svg />
             </div>
             <div className="rr">
-              <h1>
-                {language === "ge" ? info.title_ge : info.title_en}
-              </h1>
+              <h1>{language === "ge" ? info.title_ge : info.title_en}</h1>
               <p>{language === "ge" ? info.unit_ge : info.unit_en}</p>
             </div>
           </div>
@@ -397,9 +429,7 @@ const Chart1 = ({ chartInfo }) => {
               <Svg />
             </div>
             <div className="rr">
-              <h1>
-                {language === "ge" ? info.title_ge : info.title_en}
-              </h1>
+              <h1>{language === "ge" ? info.title_ge : info.title_en}</h1>
               <p>{language === "ge" ? info.unit_ge : info.unit_en}</p>
             </div>
           </div>
@@ -427,7 +457,7 @@ const Chart1 = ({ chartInfo }) => {
   }
 
   return (
-    <div className="chart-wrapper" id={chartInfo.id}>
+    <div className="chart-wrapper" id={chartInfo.chartID}>
       <div className="header">
         <div className="right">
           <div className="ll">

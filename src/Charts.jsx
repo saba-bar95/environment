@@ -108,8 +108,12 @@ const rawCharts = {
         {
           title_ge: "საქართველოს დაცული ტერიტორიები",
           title_en: "Protected areas of Georgia",
+          path_ge: "ტყის ფართობი",
+          path_en: "Forest Area",
         },
       ],
+    },
+    {
       forestarea: [
         {
           title_ge:
@@ -120,6 +124,8 @@ const rawCharts = {
           path_en: "Forest Area",
         },
       ],
+    },
+    {
       forestandfieldfires: [
         {
           title_ge: "ტყისა და ველის ხანძრები რეგიონების მიხედვით",
