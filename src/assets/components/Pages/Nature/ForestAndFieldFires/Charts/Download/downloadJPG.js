@@ -1,20 +1,23 @@
 import html2canvas from "html2canvas";
 
 const downloadJPG = (e, filename = "Forest Fires Chart", language = "en") => {
-  // Find the closest parent element with the class 'chart-wrapper'
-  const chartElement = e.target.closest(".chart-wrapper");
-  if (!chartElement) {
-    console.warn("Chart element not found for JPG download");
+  // Find the Georgia map container specifically
+  const mapElement = document.querySelector("#georgia-map-container");
+  if (!mapElement) {
+    console.warn("Georgia map container not found for JPG download");
     return;
   }
+  
+  // Also get chart wrapper for hiding dropdowns
+  const chartElement = e.target.closest(".chart-wrapper");
 
   // Hide the dropdown content and tooltips to avoid capturing them
   const dropdownContent = e.target
     .closest(".download-container")
     ?.querySelector(".dropdown-content");
   
-  // Hide any visible tooltips
-  const tooltips = chartElement.querySelectorAll('.custom-tooltip');
+  // Hide any visible tooltips (check both chart wrapper and map container)
+  const tooltips = (chartElement || mapElement).querySelectorAll('.custom-tooltip');
   const originalTooltipDisplays = [];
   
   tooltips.forEach((tooltip, index) => {
@@ -35,8 +38,8 @@ const downloadJPG = (e, filename = "Forest Fires Chart", language = "en") => {
       scale: 2, // Higher quality
       backgroundColor: "#ffffff", // White background
       logging: false,
-      width: chartElement.offsetWidth,
-      height: chartElement.offsetHeight,
+      width: mapElement.offsetWidth,
+      height: mapElement.offsetHeight,
       ignoreElements: (element) => {
         // Ignore dropdown elements, tooltips, and other UI components that shouldn't be captured
         return element.classList?.contains('dropdown-content') || 
@@ -53,7 +56,7 @@ const downloadJPG = (e, filename = "Forest Fires Chart", language = "en") => {
       }
     };
 
-    html2canvas(chartElement, options)
+    html2canvas(mapElement, options)
       .then((canvas) => {
         // Create download link
         const link = document.createElement("a");
