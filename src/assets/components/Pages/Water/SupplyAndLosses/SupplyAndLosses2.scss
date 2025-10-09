@@ -23,6 +23,10 @@
     max-width: 1400px;
   }
 
+  .recharts-default-legend {
+    margin-left: 50px;
+  }
+
   /* Tablet to Mid breakpoint */
   @media (min-width: calc($tablet + 1px)) and (max-width: $mid) {
     .header-container1 {
