@@ -20,7 +20,7 @@ const Chart1 = ({ chartInfo }) => {
   const [pollution, setPollution] = useState(null);
   const [chartData, setChartData] = useState(null);
   const [activeBars, setActiveBars] = useState([]);
-  const [year, setYear] = useState(2023);
+  const [year, setYear] = useState(null);
   const [years, setYears] = useState(null);
   const [isLoading, setIsLoading] = useState(true); // Add loading state
   const [error, setError] = useState(null); // Add error state
@@ -66,6 +66,12 @@ const Chart1 = ({ chartInfo }) => {
         const years = metaDataResult.data.metadata.variables[1].valueTexts.map(
           (year, i) => ({ year: year, id: i })
         );
+        const latestYear = Math.max(
+          ...years.map((item) => parseInt(item.year))
+        );
+
+        setYear(latestYear);
+
         setYears(metaDataResult.data.metadata.variables[1].valueTexts);
 
         const pollution = metaDataResult.data.metadata.variables[2].valueTexts
