@@ -58,7 +58,7 @@ const Reports = () => {
       colors: ["#63b8e9ff", "#91a0a8ff"],
       id: "material-flow-indicators",
       types: ["data", "metadata"],
-      selectedIndices: [1, 0],
+      selectedIndices: [1, 23],
       chartID: info[3].chartID,
     },
     {
