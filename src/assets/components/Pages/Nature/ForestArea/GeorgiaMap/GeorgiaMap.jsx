@@ -164,8 +164,8 @@ const GeorgiaMap = ({ selectedYear = 2023, selectedSubstance = null }) => {
           "GE-TB": 1,
           "GE-AB": -2,
           "GE-AJ": 2,
-          "GE-SZ": 3,
-          "GE-GU": 4,
+          "GE-GU": 3,
+          "GE-SZ": 4,
           "GE-IM": 5,
           "GE-RL": 6,
           "GE-SK": 7,
@@ -446,10 +446,10 @@ const GeorgiaMap = ({ selectedYear = 2023, selectedSubstance = null }) => {
       }
     };
 
-    window.addEventListener('resize', handleResize);
-    
+    window.addEventListener("resize", handleResize);
+
     return () => {
-      window.removeEventListener('resize', handleResize);
+      window.removeEventListener("resize", handleResize);
     };
   }, []);
 
@@ -466,7 +466,8 @@ const GeorgiaMap = ({ selectedYear = 2023, selectedSubstance = null }) => {
         borderRadius: "16px",
         margin: "0 auto",
         overflow: "hidden",
-      }}>
+      }}
+    >
       <div
         id="georgia-map-container"
         style={{
@@ -475,7 +476,8 @@ const GeorgiaMap = ({ selectedYear = 2023, selectedSubstance = null }) => {
           left: "0",
           width: "100%",
           height: "100%",
-        }}></div>
+        }}
+      ></div>
 
       {/* Dynamic Tooltip - only shows when hovering over a region */}
       {currentRegionData && hoveredRegion && (
@@ -491,16 +493,23 @@ const GeorgiaMap = ({ selectedYear = 2023, selectedSubstance = null }) => {
             boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
             display: "block",
             zIndex: 1000,
-            minWidth: window.innerWidth <= 480 ? "200px" : window.innerWidth <= 768 ? "240px" : "280px",
+            minWidth:
+              window.innerWidth <= 480
+                ? "200px"
+                : window.innerWidth <= 768
+                ? "240px"
+                : "280px",
             maxWidth: window.innerWidth <= 480 ? "250px" : "320px",
             pointerEvents: "none",
-          }}>
+          }}
+        >
           <div
             style={{
               display: "flex",
               flexDirection: "column",
               gap: "8px",
-            }}>
+            }}
+          >
             <div
               style={{
                 fontFamily: "'FiraGO', Arial, sans-serif",
@@ -509,17 +518,24 @@ const GeorgiaMap = ({ selectedYear = 2023, selectedSubstance = null }) => {
                 color: "#FFFFFF",
                 lineHeight: "1.4",
                 marginBottom: "4px",
-              }}>
+              }}
+            >
               {currentRegionData.name}
             </div>
             <div
               style={{
                 fontFamily: "'FiraGO', Arial, sans-serif",
-                fontSize: window.innerWidth <= 480 ? "18px" : window.innerWidth <= 768 ? "20px" : "24px",
+                fontSize:
+                  window.innerWidth <= 480
+                    ? "18px"
+                    : window.innerWidth <= 768
+                    ? "20px"
+                    : "24px",
                 fontWeight: 600,
                 color: "#48BB78",
                 lineHeight: "1.2",
-              }}>
+              }}
+            >
               {currentRegionData.id === "GE-AB" && currentRegionData.value === 0
                 ? "-"
                 : `${currentRegionData.value.toLocaleString()} ${
@@ -540,7 +556,8 @@ const GeorgiaMap = ({ selectedYear = 2023, selectedSubstance = null }) => {
               borderTop: "8px solid transparent",
               borderBottom: "8px solid transparent",
               borderRight: "8px solid #2D3748",
-            }}></div>
+            }}
+          ></div>
         </div>
       )}
 
