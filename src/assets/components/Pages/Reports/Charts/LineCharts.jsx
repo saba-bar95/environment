@@ -212,18 +212,27 @@ const LineChart1 = ({ chartInfo }) => {
           {payload.map(({ value, stroke, dataKey }) => {
             const text = selectedTexts.find((t) => t.name === dataKey);
             return (
-              <p key={`item-${dataKey}`} className="text">
-                <span
-                  style={{
-                    backgroundColor: stroke,
-                    flexShrink: 0,
-                    width: 12,
-                    height: 12,
-                    display: "inline-block",
-                    marginRight: 8,
-                  }}
-                  className="before-span"></span>
-                {text?.name} :
+              <p
+                key={`item-${dataKey}`}
+                className="text"
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  gap: "10px",
+                  alignItems: "center",
+                }}>
+                <div>
+                  <span
+                    style={{
+                      backgroundColor: stroke,
+                      width: 12,
+                      height: 12,
+                      display: "inline-block",
+                      marginRight: 8,
+                    }}
+                    className="before-span"></span>
+                  {text?.name} :
+                </div>
                 <span style={{ fontWeight: 900, marginLeft: "5px" }}>
                   {value?.toFixed(2)}
                 </span>
