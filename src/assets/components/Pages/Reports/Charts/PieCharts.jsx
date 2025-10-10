@@ -406,6 +406,7 @@ const PieChartComponent = ({ chartInfo }) => {
             filename={`${chartInfo[`title_${language}`]} (${year})`}
             unit={chartInfo[`unit_${language}`]}
             isPieChart={true}
+            year={year}
           />
         </div>
       </div>

@@ -7,7 +7,7 @@ const downloadExcel = (
   isPieChart,
   bcwy,
   language,
-  year = "2025"
+  year
 ) => {
   const isGeorgian = language === "ge";
 
