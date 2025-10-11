@@ -9,66 +9,104 @@ function cleanId(id, fallback = "untitled", index = 0) {
 }
 
 const rawCharts = {
+  waste: [
+    {
+      title_ge: "ნაგავსაყრელზე ჯამურად განთავსებული მუნიციპალური ნარჩენები",
+      title_en: "Total Municipal Waste Disposed Of in Landfills",
+      path_ge: "მუნიციპალური ნარჩენები",
+      path_en: "municipal waste",
+    },
+    {
+      title_ge: "მუნიციპალური ნარჩენები ერთ სულ მოსახლეზე",
+      title_en: "Municipal waste per capita",
+      path_ge: "მუნიციპალური ნარჩენები",
+      path_en: "municipal waste",
+    },
+    {
+      title_ge: "ნარჩენების წარმოქმნა მოსახლეობასთან მიმართებით",
+      title_en: "Waste generation in relation to population",
+      path_ge: "მუნიციპალური ნარჩენები",
+      path_en: "municipal waste",
+    },
+    {
+      title_ge: "ნარჩენების ჯამური რაოდენობის წლიური ზრდა",
+      title_en: "Annual growth in total waste",
+      path_ge: "მუნიციპალური ნარჩენები",
+      path_en: "municipal waste",
+    },
+    {
+      title_ge: "ნარჩენების ინტენსივობა ერთ სულ მოსახლეზე",
+      title_en: "Waste intensity per capita",
+      path_ge: "მუნიციპალური ნარჩენები",
+      path_en: "municipal waste",
+    },
+    {
+      title_ge: "მუნიციპალური მყარი ნარჩენების საილუსტრაციო შემადგენლობა",
+      title_en: "Illustrative composition of municipal solid waste",
+      path_ge: "მუნიციპალური ნარჩენები",
+      path_en: "municipal waste",
+    },
+  ],
   transport: [
     {
       title_ge: "სამგზავრო გადაყვანების მოცულობა",
       title_en: "Passenger Capacity",
       path_ge: "ტრანსპორტის სტატისტიკა",
-      path_en: "Transport Statistics",
+      path_en: "transport statistics",
     },
     {
       title_ge: "სატვირთო გადაზიდვების მოცულობა",
       title_en: "Freight Transportation Volume",
       path_ge: "ტრანსპორტის სტატისტიკა",
-      path_en: "Transport Statistics",
+      path_en: "transport statistics",
     },
     {
       title_ge: "სამგზავრო გადაყვანები ტრანსპორტის სახეების მიხედვით",
       title_en: "Passenger Transfers by Type of Transport",
       path_ge: "ტრანსპორტის სტატისტიკა",
-      path_en: "Transport Statistics",
+      path_en: "transport statistics",
     },
     {
       title_ge: "სატვირთო გადაზიდვები ტრანსპორტის სახეების მიხედვით",
       title_en: "Freight Transfers by Type of Transport",
       path_ge: "ტრანსპორტის სტატისტიკა",
-      path_en: "Transport Statistics",
+      path_en: "transport statistics",
     },
     {
       title_ge: "სამგზავრო გადაყვანების განაწილება",
       title_en: "Distribution of Passenger Transfers",
       path_ge: "ტრანსპორტის სტატისტიკა",
-      path_en: "Transport Statistics",
+      path_en: "transport statistics",
     },
     {
       title_ge: "სატვირთო გადაზიდვების განაწილება",
       title_en: "Distribution of Freight Transfers",
       path_ge: "ტრანსპორტის სტატისტიკა",
-      path_en: "Transport Statistics",
+      path_en: "transport statistics",
     },
     {
       title_ge: "სატვირთო გადაზიდვების ინტენსივობა მშპ-სთან მიმართებით",
       title_en: "Freight transport intensity in relation to GDP",
       path_ge: "ტრანსპორტის სტატისტიკა",
-      path_en: "Transport Statistics",
+      path_en: "transport statistics",
     },
     {
       title_ge: "სამგზავრო გადაყვანებზე მოთხოვნა ერთ სულ მოსახლეზე",
       title_en: "Per Capita Demand for Passenger Transport",
       path_ge: "ტრანსპორტის სტატისტიკა",
-      path_en: "Transport Statistics",
+      path_en: "transport statistics",
     },
     {
       title_ge: "საავტომობილო ტრანსპორტი: სამგზავრო და სატვირთოს შედარება",
       title_en: "Road transport: comparison of passenger and freight transport",
       path_ge: "ტრანსპორტის სტატისტიკა",
-      path_en: "Transport Statistics",
+      path_en: "transport statistics",
     },
     {
       title_ge: "სარკინიგზო ტრანსპორტი: სამგზავრო და სატვირთოს შედარება",
       title_en: "Rail transport: passenger and freight comparison",
       path_ge: "ტრანსპორტის სტატისტიკა",
-      path_en: "Transport Statistics",
+      path_en: "transport statistics",
     },
   ],
   energy: [
