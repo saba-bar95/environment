@@ -9,6 +9,130 @@ function cleanId(id, fallback = "untitled", index = 0) {
 }
 
 const rawCharts = {
+  transport: [
+    {
+      title_ge: "სამგზავრო გადაყვანების მოცულობა",
+      title_en: "Passenger Capacity",
+      path_ge: "ტრანსპორტის სტატისტიკა",
+      path_en: "Transport Statistics",
+    },
+    {
+      title_ge: "სატვირთო გადაზიდვების მოცულობა",
+      title_en: "Freight Transportation Volume",
+      path_ge: "ტრანსპორტის სტატისტიკა",
+      path_en: "Transport Statistics",
+    },
+    {
+      title_ge: "სამგზავრო გადაყვანები ტრანსპორტის სახეების მიხედვით",
+      title_en: "Passenger Transfers by Type of Transport",
+      path_ge: "ტრანსპორტის სტატისტიკა",
+      path_en: "Transport Statistics",
+    },
+    {
+      title_ge: "სატვირთო გადაზიდვები ტრანსპორტის სახეების მიხედვით",
+      title_en: "Freight Transfers by Type of Transport",
+      path_ge: "ტრანსპორტის სტატისტიკა",
+      path_en: "Transport Statistics",
+    },
+    {
+      title_ge: "სამგზავრო გადაყვანების განაწილება",
+      title_en: "Distribution of Passenger Transfers",
+      path_ge: "ტრანსპორტის სტატისტიკა",
+      path_en: "Transport Statistics",
+    },
+    {
+      title_ge: "სატვირთო გადაზიდვების განაწილება",
+      title_en: "Distribution of Freight Transfers",
+      path_ge: "ტრანსპორტის სტატისტიკა",
+      path_en: "Transport Statistics",
+    },
+    {
+      title_ge: "სატვირთო გადაზიდვების ინტენსივობა მშპ-სთან მიმართებით",
+      title_en: "Freight transport intensity in relation to GDP",
+      path_ge: "ტრანსპორტის სტატისტიკა",
+      path_en: "Transport Statistics",
+    },
+    {
+      title_ge: "სამგზავრო გადაყვანებზე მოთხოვნა ერთ სულ მოსახლეზე",
+      title_en: "Per Capita Demand for Passenger Transport",
+      path_ge: "ტრანსპორტის სტატისტიკა",
+      path_en: "Transport Statistics",
+    },
+    {
+      title_ge: "საავტომობილო ტრანსპორტი: სამგზავრო და სატვირთოს შედარება",
+      title_en: "Road transport: comparison of passenger and freight transport",
+      path_ge: "ტრანსპორტის სტატისტიკა",
+      path_en: "Transport Statistics",
+    },
+    {
+      title_ge: "სარკინიგზო ტრანსპორტი: სამგზავრო და სატვირთოს შედარება",
+      title_en: "Rail transport: passenger and freight comparison",
+      path_ge: "ტრანსპორტის სტატისტიკა",
+      path_en: "Transport Statistics",
+    },
+  ],
+  energy: [
+    {
+      title_ge: "მოხმარების ზრდა სექტორების მიხედვით",
+      title_en: "According to Consumption Growth",
+      path_ge: "საქართველოს ენერგეტიკის გარემოსდაცვითი მაჩვენებლები",
+      path_en: "environmental performance of georgian energy sector",
+    },
+    {
+      title_ge: "მოხმარების სტრუქტურა",
+      title_en: "Consumption Structure",
+      path_ge: "საქართველოს ენერგეტიკის გარემოსდაცვითი მაჩვენებლები",
+      path_en: "environmental performance of georgian energy sector",
+    },
+    {
+      title_ge: "მოხმარების სექტორების მიხედვით (%)",
+      title_en: "By Consumption Sectors (%)",
+      path_ge: "საქართველოს ენერგეტიკის გარემოსდაცვითი მაჩვენებლები",
+      path_en: "environmental performance of georgian energy sector",
+    },
+    {
+      title_ge: "პირველადი მომარაგების შემადგენლობა",
+      title_en: "Composition of Primary Supply",
+      path_ge: "საქართველოს ენერგეტიკის გარემოსდაცვითი მაჩვენებლები",
+      path_en: "environmental performance of georgian energy sector",
+    },
+    {
+      title_ge: "ენერგიის წარმოება vs. ვაჭრობა",
+      title_en: "Energy Production vs. Trade",
+      path_ge: "საქართველოს ენერგეტიკის გარემოსდაცვითი მაჩვენებლები",
+      path_en: "environmental performance of georgian energy sector",
+    },
+    {
+      title_ge: "ენერგოინტენსივობა მშპ-სთან მიმართებით",
+      title_en: "Energy Intensity in Relation to GDP",
+      path_ge: "საქართველოს ენერგეტიკის გარემოსდაცვითი მაჩვენებლები",
+      path_en: "environmental performance of georgian energy sector",
+    },
+    {
+      title_ge: "ენერგოინტენსივობის წლიური ცვლილება",
+      title_en: "Annual Change in Energy Intensity",
+      path_ge: "საქართველოს ენერგეტიკის გარემოსდაცვითი მაჩვენებლები",
+      path_en: "environmental performance of georgian energy sector",
+    },
+    {
+      title_ge: "განახლებადი ენერგიის მომარაგების ზრდა ტიპების მიხედვით",
+      title_en: "Renewable Energy Supply Growth by Type",
+      path_ge: "საქართველოს ენერგეტიკის გარემოსდაცვითი მაჩვენებლები",
+      path_en: "environmental performance of georgian energy sector",
+    },
+    {
+      title_ge: "განახლებადი ენერგიის სტრუქტურა",
+      title_en: "Renewable Energy Structure",
+      path_ge: "საქართველოს ენერგეტიკის გარემოსდაცვითი მაჩვენებლები",
+      path_en: "environmental performance of georgian energy sector",
+    },
+    {
+      title_ge: "განახლებადი ენერგიის წილი მთლიან ენერგომომარაგებაში",
+      title_en: "Share of Renewable Energy in Total Energy Supply",
+      path_ge: "საქართველოს ენერგეტიკის გარემოსდაცვითი მაჩვენებლები",
+      path_en: "environmental performance of georgian energy sector",
+    },
+  ],
   air: [
     {
       title_ge:
