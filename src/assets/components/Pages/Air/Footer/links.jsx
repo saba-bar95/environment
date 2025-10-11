@@ -17,12 +17,12 @@ const links = [
     name_en: "Emissions Map",
     link: "http://map.emoe.gov.ge/#",
   },
-  {
-    backgroundColor: "#4c545fff",
-    background: background3,
-    name_ge: "ჰაერის დაბინძურების კალკულატორი",
-    name_en: "Air Pollution Calculator",
-    link: "https://calculator.cleanairhub.org.uk/",
-  },
+  // {
+  //   backgroundColor: "#4c545fff",
+  //   background: background3,
+  //   name_ge: "ჰაერის დაბინძურების კალკულატორი",
+  //   name_en: "Air Pollution Calculator",
+  //   link: "https://calculator.cleanairhub.org.uk/",
+  // },
 ];
 export default links;
