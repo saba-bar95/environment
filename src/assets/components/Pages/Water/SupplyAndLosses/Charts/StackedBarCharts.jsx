@@ -223,7 +223,7 @@ const StackedBarCharts = ({ chartInfo }) => {
                   gap: "10px",
                   alignItems: "center",
                 }}>
-                <div>
+                <span>
                   <span
                     style={{
                       backgroundColor: stroke,
@@ -234,7 +234,7 @@ const StackedBarCharts = ({ chartInfo }) => {
                     }}
                     className="before-span"></span>
                   {text?.name} :
-                </div>
+                </span>
                 <span style={{ fontWeight: 900, marginLeft: "5px" }}>
                   {value?.toFixed(2)}
                 </span>
