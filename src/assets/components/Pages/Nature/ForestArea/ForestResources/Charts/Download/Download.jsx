@@ -1,15 +1,15 @@
-import "../../../../../Download/Download.scss";
+import "../../../../../../Download/Download.scss";
 import { useState, useRef, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import downloadPNG from "../../../../../Download/downloadPNG";
-import downloadJPG from "../../../../../Download/downloadJPG";
+import downloadPNG from "../../../../../../Download/downloadPNG";
+import downloadJPG from "../../../../../../Download/downloadJPG";
 import downloadExcel from "./downloadExcel";
 import downloadPDF from "./downloadPDF";
-import Dots from "../../../../../Download/Svgs/Dots";
-import Excel from "../../../../../Download/Svgs/Excel";
-import PDF from "../../../../../Download/Svgs/PDF";
-import JPG from "../../../../../Download/Svgs/JPG";
-import PNG from "../../../../../Download/Svgs/PNG";
+import Dots from "../../../../../../Download/Svgs/Dots";
+import Excel from "../../../../../../Download/Svgs/Excel";
+import PDF from "../../../../../../Download/Svgs/PDF";
+import JPG from "../../../../../../Download/Svgs/JPG";
+import PNG from "../../../../../../Download/Svgs/PNG";
 
 const Download = ({ data, mapData, year, unit, filename, isMapData }) => {
   const [open, setOpen] = useState(false);
@@ -48,8 +48,7 @@ const Download = ({ data, mapData, year, unit, filename, isMapData }) => {
         onClick={(event) => {
           event.stopPropagation();
           handleToggle();
-        }}
-      >
+        }}>
         <Dots />
       </div>
       {open && (
@@ -69,8 +68,7 @@ const Download = ({ data, mapData, year, unit, filename, isMapData }) => {
                   isMapData
                 );
                 setOpen(false); // Close dropdown
-              }}
-            >
+              }}>
               <Excel />
               <p>Excel</p>
             </div>
@@ -91,8 +89,7 @@ const Download = ({ data, mapData, year, unit, filename, isMapData }) => {
                   isMapData
                 );
                 setOpen(false); // Close dropdown
-              }}
-            >
+              }}>
               <PDF />
               <p>PDF</p>
             </div>
@@ -104,8 +101,7 @@ const Download = ({ data, mapData, year, unit, filename, isMapData }) => {
               onClick={(e) => {
                 downloadJPG(e);
                 setOpen(false); // Close dropdown
-              }}
-            >
+              }}>
               <JPG />
               <p>JPG</p>
             </div>
@@ -114,8 +110,7 @@ const Download = ({ data, mapData, year, unit, filename, isMapData }) => {
               onClick={(e) => {
                 downloadPNG(e);
                 setOpen(false); // Close dropdown
-              }}
-            >
+              }}>
               <PNG />
               <p>PNG</p>
             </div>

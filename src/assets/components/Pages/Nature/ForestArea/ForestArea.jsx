@@ -1,7 +1,7 @@
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import backgroundImg from "./Background/background.jpg";
-import Charts from "../../../../../Charts";
-import Chart1 from "./Charts/Chart1/Chart1";
+import Arrow from "./Svg/Arrow";
+import Children from "./Children/Children";
 
 const ForestArea = () => {
   const { language } = useParams();
@@ -22,9 +22,36 @@ const ForestArea = () => {
             : "ტყის საფარის და ტყითსარგებლობის ტენდენციების სტატისტიკა"}{" "}
         </h2>
       </div>
-      <div className="charts-section">
-        <div className="chart-container">
-          <Chart1 chartInfo={Charts.nature[1].forestarea[0]} />
+
+      <div className="children-container">
+        <div className="wrapper">
+          {Children.map((child, i) => {
+            return (
+              <Link key={i} to={`/${language}/${child.href}`}>
+                <div className="child-wrapper">
+                  <div className="child-background-container">
+                    <div
+                      className="child-background-inner"
+                      style={{
+                        backgroundImage: `url(${child.background})`,
+                      }}></div>
+                  </div>
+
+                  <h1>{child.text[language].header1}</h1>
+                  <h2>{child.text[language].header2}</h2>
+                  <div>
+                    <p>
+                      {language === "en" ? "View in detail" : "დეტალურად ნახვა"}{" "}
+                      <span>
+                        {" "}
+                        <Arrow />{" "}
+                      </span>
+                    </p>
+                  </div>
+                </div>
+              </Link>
+            );
+          })}
         </div>
       </div>
     </div>

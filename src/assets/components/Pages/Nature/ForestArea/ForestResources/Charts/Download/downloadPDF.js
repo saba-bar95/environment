@@ -1,6 +1,6 @@
 import { jsPDF } from "jspdf";
 import { autoTable } from "jspdf-autotable";
-import georgianFont from "../../../../../../fonts/NotoSansGeorgian_ExtraCondensed-Bold.ttf";
+import georgianFont from "../../../../../../../fonts/NotoSansGeorgian_ExtraCondensed-Bold.ttf";
 
 const downloadPDF = (
   data,
@@ -32,15 +32,17 @@ const downloadPDF = (
     const regionHeader = isGeorgian ? "რეგიონი" : "Region";
     const valueHeader = isGeorgian ? "მნიშვნელობა" : "Value";
     const substanceHeader = isGeorgian ? "ტიპი" : "Type";
-    
-    const tableHead = [[regionHeader, yearHeader, valueHeader, substanceHeader]];
-    
+
+    const tableHead = [
+      [regionHeader, yearHeader, valueHeader, substanceHeader],
+    ];
+
     // Map the comprehensive data to table format
-    const tableBody = mapData.map(item => [
+    const tableBody = mapData.map((item) => [
       item.region,
       item.year,
       item.value,
-      item.substance
+      item.substance,
     ]);
 
     autoTable(doc, {
@@ -54,10 +56,10 @@ const downloadPDF = (
       headStyles: {
         fillColor: [66, 139, 202], // Blue header
         textColor: [255, 255, 255],
-        fontStyle: 'bold'
+        fontStyle: "bold",
       },
       margin: { top: 20 },
-      pageBreak: 'auto',
+      pageBreak: "auto",
     });
 
     const firstItem = mapData[0];

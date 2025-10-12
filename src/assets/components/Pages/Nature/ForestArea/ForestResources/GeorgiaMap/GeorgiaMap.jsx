@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import * as am5 from "@amcharts/amcharts5";
 import * as am5map from "@amcharts/amcharts5/map";
 import * as am5geodata_georgiaHigh from "@amcharts/amcharts5-geodata/georgiaLow";
-import commonData from "../../../../../fetchFunctions/commonData";
+import commonData from "../../../../../../fetchFunctions/commonData";
 import "./GeorgiaMap.scss";
 
 const GeorgiaMap = ({ selectedYear = 2023, selectedSubstance = null }) => {
@@ -466,8 +466,7 @@ const GeorgiaMap = ({ selectedYear = 2023, selectedSubstance = null }) => {
         borderRadius: "16px",
         margin: "0 auto",
         overflow: "hidden",
-      }}
-    >
+      }}>
       <div
         id="georgia-map-container"
         style={{
@@ -476,8 +475,7 @@ const GeorgiaMap = ({ selectedYear = 2023, selectedSubstance = null }) => {
           left: "0",
           width: "100%",
           height: "100%",
-        }}
-      ></div>
+        }}></div>
 
       {/* Dynamic Tooltip - only shows when hovering over a region */}
       {currentRegionData && hoveredRegion && (
@@ -501,15 +499,13 @@ const GeorgiaMap = ({ selectedYear = 2023, selectedSubstance = null }) => {
                 : "280px",
             maxWidth: window.innerWidth <= 480 ? "250px" : "320px",
             pointerEvents: "none",
-          }}
-        >
+          }}>
           <div
             style={{
               display: "flex",
               flexDirection: "column",
               gap: "8px",
-            }}
-          >
+            }}>
             <div
               style={{
                 fontFamily: "'FiraGO', Arial, sans-serif",
@@ -518,8 +514,7 @@ const GeorgiaMap = ({ selectedYear = 2023, selectedSubstance = null }) => {
                 color: "#FFFFFF",
                 lineHeight: "1.4",
                 marginBottom: "4px",
-              }}
-            >
+              }}>
               {currentRegionData.name}
             </div>
             <div
@@ -534,8 +529,7 @@ const GeorgiaMap = ({ selectedYear = 2023, selectedSubstance = null }) => {
                 fontWeight: 600,
                 color: "#48BB78",
                 lineHeight: "1.2",
-              }}
-            >
+              }}>
               {currentRegionData.id === "GE-AB" && currentRegionData.value === 0
                 ? "-"
                 : `${currentRegionData.value.toLocaleString()} ${
@@ -556,8 +550,7 @@ const GeorgiaMap = ({ selectedYear = 2023, selectedSubstance = null }) => {
               borderTop: "8px solid transparent",
               borderBottom: "8px solid transparent",
               borderRight: "8px solid #2D3748",
-            }}
-          ></div>
+            }}></div>
         </div>
       )}
 

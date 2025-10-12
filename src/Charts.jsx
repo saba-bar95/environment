@@ -316,12 +316,36 @@ const rawCharts = {
     {
       forestarea: [
         {
-          title_ge:
-            "მოჭრილი მერქნის მოცულობა, უკანონო ჭრა და ტყის განახლება საქართველოში (2013–2023)",
-          title_en:
-            "Volume of harvested timber, illegal logging and forest regeneration in Georgia (2013–2023)",
-          path_ge: "ტყის ფართობი",
-          path_en: "Forest Area",
+          forestResources: [
+            {
+              title_ge:
+                "მოჭრილი მერქნის მოცულობა, უკანონო ჭრა და ტყის განახლება საქართველოში (2013–2023)",
+              title_en:
+                "Volume of harvested timber, illegal logging and forest regeneration in Georgia (2013–2023)",
+              path_ge: "ტყის რესურსები",
+              path_en: "Forest Resources",
+            },
+          ],
+        },
+        {
+          timber: [
+            {
+              title_ge: "",
+              title_en: "",
+              path_ge: "დაუმუშავებელი მერქნის იმპორტი და ექსპორტი",
+              path_en: "Import and Export of Unprocessed Timber",
+            },
+          ],
+        },
+        {
+          inventorization: [
+            {
+              title_ge: "",
+              title_en: "",
+              path_ge: "ტყის ეროვნული ინვენტარიზაცია",
+              path_en: "National Forest Inventory",
+            },
+          ],
         },
       ],
     },

@@ -1,11 +1,11 @@
 import { useEffect, useState, useMemo } from "react";
 import Svg from "./Svg";
 import { useParams } from "react-router-dom";
-import commonData from "../../../../../../fetchFunctions/commonData";
-import YearDropdown from "../../../../../YearDropdown/YearDropdown";
+import commonData from "../../../../../../../fetchFunctions/commonData";
+import YearDropdown from "../../../../../../YearDropdown/YearDropdown";
 import Download from "../Download/Download";
 import GeorgiaMap from "../../GeorgiaMap/GeorgiaMap";
-import "../../../../../../../assets/styles/SpinnerAndError.scss";
+import "../../../../../../../../assets/styles/SpinnerAndError.scss";
 
 const Chart1 = ({ chartInfo }) => {
   const { language } = useParams();
