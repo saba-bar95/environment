@@ -21,11 +21,14 @@ import Majors from "./assets/components/Pages/Water/Majors/Majors";
 import Protection from "./assets/components/Pages/Water/Protection/Protection";
 import SupplyAndLosses from "./assets/components/Pages/Water/SupplyAndLosses/SupplyAndLosses";
 import Trace from "./assets/components/Pages/Water/Trace/Trace";
-
 // Nature Children Pages
 import ProtectedAreas from "./assets/components/Pages/Nature/ProtectedAreas/ProtectedAreas";
 import ForestAndFieldFires from "./assets/components/Pages/Nature/ForestAndFieldFires/ForestAndFieldFires";
 import ForestArea from "./assets/components/Pages/Nature/ForestArea/ForestArea";
+// ForestArea Pages
+import ForestResources from "./assets/components/Pages/Nature/ForestArea/ForestResources/ForestResources";
+import Inventorization from "./assets/components/Pages/Nature/ForestArea/Inventorization/Inventorization";
+import Timber from "./assets/components/Pages/Nature/ForestArea/Timber/Timber";
 
 const routes = [
   {
@@ -61,6 +64,16 @@ const routes = [
       { path: "nature/protectedareas", element: <ProtectedAreas /> },
       { path: "nature/forestandfieldfires", element: <ForestAndFieldFires /> },
       { path: "nature/forestarea", element: <ForestArea /> },
+      // Forest Area Paths
+      {
+        path: "nature/forestarea/forestresources",
+        element: <ForestResources />,
+      },
+      { path: "nature/forestarea/timber", element: <Timber /> },
+      {
+        path: "nature/forestarea/inventorization",
+        element: <Inventorization />,
+      },
     ],
   },
 ];
