@@ -9,6 +9,44 @@ function cleanId(id, fallback = "untitled", index = 0) {
 }
 
 const rawCharts = {
+  other: [
+    {
+      title_ge: "პესტიციდების ჯამური მოხმარების დინამიკა",
+      title_en: "Dynamics of Total Pesticide Consumption",
+      path_ge: "სხვა გარემოსდაცვითი თემები",
+      path_en: "other environmental topics",
+    },
+    {
+      title_ge: "პესტიციდების ინტენსივობა",
+      title_en: "Pesticide Intensity",
+      path_ge: "სხვა გარემოსდაცვითი თემები",
+      path_en: "other environmental topics",
+    },
+    {
+      title_ge: "პესტიციდების მოხმარება ტიპების მიხედვით (ტონა)",
+      title_en: "Pesticide Consumption by Type (tons)",
+      path_ge: "სხვა გარემოსდაცვითი თემები",
+      path_en: "other environmental topics",
+    },
+    {
+      title_ge: "მინერალური და ორგანული სასუქების გამოყენება",
+      title_en: "Use of Mineral and Organic Fertilizers",
+      path_ge: "სხვა გარემოსდაცვითი თემები",
+      path_en: "other environmental topics",
+    },
+    {
+      title_ge: "სასუქების ჯამური ინტენსივობა",
+      title_en: "Total Fertilizer Intensity",
+      path_ge: "სხვა გარემოსდაცვითი თემები",
+      path_en: "other environmental topics",
+    },
+    {
+      title_ge: "დამუშავებული სასოფლო-სამეურნეო ფართობი",
+      title_en: "Cultivated agricultural area",
+      path_ge: "სხვა გარემოსდაცვითი თემები",
+      path_en: "other environmental topics",
+    },
+  ],
   waste: [
     {
       title_ge: "ნაგავსაყრელზე ჯამურად განთავსებული მუნიციპალური ნარჩენები",
