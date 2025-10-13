@@ -76,7 +76,7 @@ const Waste = () => {
       colors: ["#1678e7ff"],
       id: "fertilizer-use",
       types: ["data", "metadata"],
-      selectedIndices: [15],
+      selectedIndices: [19],
       chartID: info[4].chartID,
     },
     {
