@@ -85,6 +85,125 @@ const CompromisedCharts = ({ chartInfo }) => {
     getData();
   }, [language, chartInfo]);
 
+  // Custom Legend Component
+  const CustomLegend = () => {
+    const visibleCount = Object.values(visibleItems).filter(Boolean).length;
+
+    return (
+      <ul className="recharts-default-legend">
+        {selectedTexts.map((text, index) => (
+          <li
+            key={`legend-item-${text.name}`}
+            className={`recharts-legend-item legend-item-${index}`}
+            onClick={() => {
+              // Prevent toggling off if this is the last visible item
+              if (visibleItems[text.name] && visibleCount <= 1) return;
+
+              setVisibleItems((prev) => ({
+                ...prev,
+                [text.name]: !prev[text.name],
+              }));
+            }}
+            style={{
+              cursor: "pointer",
+              opacity: visibleItems[text.name] ? 1 : 0.5,
+            }}>
+            <span
+              className="recharts-legend-item-icon"
+              style={{
+                backgroundColor:
+                  chartInfo.colors[index % chartInfo.colors.length],
+                flexShrink: 0,
+                width: 12,
+                height: 12,
+                display: "inline-block",
+                marginRight: 8,
+                borderRadius: 0,
+              }}></span>
+            <span className="recharts-legend-item-text">{text.name}</span>
+          </li>
+        ))}
+      </ul>
+    );
+  };
+
+  // Enhanced Custom Tooltip Component to handle dual axes
+  const CustomTooltip = ({ active, payload, label }) => {
+    if (!active || !payload || !payload.length) return null;
+
+    return (
+      <div className="custom-tooltip">
+        <div className="tooltip-container">
+          <p className="tooltip-label">
+            {label} {language === "en" ? "Year" : "წელი"}
+          </p>
+          {payload.map(({ value, stroke, dataKey }) => {
+            const text = selectedTexts.find((t) => t.name === dataKey);
+
+            return (
+              <p
+                key={`item-${dataKey}`}
+                className="text"
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  gap: "10px",
+                  alignItems: "center",
+                }}>
+                <span>
+                  <span
+                    style={{
+                      backgroundColor: stroke,
+                      width: 12,
+                      height: 12,
+                      display: "inline-block",
+                      marginRight: 8,
+                    }}
+                    className="before-span"></span>
+                  {text?.name}:
+                </span>
+                <span style={{ fontWeight: 900, marginLeft: "5px" }}>
+                  {value?.toFixed(2)}
+                </span>
+              </p>
+            );
+          })}
+        </div>
+      </div>
+    );
+  };
+
+  // Show empty state if no data
+  if (chartData.length === 0) {
+    return (
+      <div className="chart-wrapper" id={chartInfo.chartID}>
+        <div className="header">
+          <div className="right">
+            <div className="ll"></div>
+            <div className="rr">
+              <h1>
+                {language === "ge" ? chartInfo.title_ge : chartInfo.title_en}
+              </h1>
+              <p>{language === "ge" ? chartInfo.unit_ge : chartInfo.unit_en}</p>
+            </div>
+          </div>
+          <div className="left">
+            <div className="download-placeholder">
+              {language === "ge"
+                ? "მონაცემები არ მოიძებნა"
+                : "No data to download"}
+            </div>
+          </div>
+        </div>
+        <div className="empty-state">
+          <p>
+            {language === "ge" ? "მონაცემები არ მოიძებნა" : "No data available"}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   // Show loading state
   if (isLoading) {
     return (
@@ -157,125 +276,6 @@ const CompromisedCharts = ({ chartInfo }) => {
     );
   }
 
-  // Custom Legend Component
-  const CustomLegend = () => {
-    const visibleCount = Object.values(visibleItems).filter(Boolean).length;
-
-    return (
-      <ul className="recharts-default-legend">
-        {selectedTexts.map((text, index) => (
-          <li
-            key={`legend-item-${text.name}`}
-            className={`recharts-legend-item legend-item-${index}`}
-            onClick={() => {
-              // Prevent toggling off if this is the last visible item
-              if (visibleItems[text.name] && visibleCount <= 1) return;
-
-              setVisibleItems((prev) => ({
-                ...prev,
-                [text.name]: !prev[text.name],
-              }));
-            }}
-            style={{
-              cursor: "pointer",
-              opacity: visibleItems[text.name] ? 1 : 0.5,
-            }}>
-            <span
-              className="recharts-legend-item-icon"
-              style={{
-                backgroundColor:
-                  chartInfo.colors[index % chartInfo.colors.length],
-                flexShrink: 0,
-                width: 12,
-                height: 12,
-                display: "inline-block",
-                marginRight: 8,
-                borderRadius: 0,
-              }}></span>
-            <span className="recharts-legend-item-text">{text.name}</span>
-          </li>
-        ))}
-      </ul>
-    );
-  };
-
-  // Custom Tooltip Component
-  const CustomTooltip = ({ active, payload, label }) => {
-    if (!active || !payload || !payload.length) return null;
-
-    return (
-      <div className="custom-tooltip">
-        <div className="tooltip-container">
-          <p className="tooltip-label">
-            {label} {language === "en" ? "Year" : "წელი"}
-          </p>
-          {payload.map(({ value, stroke, dataKey }) => {
-            const text = selectedTexts.find((t) => t.name === dataKey);
-
-            return (
-              <p
-                key={`item-${dataKey}`}
-                className="text"
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  gap: "10px",
-                  alignItems: "center",
-                }}>
-                <span>
-                  <span
-                    style={{
-                      backgroundColor: stroke,
-                      width: 12,
-                      height: 12,
-                      display: "inline-block",
-                      marginRight: 8,
-                    }}
-                    className="before-span"></span>
-                  {text?.name} :
-                </span>
-                <span style={{ fontWeight: 900, marginLeft: "5px" }}>
-                  {value?.toFixed(2)}
-                </span>
-              </p>
-            );
-          })}
-        </div>
-      </div>
-    );
-  };
-
-  // Show empty state if no data
-  if (chartData.length === 0) {
-    return (
-      <div className="chart-wrapper" id={chartInfo.chartID}>
-        <div className="header">
-          <div className="right">
-            <div className="ll"></div>
-            <div className="rr">
-              <h1>
-                {language === "ge" ? chartInfo.title_ge : chartInfo.title_en}
-              </h1>
-              <p>{language === "ge" ? chartInfo.unit_ge : chartInfo.unit_en}</p>
-            </div>
-          </div>
-          <div className="left">
-            <div className="download-placeholder">
-              {language === "ge"
-                ? "მონაცემები არ მოიძებნა"
-                : "No data to download"}
-            </div>
-          </div>
-        </div>
-        <div className="empty-state">
-          <p>
-            {language === "ge" ? "მონაცემები არ მოიძებნა" : "No data available"}
-          </p>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="chart-wrapper" id={chartInfo.chartID}>
       <div className="header">
@@ -301,7 +301,41 @@ const CompromisedCharts = ({ chartInfo }) => {
         <ComposedChart data={chartData} stackOffset="sign">
           <CartesianGrid strokeDasharray="3 3" vertical={false} />
           <XAxis dataKey="year" tick={{ fontSize: 15 }} tickLine={false} />
-          <YAxis tick={{ fontSize: 12 }} />
+
+          {/* Left Y-Axis for Bar - Auto scaling */}
+          <YAxis
+            yAxisId="left"
+            tick={{ fontSize: 12 }}
+            stroke="#666"
+            orientation="left"
+            label={{
+              value: language === "en" ? "Thousand tonnes" : "ათასი ტონა",
+              angle: -90,
+              position: "insideLeft",
+              style: {
+                textAnchor: "middle",
+                fontSize: 12,
+                fontFamily: "FiraGO",
+              },
+            }}
+          />
+
+          {/* Right Y-Axis for Lines - Custom domain starting from 3.5 */}
+          <YAxis
+            yAxisId="right"
+            tick={{ fontSize: 12 }}
+            stroke="#666"
+            orientation="right"
+            domain={[3.5, "auto"]} // Start from 3.5, auto scale max
+            label={{
+              value: language === "en" ? "Million People" : "მილიონი ადამიანი",
+              angle: 90,
+              position: "insideRight",
+              fontFamily: "FiraGO",
+              style: { textAnchor: "middle", fontSize: 12 },
+            }}
+          />
+
           <Tooltip content={<CustomTooltip />} />
           <Legend
             wrapperStyle={{ marginBottom: -20 }}
@@ -310,9 +344,11 @@ const CompromisedCharts = ({ chartInfo }) => {
             align="center"
           />
 
+          {/* Bar with left Y-axis */}
           {selectedTexts.length > 0 && visibleItems[selectedTexts[0]?.name] && (
             <Bar
               key={`bar-${selectedTexts[0]?.name}`}
+              yAxisId="left"
               dataKey={selectedTexts[0]?.name}
               fill={chartInfo.colors[0]}
               stroke={chartInfo.colors[0]}
@@ -321,10 +357,12 @@ const CompromisedCharts = ({ chartInfo }) => {
             />
           )}
 
+          {/* Lines with right Y-axis */}
           {selectedTexts.slice(1).map((text, index) =>
             visibleItems[text.name] ? (
               <Line
                 key={`line-${text.name}`}
+                yAxisId="right"
                 type="monotone"
                 dataKey={text.name}
                 stroke={chartInfo.colors[(index + 1) % chartInfo.colors.length]}
