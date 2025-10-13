@@ -10,7 +10,8 @@ const downloadPDF = (
   bcwy,
   language,
   year,
-  sbcwp
+  sbcwp,
+  isVertical
 ) => {
   const isGeorgian = language === "ge";
 
@@ -34,6 +35,46 @@ const downloadPDF = (
   const yearHeader = isGeorgian ? "წელი" : "Year";
   const nameHeader = isGeorgian ? "დასახელება" : "Name";
   const unitHeader = unit; // Use unit parameter as header
+
+  if (isVertical) {
+    // Create table head
+    const tableHead = [[nameHeader, unitHeader]];
+
+    // Create table body
+    const tableBody = data.map((item) => [
+      item.name,
+      Number(item.value).toFixed(2),
+    ]);
+
+    // Add table to PDF
+    autoTable(doc, {
+      head: tableHead,
+      body: tableBody,
+      styles: {
+        font: isGeorgian ? "NotoSansGeorgian" : "helvetica",
+        fontStyle: "normal",
+        fontSize: 10,
+        cellPadding: 2,
+      },
+      headStyles: {
+        fontStyle: "bold",
+        fillColor: [200, 200, 200], // Light gray background for header
+        textColor: [0, 0, 0], // Black text
+      },
+      margin: { top: 20 },
+      columnStyles: {
+        0: { cellWidth: 80 }, // Wider column for name
+        1: { cellWidth: 30 }, // Year column
+      },
+    });
+
+    // Generate filename
+    const finalFilename = `${filename}.pdf`;
+
+    // Save the PDF
+    doc.save(finalFilename);
+    return;
+  }
 
   if (sbcwp) {
     // Get headers for values (exclude 'year' and percentage fields)

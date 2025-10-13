@@ -7,31 +7,37 @@ import {
   CartesianGrid,
   Tooltip,
   Legend,
+  Cell,
   ResponsiveContainer,
-  Brush,
 } from "recharts";
 import { useParams } from "react-router-dom";
-import commonData from "../../../../fetchFunctions/commonData";
+import commonData from "../../../../../fetchFunctions/commonData";
 import Download from "./Download/Download";
+import YearDropdown from "../../../../YearDropdown/YearDropdown";
 
-const BarChartsFull = ({ chartInfo }) => {
+const VerticalBarCharts = ({ chartInfo }) => {
   const { language } = useParams();
   const [chartData, setChartData] = useState([]);
+  const [barData, setBarData] = useState([]);
   const [selectedTexts, setSelectedTexts] = useState([]);
   const [visibleBars, setVisibleBars] = useState({});
+  const [year, setYear] = useState(null);
+  const [years, setYears] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [colorMap, setColorMap] = useState({});
+  const [width, setWidth] = useState(window.innerWidth);
 
-  // Function to determine color based on value
-  const getBarColor = (value, colors) => {
-    if (value < 240) {
-      return colors[0]; // First color for values below 240
-    } else if (value >= 240 && value <= 299) {
-      return colors[1]; // Second color for values 240-299
-    } else {
-      return colors[2]; // Third color for values above 299
-    }
-  };
+  useEffect(() => {
+    const handleResize = () => {
+      const newWidth = window.innerWidth;
+      setWidth(newWidth);
+    };
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, [width]);
 
   // Fetch and process data
   useEffect(() => {
@@ -56,6 +62,12 @@ const BarChartsFull = ({ chartInfo }) => {
 
         setSelectedTexts(selected);
 
+        const newColorMap = selected.reduce((acc, text, index) => {
+          acc[text.name] = chartInfo.colors[index % chartInfo.colors.length];
+          return acc;
+        }, {});
+        setColorMap(newColorMap);
+
         setVisibleBars(
           selected.reduce((acc, text) => {
             acc[text.name] = true;
@@ -68,17 +80,23 @@ const BarChartsFull = ({ chartInfo }) => {
             (year, i) => ({ year: year, id: i })
           ) || [];
 
-        const rawData = dataResult?.data?.data || [];
+        const availableYears = yearData.map((item) => item.year);
+        setYears(availableYears);
 
-        // Process chartData (no need to precompute colors anymore)
+        if (availableYears.length > 0) {
+          const latestYear = Math.max(...availableYears).toString();
+          setYear(+latestYear);
+        }
+
+        const rawData = dataResult.data.data || [];
+
         const processedData = yearData
           .map(({ year }) => {
-            const dataItem = rawData.find((item) => item.year == year);
+            const dataItem = rawData.find((item) => item.year === Number(year));
             if (!dataItem) return null;
             const dataPoint = { year };
             selected.forEach((text) => {
-              const value = dataItem[String(text.id)];
-              dataPoint[text.name] = value;
+              dataPoint[text.name] = dataItem[String(text.id)];
             });
             return dataPoint;
           })
@@ -86,7 +104,7 @@ const BarChartsFull = ({ chartInfo }) => {
 
         setChartData(processedData);
       } catch (error) {
-        console.log("Error fetching data:", error);
+        console.error("Error fetching data:", error);
         setError("Failed to load chart data. Please try again.");
       } finally {
         setIsLoading(false);
@@ -96,7 +114,28 @@ const BarChartsFull = ({ chartInfo }) => {
     getData();
   }, [language, chartInfo]);
 
-  // Show loading state
+  // Transform chartData for the selected year into barData, sorted descending by value
+  useEffect(() => {
+    const selectedYearData = chartData.find(
+      (item) => item.year === String(year)
+    );
+    if (selectedYearData) {
+      let transformedData = selectedTexts
+        .filter((text) => visibleBars[text.name])
+        .map((text) => ({
+          name: text.name,
+          value: selectedYearData[text.name] || 0,
+          color: colorMap[text.name],
+        }));
+      // Sort descending by value
+      transformedData.sort((a, b) => b.value - a.value);
+      setBarData(transformedData);
+    } else {
+      setBarData([]);
+    }
+  }, [chartData, year, visibleBars, selectedTexts, colorMap]);
+
+  // Loading state
   if (isLoading) {
     return (
       <div className="chart-wrapper" id={chartInfo.chartID}>
@@ -131,7 +170,7 @@ const BarChartsFull = ({ chartInfo }) => {
     );
   }
 
-  // Show error state
+  // Error state
   if (error) {
     return (
       <div className="chart-wrapper" id={chartInfo.chartID}>
@@ -168,73 +207,39 @@ const BarChartsFull = ({ chartInfo }) => {
     );
   }
 
-  // Custom Legend Component
-  const CustomLegend = () => {
-    const visibleBarCount = Object.values(visibleBars).filter(Boolean).length;
-
-    return (
-      <ul className="recharts-default-legend">
-        {selectedTexts.map((text, index) => (
-          <li
-            key={`legend-item-${text.name}`}
-            className={`recharts-legend-item legend-item-${index}`}
-            onClick={() => {
-              if (visibleBars[text.name] && visibleBarCount === 1) {
-                return;
-              }
-              setVisibleBars((prev) => ({
-                ...prev,
-                [text.name]: !prev[text.name],
-              }));
-            }}
-            style={{
-              cursor: "pointer",
-              opacity: visibleBars[text.name] ? 1 : 0.5,
-            }}>
-            <span
-              className="recharts-legend-item-icon"
-              style={{
-                backgroundColor:
-                  chartInfo.colors[index % chartInfo.colors.length],
-                flexShrink: 0,
-                width: 12,
-                height: 12,
-                display: "inline-block",
-                marginRight: 8,
-              }}></span>
-            <span className="recharts-legend-item-text">{text.name}</span>
-          </li>
-        ))}
-      </ul>
-    );
-  };
-
-  // Custom Tooltip Component (with color added for consistency)
-  const CustomTooltip = ({ active, payload, label }) => {
+  // Custom Tooltip
+  const CustomTooltip = ({ active, payload }) => {
     if (!active || !payload || !payload.length) return null;
+
+    const color = payload[0].payload.color;
+    const name = payload[0].payload.name;
 
     return (
       <div className="custom-tooltip">
         <div className="tooltip-container">
-          <p className="tooltip-label">
-            {label} {language === "en" ? "Year" : "წელი"}
-          </p>
           {payload.map(({ value, dataKey }) => {
-            const text = selectedTexts.find((t) => t.name === dataKey);
-            const color = getBarColor(value, chartInfo.colors);
             return (
-              <p key={`item-${dataKey}`} className="text">
-                <span
-                  style={{
-                    backgroundColor: color,
-                    flexShrink: 0,
-                    width: 12,
-                    height: 12,
-                    display: "inline-block",
-                    marginRight: 8,
-                  }}
-                  className="before-span"></span>
-                {text?.name} :
+              <p
+                key={`item-${dataKey}`}
+                className="text"
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  gap: "10px",
+                  alignItems: "center",
+                }}>
+                <span>
+                  <span
+                    style={{
+                      backgroundColor: color,
+                      width: 12,
+                      height: 12,
+                      display: "inline-block",
+                      marginRight: 8,
+                    }}
+                    className="before-span"></span>
+                  {name}:
+                </span>
                 <span style={{ fontWeight: 900, marginLeft: "5px" }}>
                   {value?.toFixed(2)}
                 </span>
@@ -246,8 +251,8 @@ const BarChartsFull = ({ chartInfo }) => {
     );
   };
 
-  // Show empty state if no data
-  if (chartData.length === 0) {
+  // Empty state
+  if (barData.length === 0) {
     return (
       <div className="chart-wrapper" id={chartInfo.chartID}>
         <div className="header">
@@ -278,8 +283,11 @@ const BarChartsFull = ({ chartInfo }) => {
   }
 
   return (
-    <div className="chart-wrapper" id={chartInfo.chartID}>
-      <div className="header">
+    <div
+      className="chart-wrapper"
+      id={chartInfo.chartID}
+      style={width > 1200 ? chartInfo?.wrapperStyles : {}}>
+      <div className="header" style={{ marginBottom: 0 }}>
         <div className="right">
           <div className="ll"></div>
           <div className="rr">
@@ -290,61 +298,48 @@ const BarChartsFull = ({ chartInfo }) => {
           </div>
         </div>
         <div className="left">
+          <YearDropdown years={years} year={year} setYear={setYear} />
           <Download
-            data={chartData}
-            filename={chartInfo[`title_${language}`]}
+            data={barData}
+            filename={`${chartInfo[`title_${language}`]} (${year})`}
             unit={chartInfo[`unit_${language}`]}
+            isVertical={true}
+            year={year}
           />
         </div>
       </div>
 
       <ResponsiveContainer width="100%" height={460}>
-        <BarChart data={chartData} stackOffset="sign">
-          <CartesianGrid strokeDasharray="3 3" vertical={false} />
-          <XAxis dataKey="year" tick={{ fontSize: 15 }} tickLine={false} />
-          <YAxis tick={{ fontSize: 12 }} />
+        <BarChart
+          data={barData}
+          margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+          layout="vertical">
+          <CartesianGrid strokeDasharray="3 3" horizontal={false} />
+          <YAxis
+            dataKey="name"
+            type="category"
+            tick={{ fontSize: 13 }}
+            tickLine={false}
+            axisLine={false}
+            width={150}
+          />
+          <XAxis
+            type="number"
+            tick={{ fontSize: 12 }}
+            tickLine={false}
+            axisLine={false}
+          />
           <Tooltip content={<CustomTooltip />} />
-          <Legend
-            wrapperStyle={{ marginBottom: -20 }}
-            content={<CustomLegend />}
-            verticalAlign="bottom"
-            align="center"
-          />
-          {selectedTexts.map((text) =>
-            visibleBars[text.name] ? (
-              <Bar
-                key={`bar-${text.name}`}
-                dataKey={text.name}
-                name={text.name}
-                // Custom shape to render bar with dynamic color based on value
-                shape={(props) => {
-                  const { value, x, y, width, height } = props;
-                  const color = getBarColor(value, chartInfo.colors);
 
-                  return (
-                    <rect
-                      x={x}
-                      y={y}
-                      width={width}
-                      height={height}
-                      fill={color}
-                      stroke={color}
-                    />
-                  );
-                }}
-              />
-            ) : null
-          )}
-          <Brush
-            dataKey="year"
-            height={20}
-            stroke="#8884d8"
-            travellerWidth={5}
-          />
+          <Bar dataKey="value" barSize={15}>
+            {barData.map((entry, index) => (
+              <Cell key={`cell-${index}`} fill={entry.color || "#8884d8"} />
+            ))}
+          </Bar>
         </BarChart>
       </ResponsiveContainer>
     </div>
   );
 };
 
-export default BarChartsFull;
+export default VerticalBarCharts;

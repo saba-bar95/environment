@@ -8,7 +8,8 @@ const downloadExcel = (
   bcwy,
   language,
   year,
-  sbcwp
+  sbcwp,
+  isVertical
 ) => {
   const isGeorgian = language === "ge";
 
@@ -21,6 +22,32 @@ const downloadExcel = (
   const yearHeader = isGeorgian ? "წელი" : "Year";
   const nameHeader = isGeorgian ? "დასახელება" : "Name";
   const unitHeader = unit || " "; // Use unit parameter as header
+
+  if (isVertical) {
+    // Create headers based on language
+    const nameHeader = isGeorgian ? "დასახელება" : "Name";
+    const unitHeader = unit || (isGeorgian ? "რაოდენობა" : "Value");
+
+    // Transform data into vertical format
+    const worksheetData = data.map((item) => ({
+      [nameHeader]: item.name,
+      [unitHeader]: item.value,
+    }));
+
+    // Create worksheet and workbook
+    const worksheet = XLSX.utils.json_to_sheet(worksheetData, {
+      header: [nameHeader, unitHeader],
+    });
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "VerticalData");
+
+    // Generate filename
+    const finalFilename = `${filename}.xlsx`;
+
+    // Generate and download the Excel file
+    XLSX.writeFile(workbook, finalFilename);
+    return;
+  }
 
   if (sbcwp) {
     // Get headers for values (exclude 'year' and percentage fields)
