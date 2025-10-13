@@ -309,7 +309,49 @@ const rawCharts = {
           title_ge: "საქართველოს დაცული ტერიტორიები",
           title_en: "Protected areas of Georgia",
           path_ge: "ტყის ფართობი",
-          path_en: "Forest Area",
+          path_en: "Protected Areas",
+        },
+        {
+          title_ge: "ძირითადი მტაცებლების პოპულაციები",
+          title_en: "Populations of Key redators",
+          path_ge: "ტყის ფართობი",
+          path_en: "Protected Areas",
+        },
+        {
+          title_ge: "ბალახისმჭამელების პოპულაციები",
+          title_en: "Herbivore Populations",
+          path_ge: "ტყის ფართობი",
+          path_en: "Protected Areas",
+        },
+        {
+          title_ge: "ქურციკის პოპულაციის აღდგენა",
+          title_en: "Restoration of The Kurtsik Population",
+          path_ge: "ტყის ფართობი",
+          path_en: "Protected Areas",
+        },
+        {
+          title_ge: "ძუძუმწოვრების პოპულაციები დაცულ ტერიტორიებზე",
+          title_en: "Mammal Populations in Protected Areas",
+          path_ge: "ტყის ფართობი",
+          path_en: "Protected Areas",
+        },
+        {
+          title_ge: "ძირითადი მტაცებელი ფრინველების პოპულაციები",
+          title_en: "Population of Major Birds of Prey",
+          path_ge: "ტყის ფართობი",
+          path_en: "Protected Areas",
+        },
+        {
+          title_ge: "სანადირო ფრინველების პოპულაციები",
+          title_en: "Populations of Game Birds",
+          path_ge: "ტყის ფართობი",
+          path_en: "Protected Areas",
+        },
+        {
+          title_ge: "ფრინველების პოპულაციები დაცულ ტერიტორიებზე",
+          title_en: "Bird Populations in Protected Areas",
+          path_ge: "ტყის ფართობი",
+          path_en: "Protected Areas",
         },
       ],
     },
@@ -378,7 +420,50 @@ const rawCharts = {
       ],
     },
     {
-      protection: [],
+      protection: [
+        {
+          title_ge: "წყლის აღება ბუნებრივი ობიექტებიდან",
+          title_en: "Water extraction from natural sources",
+          path_ge:
+            "ბუნებრივი ობიექტებიდან წყლის აღების ტრენდები საქართველოში (2017-2023)",
+          path_en:
+            "Trends in Water Abstraction from Natural Sources in Georgia (2017-2023)",
+        },
+        {
+          title_ge: "წყლის გამოყენება სექტორების მიხედვით",
+          title_en: "Water use by sector",
+          path_ge:
+            "ბუნებრივი ობიექტებიდან წყლის აღების ტრენდები საქართველოში (2017-2023)",
+          path_en:
+            "Trends in Water Abstraction from Natural Sources in Georgia (2017-2023)",
+        },
+        {
+          title_ge:
+            "წყლის დანაკარგები ტრანსპორტირებისას და ბრუნვითი და მეორადი მიმდევრობითი წყალმომარაგება",
+          title_en:
+            "Water losses during transportation and circulating and secondary sequential water supply",
+          path_ge:
+            "ბუნებრივი ობიექტებიდან წყლის აღების ტრენდები საქართველოში (2017-2023)",
+          path_en:
+            "Trends in Water Abstraction from Natural Sources in Georgia (2017-2023)",
+        },
+        {
+          title_ge: "ჩამდინარე წყლის ჩაშვება ზედაპირული წყლის ობიექტებში, სულ",
+          title_en: "Wastewater discharge into surface water bodies, total",
+          path_ge:
+            "ბუნებრივი ობიექტებიდან წყლის აღების ტრენდები საქართველოში (2017-2023)",
+          path_en:
+            "Trends in Water Abstraction from Natural Sources in Georgia (2017-2023)",
+        },
+        {
+          title_ge: "წყლის გამოყენების განაწილება სექტორების მიხედვით, %",
+          title_en: "Distribution of water use by sectors, %",
+          path_ge:
+            "ბუნებრივი ობიექტებიდან წყლის აღების ტრენდები საქართველოში (2017-2023)",
+          path_en:
+            "Trends in Water Abstraction from Natural Sources in Georgia (2017-2023)",
+        },
+      ],
     },
     {
       supplyandlosses: [

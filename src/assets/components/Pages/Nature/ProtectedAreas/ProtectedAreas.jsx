@@ -5,12 +5,12 @@ import Charts from "../../../../../Charts";
 import { useEffect } from "react";
 import Header from "./Header/Header";
 import Footer from "./Footer/Footer";
+import LineChart1 from "./Charts/LineCharts";
 
 const ProtectedAreas = () => {
   const { language } = useParams();
   const location = useLocation(); // Get the current location to access hash
-
-  const info = Charts.nature[0].protectedAreas[0];
+  const info = Charts.nature[0].protectedAreas;
 
   useEffect(() => {
     if (location.hash) {
@@ -22,8 +22,21 @@ const ProtectedAreas = () => {
     }
   }, [location.hash]); // Re-run when the hash changes
 
+  const ChartInfo = [
+    {},
+    {
+      title_ge: info[1].title_ge,
+      title_en: info[1].title_en,
+      colors: ["#552a08ff", "#4c534eff", "#f7a72fff"],
+      id: "municipal-waste",
+      types: ["data", "metadata"],
+      selectedIndices: [0, 4, 6],
+      chartID: info[1].chartID,
+    },
+  ];
+
   return (
-    <div className="section-container">
+    <div className="section-container supply-and-losses">
       <div
         className="background-container"
         style={{
@@ -44,7 +57,33 @@ const ProtectedAreas = () => {
       </div>
       <Header />
       <div className="charts-section">
-        <GeoMapContainer chartInfo={info} />
+        <GeoMapContainer chartInfo={info[0]} />
+        <div className="chart-container">
+          <div
+            className="header-container1"
+            style={{
+              borderBottom: "2px solid green",
+              width: "100%",
+              paddingBottom: "10px",
+              gridColumn: "1/3",
+            }}>
+            <h1
+              className="title-text"
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                gap: "10px",
+                margin: "auto",
+                width: "90%",
+              }}>
+              {language === "en"
+                ? "Protected Mammal Species"
+                : "დაცული ძუძუმწოვრების სახეობები"}
+            </h1>
+          </div>
+          <LineChart1 chartInfo={ChartInfo[1]} />
+        </div>
       </div>
       <Footer />
     </div>
