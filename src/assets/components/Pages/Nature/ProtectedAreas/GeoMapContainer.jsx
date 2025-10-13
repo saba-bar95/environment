@@ -698,6 +698,7 @@ const GeoMapContainer = ({ chartInfo }) => {
         width: "90%",
         padding: "20px",
         borderRadius: "15px",
+        zIndex: 0,
       }}>
       <div className="map-header flex justify-between items-center mb-2">
         <div className="map-header-buttons space-x-2">
