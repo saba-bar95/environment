@@ -23,7 +23,7 @@ const Quality = () => {
                   </span>
                   {el[`name_${language}`]}
                 </h2>
-                <h1>{el.num}</h1>
+                <h1 style={{ color: el.textColor }}>{el.num}</h1>
               </div>
             </div>
           </div>
