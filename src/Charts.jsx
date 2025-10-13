@@ -1,11 +1,10 @@
-// Utility function to clean and normalize ID strings
 function cleanId(id, fallback = "untitled", index = 0) {
   if (!id) return `${fallback}-${index}`;
   return id
     .toLowerCase()
     .trim()
-    .replace(/\s+/g, "-") // Replace spaces with hyphens
-    .replace(/[^a-z0-9-]/g, ""); // Remove non-alphanumeric except hyphens
+    .replace(/\s+/g, "-")
+    .replace(/[^a-z0-9-]/g, "");
 }
 
 const rawCharts = {
@@ -579,7 +578,6 @@ const rawCharts = {
   ],
 };
 
-// Recursively normalize chart objects
 function normalizeCharts(data, fallbackPrefix = "chart") {
   const usedIds = new Set();
 
@@ -615,7 +613,6 @@ function normalizeCharts(data, fallbackPrefix = "chart") {
   return data;
 }
 
-// Apply normalization to each top-level path
 const Charts = Object.fromEntries(
   Object.entries(rawCharts).map(([path, charts]) => [
     path,

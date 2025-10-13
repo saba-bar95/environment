@@ -480,7 +480,7 @@ const Chart3 = ({ chartInfo }) => {
           <CartesianGrid strokeDasharray="3 3" vertical={false} />
           <XAxis dataKey="year" tick={{ fontSize: 15 }} tickLine={false} />
           <YAxis tick={{ fontSize: 12 }} />
-          <Tooltip content={<CustomTooltip />} />
+          <Tooltip content={<CustomTooltip />} />`
           <Legend
             wrapperStyle={{ marginBottom: -20 }}
             content={<CustomLegend />}
