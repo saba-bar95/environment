@@ -9,7 +9,6 @@ import LineChart1 from "./Charts/LineCharts";
 import CompromisedCharts from "./Charts/CompromisedCharts";
 import PositiveAndNegativeBarChart from "../Energy/Charts/PositiveAndNegativeBarChart";
 import BarChartsFull from "./Charts/BarChartsFull";
-import PieChartComponent from "./Charts/PieCharts";
 import Quality from "./Quality/Quality";
 
 const Waste = () => {
@@ -58,10 +57,10 @@ const Waste = () => {
     {
       title_ge: info[3].title_ge,
       title_en: info[3].title_en,
-      colors: ["#e94d74ff"],
+      colors: ["#e94d74ff", "#55c079ff"],
       id: "municipal-waste",
       types: ["data", "metadata"],
-      selectedIndices: [0],
+      selectedIndices: [3],
       chartID: info[3].chartID,
     },
     {
@@ -144,9 +143,8 @@ const Waste = () => {
           <BarCharts chartInfo={ChartInfo[0]} />
           <LineChart1 chartInfo={ChartInfo[1]} />
           <CompromisedCharts chartInfo={ChartInfo[2]} />
-          {/* <PositiveAndNegativeBarChart chartInfo={ChartInfo[3]} /> */}
+          <PositiveAndNegativeBarChart chartInfo={ChartInfo[3]} />
           <BarChartsFull chartInfo={ChartInfo[4]} />
-          {/* <PieChartComponent chartInfo={ChartInfo[5]} /> */}
         </div>
       </div>
     </div>
