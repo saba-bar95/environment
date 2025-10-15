@@ -1,60 +1,73 @@
 import { useParams } from "react-router-dom";
-import PrecipitationChartContainer from "./PrecipitationChartContainer";
 import backgroundImg from "./Background/background.jpg";
-import "./Precipitation.scss";
-import DeviationChartsPage from "./DeviationChartsPage.jsx";
-import MinMaxChartPage from "./MinMaxChartPage.jsx";
-import MultiLineChartPage from "./MultiLineChartPage.jsx";
-import DonutChartPage from "./DonutChartPage.jsx";
-import ExtremeYearsPage from "./ExtremeYearsPage.jsx";
-import MonthlyRange2022Chart from "./MonthlyRange2022Chart.jsx";
-import ScatterPlotPage from "./ScatterPlotPage.jsx";
-import ExtremeTrendPage from "./ExtremeTrendPage.jsx";
-import RadialChartPage from "./RadialChartPage.jsx";
-import PrecipitationHeatmap from "./PrecipitationHeatmap.jsx";
-import TablePage from "./TablePage.jsx";
+import Charts from "../../../../../Charts.jsx";
+import { useState, useEffect } from "react";
+import AreaCharts from "./Charts/Chart1/AreaCharts.jsx";
 
 const Precipitation = () => {
-    const { language } = useParams();
+  const { language } = useParams();
 
-    return (
-        <div className="section-container">
-            <div
-                className="background-container"
-                style={{ backgroundImage: `url(${backgroundImg})` }}
-            >
-                <div className="overlay"></div>
-                <h1>
-                    {language === "en"
-                        ? "Atmospheric Precipitation"
-                        : "ატმოსფერული ნალექები"}
-                </h1>
-                <h2>
-                    {language === "en"
-                        ? "Rain and snow distribution, droughts and extreme events across Georgia"
-                        : "წვიმისა და თოვლის განაწილება, გვალვები და ექსტრემალური მოვლენები საქართველოს მასშტაბით"}
-                </h2>
-            </div>
+  const info = Charts.climate[2].precipitation;
+  const [width, setWidth] = useState(window.innerWidth);
 
-            <div
-                className="chart-wrapper"
-                style={{ width: "min(1100px, 100%)", maxWidth: "1200px" }}
-            >
-                <PrecipitationChartContainer />
-                <DeviationChartsPage />
-                <MinMaxChartPage />
-                <MultiLineChartPage/>
-                <DonutChartPage />
-                <ExtremeYearsPage/>
-                <MonthlyRange2022Chart/>
-                <ScatterPlotPage/>
-                <ExtremeTrendPage/>
-                <RadialChartPage/>
-                <PrecipitationHeatmap/>
-                <TablePage/>
-            </div>
+  useEffect(() => {
+    const handleResize = () => {
+      const newWidth = window.innerWidth;
+      setWidth(newWidth);
+    };
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (location.hash) {
+      const chartId = location.hash.replace("#", "");
+      const element = document.getElementById(chartId);
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }
+  }, []);
+
+  const ChartInfo = [
+    {
+      title_ge: info[0].title_ge,
+      title_en: info[0].title_en,
+      colors: ["#1678e7ff"],
+      id: "atmospheric-precipitation",
+      types: ["data", "metadata"],
+      selectedIndices: [1],
+      chartID: info[0].chartID,
+    },
+  ];
+
+  return (
+    <div className="section-container">
+      <div
+        className="background-container"
+        style={{ backgroundImage: `url(${backgroundImg})` }}>
+        <div className="overlay"></div>
+        <h1>
+          {language === "en"
+            ? "Atmospheric Precipitation"
+            : "ატმოსფერული ნალექები"}
+        </h1>
+        <h2>
+          {language === "en"
+            ? "Rain and snow distribution, droughts and extreme events across Georgia"
+            : "წვიმისა და თოვლის განაწილება, გვალვები და ექსტრემალური მოვლენები საქართველოს მასშტაბით"}
+        </h2>
+      </div>
+
+      <div className="charts-section">
+        <div className="chart-container" style={{ width: "100%" }}>
+          <AreaCharts chartInfo={ChartInfo[0]} />
         </div>
-    );
+      </div>
+    </div>
+  );
 };
 
 export default Precipitation;
