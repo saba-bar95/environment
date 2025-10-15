@@ -249,6 +249,62 @@ const GeorgiaMap = ({ selectedYear = 2023, selectedSubstance = null }) => {
       : null;
   }, [regions, hoveredRegion]);
 
+  // Calculate min and max values for dynamic coloring
+  const { minValue, maxValue } = useMemo(() => {
+    const values = regions.map(region => region.value).filter(value => value > 0);
+    if (values.length === 0) {
+      return { minValue: 0, maxValue: 1 };
+    }
+    return {
+      minValue: Math.min(...values),
+      maxValue: Math.max(...values)
+    };
+  }, [regions]);
+
+  // Function to interpolate between two colors based on value
+  const getColorForValue = useMemo(() => {
+    return (value) => {
+      if (value === 0) {
+        return 0x6ba3d6; // Light blue for zero values
+      }
+      
+      // Normalize value between 0 and 1
+      const normalizedValue = Math.max(0, Math.min(1, (value - minValue) / (maxValue - minValue)));
+      
+      // Define color range: light blue (0x6ba3d6) to dark blue (0x084e99)
+      const lightBlue = { r: 107, g: 163, b: 214 }; // 0x6ba3d6
+      const darkBlue = { r: 8, g: 78, b: 153 };     // 0x084e99
+      
+      // Interpolate between colors
+      const r = Math.round(lightBlue.r + (darkBlue.r - lightBlue.r) * normalizedValue);
+      const g = Math.round(lightBlue.g + (darkBlue.g - lightBlue.g) * normalizedValue);
+      const b = Math.round(lightBlue.b + (darkBlue.b - lightBlue.b) * normalizedValue);
+      
+      // Convert RGB to hex
+      return (r << 16) | (g << 8) | b;
+    };
+  }, [minValue, maxValue]);
+
+  // Function to get hover color (slightly darker than base color)
+  const getHoverColorForValue = useMemo(() => {
+    return (value) => {
+      const baseColor = getColorForValue(value);
+      
+      // Extract RGB components
+      const r = (baseColor >> 16) & 0xff;
+      const g = (baseColor >> 8) & 0xff;
+      const b = baseColor & 0xff;
+      
+      // Darken the color by 20% for hover effect
+      const darkenFactor = 0.8;
+      const newR = Math.round(r * darkenFactor);
+      const newG = Math.round(g * darkenFactor);
+      const newB = Math.round(b * darkenFactor);
+      
+      return (newR << 16) | (newG << 8) | newB;
+    };
+  }, [getColorForValue]);
+
   // Initialize map only once, update data and states separately
   useLayoutEffect(() => {
     // Cleanup previous instance
@@ -297,41 +353,38 @@ const GeorgiaMap = ({ selectedYear = 2023, selectedSubstance = null }) => {
     );
     polygonSeriesRef.current = polygonSeries;
 
-    // Set initial data
+    // Set initial data with dynamic colors
     const initialData = regions.map((region) => ({
       ...region,
       isSelected: region.id === selectedRegion,
       isHovered: region.id === hoveredRegion,
+      fill: getColorForValue(region.value),
+      hoverFill: getHoverColorForValue(region.value),
     }));
     polygonSeries.data.setAll(initialData);
 
-    // Define base appearance
+    // Define base appearance - colors will come from data
     polygonSeries.mapPolygons.template.setAll({
       tooltipText: "",
       interactive: true, // Keep hover effects but click is disabled
-      fill: am5.color(0x6ba3d6),
       stroke: am5.color(0xffffff),
       strokeWidth: 0.5,
       strokeOpacity: 0.8,
     });
 
-    // Create hover, focus, and selected states using amCharts built-in states
-    // Remove the state variable declarations and apply directly
+    // Create states without fixed colors - dynamic colors will be applied
     polygonSeries.mapPolygons.template.states.create("hover", {
-      fill: am5.color(0x084e99), // Darker blue on hover
       fillOpacity: 1.0,
       strokeWidth: 2,
     });
 
     polygonSeries.mapPolygons.template.states.create("selected", {
-      fill: am5.color(0x084e99), // Darker blue for selected
       fillOpacity: 1.0,
       strokeWidth: 3,
       stroke: am5.color(0xffffff),
     });
 
     polygonSeries.mapPolygons.template.states.create("default", {
-      fill: am5.color(0x6ba3d6),
       fillOpacity: 0.6,
       strokeWidth: 1,
     });
@@ -349,9 +402,14 @@ const GeorgiaMap = ({ selectedYear = 2023, selectedSubstance = null }) => {
     polygonSeries.mapPolygons.template.events.on("pointerover", (event) => {
       const data = event.target.dataItem?.dataContext;
       const regionId = data?.id;
+      const value = data?.value || 0;
 
       if (regionId && regionId !== selectedRegion) {
         setHoveredRegion(regionId);
+
+        // Apply dynamic hover color immediately
+        event.target.set("fill", am5.color(getHoverColorForValue(value)));
+        event.target.states.apply("hover");
 
         // Update tooltip position
         if (event.point) {
@@ -360,8 +418,14 @@ const GeorgiaMap = ({ selectedYear = 2023, selectedSubstance = null }) => {
       }
     });
 
-    polygonSeries.mapPolygons.template.events.on("pointerout", () => {
+    polygonSeries.mapPolygons.template.events.on("pointerout", (event) => {
       setHoveredRegion(null);
+      
+      // Restore normal color when not hovering
+      const data = event.target.dataItem?.dataContext;
+      const value = data?.value || 0;
+      event.target.set("fill", am5.color(getColorForValue(value)));
+      event.target.states.apply("default");
     });
 
     // Click functionality disabled to prevent regions staying highlighted
@@ -394,7 +458,7 @@ const GeorgiaMap = ({ selectedYear = 2023, selectedSubstance = null }) => {
         isInitializedRef.current = false;
       }
     };
-  }, [regions, hoveredRegion, selectedRegion]); // Only recreate map when regions data changes
+  }, [regions, hoveredRegion, selectedRegion, getColorForValue, getHoverColorForValue]); // Only recreate map when regions data changes
 
   // Separate effect to update data and selection states without recreating the map
   useLayoutEffect(() => {
@@ -404,30 +468,38 @@ const GeorgiaMap = ({ selectedYear = 2023, selectedSubstance = null }) => {
       ...region,
       isSelected: region.id === selectedRegion,
       isHovered: region.id === hoveredRegion,
+      fill: getColorForValue(region.value),
+      hoverFill: getHoverColorForValue(region.value),
     }));
 
     // Update data without recreating series
     polygonSeriesRef.current.data.setAll(currentData);
 
-    // Update states for visual feedback
+    // Update states and colors for visual feedback
     polygonSeriesRef.current.mapPolygons.each((polygon) => {
       const dataContext = polygon.dataItem?.dataContext;
       const regionId = dataContext?.id;
+      const value = dataContext?.value || 0;
 
       if (regionId) {
+        // Set the base fill color from data
+        polygon.set("fill", am5.color(getColorForValue(value)));
+        
         if (regionId === selectedRegion) {
-          // Apply selected state
+          // Apply selected state with hover color
           polygon.states.apply("selected");
+          polygon.set("fill", am5.color(getHoverColorForValue(value)));
         } else if (regionId === hoveredRegion) {
-          // Apply hover state
+          // Apply hover state with hover color
           polygon.states.apply("hover");
+          polygon.set("fill", am5.color(getHoverColorForValue(value)));
         } else {
-          // Apply normal state
+          // Apply normal state with normal color
           polygon.states.apply("default");
         }
       }
     });
-  }, [selectedRegion, hoveredRegion, regions, polygonSeriesRef]); // Update states separately
+  }, [selectedRegion, hoveredRegion, regions, polygonSeriesRef, getColorForValue, getHoverColorForValue]); // Update states separately
 
   // Debounce tooltip position updates to prevent excessive re-renders
   useEffect(() => {
