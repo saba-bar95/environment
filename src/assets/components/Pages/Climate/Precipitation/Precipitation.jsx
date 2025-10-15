@@ -3,6 +3,7 @@ import backgroundImg from "./Background/background.jpg";
 import Charts from "../../../../../Charts.jsx";
 import { useState, useEffect } from "react";
 import AreaCharts from "./Charts/Chart1/AreaCharts.jsx";
+import PositiveAndNegativeBarChart from "./Charts/Chart2/PositiveAndNegativeBarChart.jsx";
 
 const Precipitation = () => {
   const { language } = useParams();
@@ -41,13 +42,23 @@ const Precipitation = () => {
       selectedIndices: [1],
       chartID: info[0].chartID,
     },
+    {
+      title_ge: info[1].title_ge,
+      title_en: info[1].title_en,
+      colors: ["#e94d74ff", "#55c079ff"],
+      id: "atmospheric-precipitation",
+      types: ["data", "metadata"],
+      selectedIndices: [20],
+      chartID: info[1].chartID,
+    },
   ];
 
   return (
     <div className="section-container">
       <div
         className="background-container"
-        style={{ backgroundImage: `url(${backgroundImg})` }}>
+        style={{ backgroundImage: `url(${backgroundImg})` }}
+      >
         <div className="overlay"></div>
         <h1>
           {language === "en"
@@ -64,6 +75,7 @@ const Precipitation = () => {
       <div className="charts-section">
         <div className="chart-container" style={{ width: "100%" }}>
           <AreaCharts chartInfo={ChartInfo[0]} />
+          <PositiveAndNegativeBarChart chartInfo={ChartInfo[1]} />
         </div>
       </div>
     </div>
