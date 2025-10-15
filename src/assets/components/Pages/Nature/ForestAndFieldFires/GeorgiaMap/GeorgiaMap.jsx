@@ -142,47 +142,46 @@ const GeorgiaMap = ({ selectedYear = 2023, selectedSubstance = null }) => {
         console.error("Data array not found or not an array:", dataArray);
       }
 
-      // Forest fires API has special structure with region-category combinations
+      // Forest fires API region mapping for new structure
       const regionIdMapping = {
-        "GE-TB": { incidents: "1 - 0", area: "1 - 1" }, // Tbilisi
-        "GE-AB": { incidents: "-2", area: "-2" }, // Abkhazia (no data)
-        "GE-AJ": { incidents: "2 - 0", area: "2 - 1" }, // Adjara
-        "GE-SZ": { incidents: "12 - 0", area: "12 - 1" }, // Samegrelo-Zemo Svaneti
-        "GE-GU": { incidents: "3 - 0", area: "3 - 1" }, // Guria
-        "GE-IM": { incidents: "4 - 0", area: "4 - 1" }, // Imereti
-        "GE-RL": { incidents: "7 - 0", area: "7 - 1" }, // Racha-Lechkhumi
-        "GE-SK": { incidents: "10 - 0", area: "10 - 1" }, // Shida Kartli
-        "GE-MM": { incidents: "6 - 0", area: "6 - 1" }, // Mtskheta-Mtianeti
-        "GE-KA": { incidents: "5 - 0", area: "5 - 1" }, // Kakheti
-        "GE-KK": { incidents: "11 - 0", area: "11 - 1" }, // Kvemo Kartli
-        "GE-SJ": { incidents: "9 - 0", area: "9 - 1" }, // Samtskhe-Javakheti
+        "GE-TB": 1,   // Tbilisi
+        "GE-AB": -2,  // Abkhazia (no data)
+        "GE-AJ": 2,   // Adjara
+        "GE-GU": 3,   // Guria
+        "GE-IM": 4,   // Imereti
+        "GE-KA": 5,   // Kakheti
+        "GE-MM": 6,   // Mtskheta-Mtianeti
+        "GE-RL": 7,   // Racha-Lechkhumi
+        "GE-SZ": 8,   // Samegrelo-Zemo Svaneti
+        "GE-SJ": 9,   // Samtskhe-Javakheti
+        "GE-KK": 10,  // Kvemo Kartli
+        "GE-SK": 11,  // Shida Kartli
       };
 
       return regionMapping.map((region) => {
         let value = 0;
         if (yearData) {
           const apiRegionId = regionIdMapping[region.id];
-          if (apiRegionId && typeof apiRegionId === "object") {
+          
+          if (apiRegionId && apiRegionId !== -2) {
             let fireKey;
 
-            // Determine which data to show based on selected substance
+            // New API structure uses underscore format (e.g., "1_0", "1_1")
             if (
               selectedSubstance === "ხანძრის შემთხვევათა რაოდენობა, ერთეული" ||
               selectedSubstance === "Number of Fire Incidents, Units"
             ) {
-              fireKey = apiRegionId.incidents;
+              // For incidents: use "regionId_0" format
+              fireKey = `${apiRegionId}_0`;
             } else if (
               selectedSubstance === "ხანძრის მოცული ფართობი, ჰექტარი" ||
               selectedSubstance === "Fire Covered Area, Hectares"
             ) {
-              fireKey = apiRegionId.area;
+              // For area: use "regionId_1" format
+              fireKey = `${apiRegionId}_1`;
             }
-
-            if (
-              fireKey &&
-              fireKey !== "-2" &&
-              yearData[fireKey] !== undefined
-            ) {
+            
+            if (fireKey && yearData[fireKey] !== undefined) {
               value = parseFloat(yearData[fireKey]) || 0;
             }
           }
