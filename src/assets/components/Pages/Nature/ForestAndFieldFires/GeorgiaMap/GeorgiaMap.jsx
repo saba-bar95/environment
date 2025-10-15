@@ -12,6 +12,7 @@ const GeorgiaMap = ({ selectedYear = 2023, selectedSubstance = null }) => {
   const [hoveredRegion, setHoveredRegion] = useState(null); // Only for hover tracking
   const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
   const [apiData, setApiData] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Refs to store amCharts objects and prevent unnecessary re-renders
   const rootRef = useRef(null);
@@ -68,6 +69,8 @@ const GeorgiaMap = ({ selectedYear = 2023, selectedSubstance = null }) => {
   // Fetch API data based on selected substance
   useEffect(() => {
     const getApiData = async () => {
+      setIsLoading(true);
+      
       if (!selectedSubstance) {
         try {
           const [dataResult, metaDataResult] = await Promise.all([
@@ -77,6 +80,8 @@ const GeorgiaMap = ({ selectedYear = 2023, selectedSubstance = null }) => {
           setApiData({ data: dataResult, metadata: metaDataResult });
         } catch (error) {
           console.error("Error fetching default timber data:", error);
+        } finally {
+          setIsLoading(false);
         }
         return;
       }
@@ -86,6 +91,7 @@ const GeorgiaMap = ({ selectedYear = 2023, selectedSubstance = null }) => {
         console.warn(
           `No API mapping found for substance: ${selectedSubstance}`
         );
+        setIsLoading(false);
         return;
       }
 
@@ -97,6 +103,8 @@ const GeorgiaMap = ({ selectedYear = 2023, selectedSubstance = null }) => {
         setApiData({ data: dataResult, metadata: metaDataResult });
       } catch (error) {
         console.error(`Error fetching data for ${apiId}:`, error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -503,6 +511,53 @@ const GeorgiaMap = ({ selectedYear = 2023, selectedSubstance = null }) => {
           height: "100%",
         }}
       ></div>
+
+      {/* Loading Overlay */}
+      {isLoading && (
+        <div
+          style={{
+            position: "absolute",
+            top: "0",
+            left: "0",
+            width: "100%",
+            height: "100%",
+            backgroundColor: "rgba(236, 245, 255, 0.8)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 1000,
+            borderRadius: "16px",
+          }}>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: "12px",
+            }}>
+            {/* Loading Spinner */}
+            <div
+              style={{
+                width: "40px",
+                height: "40px",
+                border: "4px solid #E2E8F0",
+                borderTop: "4px solid #4299E1",
+                borderRadius: "50%",
+                animation: "spin 1s linear infinite",
+              }}></div>
+            {/* Loading Text */}
+            <div
+              style={{
+                fontFamily: "'FiraGO', Arial, sans-serif",
+                fontSize: "14px",
+                fontWeight: 500,
+                color: "#4A5568",
+              }}>
+              {language === "en" ? "Loading data..." : "მონაცემების ჩატვირთვა..."}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Dynamic Tooltip - only shows when hovering over a region */}
       {currentRegionData && hoveredRegion && (
