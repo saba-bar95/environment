@@ -173,14 +173,14 @@ const GeorgiaMap = ({ selectedYear = 2023, selectedSubstance = null }) => {
           "GE-AB": -2,
           "GE-AJ": 2,
           "GE-GU": 3,
-          "GE-SZ": 4,
-          "GE-IM": 5,
-          "GE-RL": 6,
-          "GE-SK": 7,
-          "GE-MM": 8,
-          "GE-KA": 9,
+          "GE-IM": 4,
+          "GE-KA": 5,
+          "GE-MM": 6,
+          "GE-RL": 7,
+          "GE-SZ": 8,
+          "GE-SJ": 9,
           "GE-KK": 10,
-          "GE-SJ": 11,
+          "GE-SK": 11,
         };
       }
 
