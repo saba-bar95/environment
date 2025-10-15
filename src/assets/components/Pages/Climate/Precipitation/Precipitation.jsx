@@ -6,6 +6,8 @@ import AreaCharts from "./Charts/Chart1/AreaCharts.jsx";
 import PositiveAndNegativeBarChart from "./Charts/Chart2/PositiveAndNegativeBarChart.jsx";
 import PercentAreaCharts from "./Charts/Chart3/PercentAreaCharts.jsx";
 import LineChart from "./Charts/Chart4/LineCharts.jsx";
+import PieCharts from "./Charts/Chart5/PieCharts.jsx";
+import PieChartComponent from "./Charts/Chart5/PieCharts.jsx";
 
 const Precipitation = () => {
   const { language } = useParams();
@@ -75,6 +77,21 @@ const Precipitation = () => {
         gap: "5px",
       },
     },
+    {
+      title_ge: info[4].title_ge,
+      title_en: info[4].title_en,
+      colors: ["#692fc5ff", "#55c079ff", "#c5964eff", "#dad153ff"],
+      id: "atmospheric-precipitation",
+      types: ["data", "metadata"],
+      selectedIndices: [0, 10, 15, 5],
+      chartID: info[4].chartID,
+      unit_ge: "მილიმეტრი",
+      unit_en: "millimeters",
+      legendStyles: {
+        flexDirection: "column",
+        gap: "5px",
+      },
+    },
   ];
 
   return (
@@ -102,6 +119,7 @@ const Precipitation = () => {
           <PositiveAndNegativeBarChart chartInfo={ChartInfo[1]} />
           <PercentAreaCharts chartInfo={ChartInfo[2]} />
           <LineChart chartInfo={ChartInfo[3]} />
+          <PieCharts chartInfo={ChartInfo[4]} />
         </div>
       </div>
     </div>
