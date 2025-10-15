@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import AreaCharts from "./Charts/Chart1/AreaCharts.jsx";
 import PositiveAndNegativeBarChart from "./Charts/Chart2/PositiveAndNegativeBarChart.jsx";
 import PercentAreaCharts from "./Charts/Chart3/PercentAreaCharts.jsx";
+import LineChart from "./Charts/Chart4/LineCharts.jsx";
 
 const Precipitation = () => {
   const { language } = useParams();
@@ -61,6 +62,19 @@ const Precipitation = () => {
       selectedIndices: [3, 4],
       chartID: info[2].chartID,
     },
+    {
+      title_ge: info[3].title_ge,
+      title_en: info[3].title_en,
+      colors: ["#692fc5ff", "#55c079ff", "#c5964eff", "#dad153ff"],
+      id: "atmospheric-precipitation",
+      types: ["data", "metadata"],
+      selectedIndices: [1, 11, 16, 6],
+      chartID: info[3].chartID,
+      legendStyles: {
+        flexDirection: "column",
+        gap: "5px",
+      },
+    },
   ];
 
   return (
@@ -87,6 +101,7 @@ const Precipitation = () => {
           <AreaCharts chartInfo={ChartInfo[0]} />
           <PositiveAndNegativeBarChart chartInfo={ChartInfo[1]} />
           <PercentAreaCharts chartInfo={ChartInfo[2]} />
+          <LineChart chartInfo={ChartInfo[3]} />
         </div>
       </div>
     </div>
