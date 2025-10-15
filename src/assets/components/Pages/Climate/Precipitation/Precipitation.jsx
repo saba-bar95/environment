@@ -7,7 +7,7 @@ import PositiveAndNegativeBarChart from "./Charts/Chart2/PositiveAndNegativeBarC
 import PercentAreaCharts from "./Charts/Chart3/PercentAreaCharts.jsx";
 import LineChart from "./Charts/Chart4/LineCharts.jsx";
 import PieCharts from "./Charts/Chart5/PieCharts.jsx";
-import PieChartComponent from "./Charts/Chart5/PieCharts.jsx";
+import BarCharts from "./Charts/Chart6/BarCharts.jsx";
 
 const Precipitation = () => {
   const { language } = useParams();
@@ -92,10 +92,23 @@ const Precipitation = () => {
         gap: "5px",
       },
     },
+    {
+      title_ge: info[5].title_ge,
+      title_en: info[5].title_en,
+      colors: ["#e94d74ff", "#55c079ff"],
+      id: "atmospheric-precipitation",
+      types: ["data", "metadata"],
+      selectedIndices: [1, 11, 16, 6],
+      chartID: info[5].chartID,
+      legendStyles: {
+        flexDirection: "column",
+        gap: "5px",
+      },
+    },
   ];
 
   return (
-    <div className="section-container">
+    <div className="section-container supply-and-losses">
       <div
         className="background-container"
         style={{ backgroundImage: `url(${backgroundImg})` }}
@@ -120,6 +133,7 @@ const Precipitation = () => {
           <PercentAreaCharts chartInfo={ChartInfo[2]} />
           <LineChart chartInfo={ChartInfo[3]} />
           <PieCharts chartInfo={ChartInfo[4]} />
+          <BarCharts chartInfo={ChartInfo[5]} />
         </div>
       </div>
     </div>
