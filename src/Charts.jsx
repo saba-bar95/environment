@@ -576,6 +576,167 @@ const rawCharts = {
       ],
     },
   ],
+  climate: [
+    {
+      disasters: [
+        {
+          title_ge:
+            "წლიური სიკვდილიანობის დინამიკა (ყველა სტიქიური მოვლენის დროს)",
+          title_en: "Annual mortality dynamics during all natural events)",
+          path_ge: "სტიქიური მოვლენები საქართველოში",
+          path_en: "Natural Disasters in Georgia",
+        },
+        {},
+        {
+          title_ge:
+            "გეოლოგიური მოვლენები და მასთან დაკავშირებული სიკვდილიანობა (1995-2023)",
+          title_en: "Geological events and related mortality (1995-2023)",
+          path_ge: "სტიქიური მოვლენები საქართველოში",
+          path_en: "Natural Disasters in Georgia",
+        },
+        {
+          title_ge:
+            "წლიური ჰიდრომეტეოროლოგიური მოვლენები ტიპების მიხედვით (2013-2023)",
+          title_en: "Annual hydrometeorological events by type (2013-2023)",
+          path_ge: "სტიქიური მოვლენები საქართველოში",
+          path_en: "Natural Disasters in Georgia",
+        },
+        {
+          title_ge:
+            "სეზონური სტიქიური მოვლენების პროფილი (ყოველთვიური საშუალო, 2013-2023)",
+          title_en:
+            "Seasonal Natural Disasters Profile (Monthly Average, 2013-2023)",
+          path_ge: "სტიქიური მოვლენები საქართველოში",
+          path_en: "Natural Disasters in Georgia",
+        },
+        {
+          title_ge:
+            "გეოლოგიური და ჰიდრომეტეოროლოგიური მოვლენების ტენდენციები (2013-2023)",
+          title_en:
+            "Trends in geological and hydrometeorological events (2013-2023)",
+          path_ge: "სტიქიური მოვლენები საქართველოში",
+          path_en: "Natural Disasters in Georgia",
+        },
+        {
+          title_ge:
+            "ზეგავლენა ინფრასტრუქტურასა და დასახლებულ პუნქტებზე (1995-2023)",
+          title_en: "Impact on infrastructure and settlements (1995-2023)",
+          path_ge: "სტიქიური მოვლენები საქართველოში",
+          path_en: "Natural Disasters in Georgia",
+        },
+        {
+          title_ge:
+            "გეოლოგიური კატასტროფები ათწლეულების ჭრილში (ჯამური შემთხვევები)",
+          title_en:
+            "Geological disasters by decade (total number of incidents)",
+          path_ge: "სტიქიური მოვლენები საქართველოში",
+          path_en: "Natural Disasters in Georgia",
+        },
+      ],
+    },
+    {
+      temperature: [
+        {
+          title_ge: "წყლის აღება ბუნებრივი ობიექტებიდან",
+          title_en: "Water extraction from natural sources",
+          path_ge:
+            "ბუნებრივი ობიექტებიდან წყლის აღების ტრენდები საქართველოში (2017-2023)",
+          path_en:
+            "Trends in Water Abstraction from Natural Sources in Georgia (2017-2023)",
+        },
+      ],
+    },
+    {
+      precipitation: [
+        {
+          title_ge: "წლიური ნალექების ტენდენცია საქართველოში",
+          title_en: "Annual comparison in Georgia",
+          path_ge: "ატმოსფერული ნალექები",
+          path_en: "Atmospheric Precipitation",
+        },
+        {
+          title_ge: "გადახრა 1961-1990 წლების საშუალოდან",
+          title_en: "Deviation from the 1961-1990 average",
+          path_ge: "ატმოსფერული ნალექები",
+          path_en: "Atmospheric Precipitation",
+        },
+        {
+          title_ge: "თვიური ნალექების დიაპაზონი",
+          title_en: "Monthly precipitation range",
+          path_ge: "ატმოსფერული ნალექები",
+          path_en: "Atmospheric Precipitation",
+        },
+        {
+          title_ge:
+            "წლიური ნალექები ქვეყნის, თბილისის, საქართველოს ყველაზე უხვი და მცირე ნალექიანი რეგიონების მიხედვით",
+          title_en:
+            "Annual precipitation by region, Tbilisi, Georgia, with the most and least precipitation",
+          path_ge: "ატმოსფერული ნალექები",
+          path_en: "Atmospheric Precipitation",
+        },
+        {
+          title_ge:
+            "ისტორიული საშუალო ნალექიანობა რეგიონების მიხედვით (1961-1990)",
+          title_en: "Historical average precipitation by region (1961-1990)",
+          path_ge: "ატმოსფერული ნალექები",
+          path_en: "Atmospheric Precipitation",
+        },
+        {
+          title_ge: "ექსტრემალური წლები",
+          title_en: "Extreme years",
+          path_ge: "ატმოსფერული ნალექები",
+          path_en: "Atmospheric Precipitation",
+        },
+        {
+          title_ge: "თვიური ნალექების დიაპაზონი რეგიონების მიხედვით (2022)",
+          title_en: "Monthly precipitation range by region (2022)",
+          path_ge: "ატმოსფერული ნალექები",
+          path_en: "Atmospheric Precipitation",
+        },
+        {
+          title_ge: "კორელაცია: წლიური vs. მაქს. თვიური ნალექი",
+          title_en: "Correlation: Annual vs. Max. Monthly Precipitation",
+          path_ge: "ატმოსფერული ნალექები",
+          path_en: "Atmospheric Precipitation",
+        },
+        {
+          title_ge: "ექსტრემალური მაჩვენებლების ტენდენცია საქართველოში",
+          title_en: "Trend of extreme indicators in Georgia",
+          path_ge: "ატმოსფერული ნალექები",
+          path_en: "Atmospheric Precipitation",
+        },
+        {
+          title_ge: "2022 წლის ნალექები ისტორიულ საშუალოსთან შედარებით",
+          title_en: "2022 precipitation compared to historical average",
+          path_ge: "ატმოსფერული ნალექები",
+          path_en: "Atmospheric Precipitation",
+        },
+        {
+          title_ge: "წლიური ნალექების თერმული რუკა (საქართველო)",
+          title_en: "Thermal map of annual precipitation (Georgia)",
+          path_ge: "ატმოსფერული ნალექები",
+          path_en: "Atmospheric Precipitation",
+        },
+        {
+          title_ge: "ნალექების დეტალური მონაცემები (2022)",
+          title_en: "Detailed precipitation data (2022)",
+          path_ge: "ატმოსფერული ნალექები",
+          path_en: "Atmospheric Precipitation",
+        },
+      ],
+    },
+    {
+      emissions: [
+        {
+          title_ge: "წყალმომარაგების სისტემაში გაშვებული და მიწოდებული წყალი",
+          title_en: "Water supply released and delivered to the supply system",
+          path_ge:
+            "წყალმომარაგება, დანაკარგები და შინამეურნეობების მიერ წყლის მოხმარება",
+          path_en: "Water supply, losses and household water consumption",
+        },
+      ],
+    },
+  ],
 };
 
 function normalizeCharts(data, fallbackPrefix = "chart") {
