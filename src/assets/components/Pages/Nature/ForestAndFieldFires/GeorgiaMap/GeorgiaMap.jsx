@@ -12,6 +12,7 @@ const GeorgiaMap = ({ selectedYear = 2023, selectedSubstance = null }) => {
   const [hoveredRegion, setHoveredRegion] = useState(null); // Only for hover tracking
   const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
   const [apiData, setApiData] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Refs to store amCharts objects and prevent unnecessary re-renders
   const rootRef = useRef(null);
@@ -68,6 +69,8 @@ const GeorgiaMap = ({ selectedYear = 2023, selectedSubstance = null }) => {
   // Fetch API data based on selected substance
   useEffect(() => {
     const getApiData = async () => {
+      setIsLoading(true);
+      
       if (!selectedSubstance) {
         try {
           const [dataResult, metaDataResult] = await Promise.all([
@@ -77,6 +80,8 @@ const GeorgiaMap = ({ selectedYear = 2023, selectedSubstance = null }) => {
           setApiData({ data: dataResult, metadata: metaDataResult });
         } catch (error) {
           console.error("Error fetching default timber data:", error);
+        } finally {
+          setIsLoading(false);
         }
         return;
       }
@@ -86,6 +91,7 @@ const GeorgiaMap = ({ selectedYear = 2023, selectedSubstance = null }) => {
         console.warn(
           `No API mapping found for substance: ${selectedSubstance}`
         );
+        setIsLoading(false);
         return;
       }
 
@@ -97,6 +103,8 @@ const GeorgiaMap = ({ selectedYear = 2023, selectedSubstance = null }) => {
         setApiData({ data: dataResult, metadata: metaDataResult });
       } catch (error) {
         console.error(`Error fetching data for ${apiId}:`, error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -134,47 +142,46 @@ const GeorgiaMap = ({ selectedYear = 2023, selectedSubstance = null }) => {
         console.error("Data array not found or not an array:", dataArray);
       }
 
-      // Forest fires API has special structure with region-category combinations
+      // Forest fires API region mapping for new structure
       const regionIdMapping = {
-        "GE-TB": { incidents: "1 - 0", area: "1 - 1" }, // Tbilisi
-        "GE-AB": { incidents: "-2", area: "-2" }, // Abkhazia (no data)
-        "GE-AJ": { incidents: "2 - 0", area: "2 - 1" }, // Adjara
-        "GE-SZ": { incidents: "12 - 0", area: "12 - 1" }, // Samegrelo-Zemo Svaneti
-        "GE-GU": { incidents: "3 - 0", area: "3 - 1" }, // Guria
-        "GE-IM": { incidents: "4 - 0", area: "4 - 1" }, // Imereti
-        "GE-RL": { incidents: "7 - 0", area: "7 - 1" }, // Racha-Lechkhumi
-        "GE-SK": { incidents: "10 - 0", area: "10 - 1" }, // Shida Kartli
-        "GE-MM": { incidents: "6 - 0", area: "6 - 1" }, // Mtskheta-Mtianeti
-        "GE-KA": { incidents: "5 - 0", area: "5 - 1" }, // Kakheti
-        "GE-KK": { incidents: "11 - 0", area: "11 - 1" }, // Kvemo Kartli
-        "GE-SJ": { incidents: "9 - 0", area: "9 - 1" }, // Samtskhe-Javakheti
+        "GE-TB": 1,   // Tbilisi
+        "GE-AB": -2,  // Abkhazia (no data)
+        "GE-AJ": 2,   // Adjara
+        "GE-GU": 3,   // Guria
+        "GE-IM": 4,   // Imereti
+        "GE-KA": 5,   // Kakheti
+        "GE-MM": 6,   // Mtskheta-Mtianeti
+        "GE-RL": 7,   // Racha-Lechkhumi
+        "GE-SZ": 8,   // Samegrelo-Zemo Svaneti
+        "GE-SJ": 9,   // Samtskhe-Javakheti
+        "GE-KK": 10,  // Kvemo Kartli
+        "GE-SK": 11,  // Shida Kartli
       };
 
       return regionMapping.map((region) => {
         let value = 0;
         if (yearData) {
           const apiRegionId = regionIdMapping[region.id];
-          if (apiRegionId && typeof apiRegionId === "object") {
+          
+          if (apiRegionId && apiRegionId !== -2) {
             let fireKey;
 
-            // Determine which data to show based on selected substance
+            // New API structure uses underscore format (e.g., "1_0", "1_1")
             if (
               selectedSubstance === "ხანძრის შემთხვევათა რაოდენობა, ერთეული" ||
               selectedSubstance === "Number of Fire Incidents, Units"
             ) {
-              fireKey = apiRegionId.incidents;
+              // For incidents: use "regionId_0" format
+              fireKey = `${apiRegionId}_0`;
             } else if (
               selectedSubstance === "ხანძრის მოცული ფართობი, ჰექტარი" ||
               selectedSubstance === "Fire Covered Area, Hectares"
             ) {
-              fireKey = apiRegionId.area;
+              // For area: use "regionId_1" format
+              fireKey = `${apiRegionId}_1`;
             }
-
-            if (
-              fireKey &&
-              fireKey !== "-2" &&
-              yearData[fireKey] !== undefined
-            ) {
+            
+            if (fireKey && yearData[fireKey] !== undefined) {
               value = parseFloat(yearData[fireKey]) || 0;
             }
           }
@@ -201,6 +208,62 @@ const GeorgiaMap = ({ selectedYear = 2023, selectedSubstance = null }) => {
       ? regions.find((region) => region.id === hoveredRegion)
       : null;
   }, [regions, hoveredRegion]);
+
+  // Calculate min and max values for dynamic coloring
+  const { minValue, maxValue } = useMemo(() => {
+    const values = regions.map(region => region.value).filter(value => value > 0);
+    if (values.length === 0) {
+      return { minValue: 0, maxValue: 1 };
+    }
+    return {
+      minValue: Math.min(...values),
+      maxValue: Math.max(...values)
+    };
+  }, [regions]);
+
+  // Function to interpolate between two colors based on value
+  const getColorForValue = useMemo(() => {
+    return (value) => {
+      if (value === 0) {
+        return 0x6ba3d6; // Light blue for zero values
+      }
+      
+      // Normalize value between 0 and 1
+      const normalizedValue = Math.max(0, Math.min(1, (value - minValue) / (maxValue - minValue)));
+      
+      // Define color range: light blue (0x6ba3d6) to dark blue (0x084e99)
+      const lightBlue = { r: 107, g: 163, b: 214 }; // 0x6ba3d6
+      const darkBlue = { r: 8, g: 78, b: 153 };     // 0x084e99
+      
+      // Interpolate between colors
+      const r = Math.round(lightBlue.r + (darkBlue.r - lightBlue.r) * normalizedValue);
+      const g = Math.round(lightBlue.g + (darkBlue.g - lightBlue.g) * normalizedValue);
+      const b = Math.round(lightBlue.b + (darkBlue.b - lightBlue.b) * normalizedValue);
+      
+      // Convert RGB to hex
+      return (r << 16) | (g << 8) | b;
+    };
+  }, [minValue, maxValue]);
+
+  // Function to get hover color (slightly darker than base color)
+  const getHoverColorForValue = useMemo(() => {
+    return (value) => {
+      const baseColor = getColorForValue(value);
+      
+      // Extract RGB components
+      const r = (baseColor >> 16) & 0xff;
+      const g = (baseColor >> 8) & 0xff;
+      const b = baseColor & 0xff;
+      
+      // Darken the color by 20% for hover effect
+      const darkenFactor = 0.8;
+      const newR = Math.round(r * darkenFactor);
+      const newG = Math.round(g * darkenFactor);
+      const newB = Math.round(b * darkenFactor);
+      
+      return (newR << 16) | (newG << 8) | newB;
+    };
+  }, [getColorForValue]);
 
   // Initialize map only once, update data and states separately
   useLayoutEffect(() => {
@@ -250,41 +313,38 @@ const GeorgiaMap = ({ selectedYear = 2023, selectedSubstance = null }) => {
     );
     polygonSeriesRef.current = polygonSeries;
 
-    // Set initial data
+    // Set initial data with dynamic colors
     const initialData = regions.map((region) => ({
       ...region,
       isSelected: region.id === selectedRegion,
       isHovered: region.id === hoveredRegion,
+      fill: getColorForValue(region.value),
+      hoverFill: getHoverColorForValue(region.value),
     }));
     polygonSeries.data.setAll(initialData);
 
-    // Define base appearance
+    // Define base appearance - colors will come from data
     polygonSeries.mapPolygons.template.setAll({
       tooltipText: "",
       interactive: true, // Keep hover effects but click is disabled
-      fill: am5.color(0x6ba3d6),
       stroke: am5.color(0xffffff),
       strokeWidth: 0.5,
       strokeOpacity: 0.8,
     });
 
-    // Create hover, focus, and selected states using amCharts built-in states
-    // Remove the state variable declarations and apply directly
+    // Create states without fixed colors - dynamic colors will be applied
     polygonSeries.mapPolygons.template.states.create("hover", {
-      fill: am5.color(0x084e99), // Darker blue on hover
       fillOpacity: 1.0,
       strokeWidth: 2,
     });
 
     polygonSeries.mapPolygons.template.states.create("selected", {
-      fill: am5.color(0x084e99), // Darker blue for selected
       fillOpacity: 1.0,
       strokeWidth: 3,
       stroke: am5.color(0xffffff),
     });
 
     polygonSeries.mapPolygons.template.states.create("default", {
-      fill: am5.color(0x6ba3d6),
       fillOpacity: 0.6,
       strokeWidth: 1,
     });
@@ -302,9 +362,14 @@ const GeorgiaMap = ({ selectedYear = 2023, selectedSubstance = null }) => {
     polygonSeries.mapPolygons.template.events.on("pointerover", (event) => {
       const data = event.target.dataItem?.dataContext;
       const regionId = data?.id;
+      const value = data?.value || 0;
 
       if (regionId && regionId !== selectedRegion) {
         setHoveredRegion(regionId);
+
+        // Apply dynamic hover color immediately
+        event.target.set("fill", am5.color(getHoverColorForValue(value)));
+        event.target.states.apply("hover");
 
         // Update tooltip position
         if (event.point) {
@@ -313,8 +378,14 @@ const GeorgiaMap = ({ selectedYear = 2023, selectedSubstance = null }) => {
       }
     });
 
-    polygonSeries.mapPolygons.template.events.on("pointerout", () => {
+    polygonSeries.mapPolygons.template.events.on("pointerout", (event) => {
       setHoveredRegion(null);
+      
+      // Restore normal color when not hovering
+      const data = event.target.dataItem?.dataContext;
+      const value = data?.value || 0;
+      event.target.set("fill", am5.color(getColorForValue(value)));
+      event.target.states.apply("default");
     });
 
     // Click functionality disabled to prevent regions staying highlighted
@@ -347,7 +418,7 @@ const GeorgiaMap = ({ selectedYear = 2023, selectedSubstance = null }) => {
         isInitializedRef.current = false;
       }
     };
-  }, [regions, hoveredRegion, selectedRegion]); // Only recreate map when regions data changes
+  }, [regions, hoveredRegion, selectedRegion, getColorForValue, getHoverColorForValue]); // Only recreate map when regions data changes
 
   // Separate effect to update data and selection states without recreating the map
   useLayoutEffect(() => {
@@ -357,30 +428,38 @@ const GeorgiaMap = ({ selectedYear = 2023, selectedSubstance = null }) => {
       ...region,
       isSelected: region.id === selectedRegion,
       isHovered: region.id === hoveredRegion,
+      fill: getColorForValue(region.value),
+      hoverFill: getHoverColorForValue(region.value),
     }));
 
     // Update data without recreating series
     polygonSeriesRef.current.data.setAll(currentData);
 
-    // Update states for visual feedback
+    // Update states and colors for visual feedback
     polygonSeriesRef.current.mapPolygons.each((polygon) => {
       const dataContext = polygon.dataItem?.dataContext;
       const regionId = dataContext?.id;
+      const value = dataContext?.value || 0;
 
       if (regionId) {
+        // Set the base fill color from data
+        polygon.set("fill", am5.color(getColorForValue(value)));
+        
         if (regionId === selectedRegion) {
-          // Apply selected state
+          // Apply selected state with hover color
           polygon.states.apply("selected");
+          polygon.set("fill", am5.color(getHoverColorForValue(value)));
         } else if (regionId === hoveredRegion) {
-          // Apply hover state
+          // Apply hover state with hover color
           polygon.states.apply("hover");
+          polygon.set("fill", am5.color(getHoverColorForValue(value)));
         } else {
-          // Apply normal state
+          // Apply normal state with normal color
           polygon.states.apply("default");
         }
       }
     });
-  }, [selectedRegion, hoveredRegion, regions, polygonSeriesRef]); // Update states separately
+  }, [selectedRegion, hoveredRegion, regions, polygonSeriesRef, getColorForValue, getHoverColorForValue]); // Update states separately
 
   // Debounce tooltip position updates to prevent excessive re-renders
   useEffect(() => {
@@ -431,6 +510,53 @@ const GeorgiaMap = ({ selectedYear = 2023, selectedSubstance = null }) => {
           height: "100%",
         }}
       ></div>
+
+      {/* Loading Overlay */}
+      {isLoading && (
+        <div
+          style={{
+            position: "absolute",
+            top: "0",
+            left: "0",
+            width: "100%",
+            height: "100%",
+            backgroundColor: "rgba(236, 245, 255, 0.8)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 1000,
+            borderRadius: "16px",
+          }}>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: "12px",
+            }}>
+            {/* Loading Spinner */}
+            <div
+              style={{
+                width: "40px",
+                height: "40px",
+                border: "4px solid #E2E8F0",
+                borderTop: "4px solid #4299E1",
+                borderRadius: "50%",
+                animation: "spin 1s linear infinite",
+              }}></div>
+            {/* Loading Text */}
+            <div
+              style={{
+                fontFamily: "'FiraGO', Arial, sans-serif",
+                fontSize: "14px",
+                fontWeight: 500,
+                color: "#4A5568",
+              }}>
+              {language === "en" ? "Loading data..." : "მონაცემების ჩატვირთვა..."}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Dynamic Tooltip - only shows when hovering over a region */}
       {currentRegionData && hoveredRegion && (
