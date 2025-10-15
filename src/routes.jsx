@@ -10,7 +10,6 @@ import Transport from "./assets/components/Pages/Transport/Transport";
 import Waste from "./assets/components/Pages/Waste/Waste";
 import Other from "./assets/components/Pages/Other/Other";
 import Reports from "./assets/components/Pages/Reports/Reports";
-import TransportAndEnergy from "./assets/components/Pages/TransportAndEnergy/TransportAndEnergy";
 // Climate Children Pages
 import Disasters from "./assets/components/Pages/Climate/Disasters/Disasters";
 import Emissions from "./assets/components/Pages/Climate/Emissions/Emissions";
@@ -49,7 +48,6 @@ const routes = [
       { path: "transport", element: <Transport /> },
       { path: "waste", element: <Waste /> },
       { path: "other", element: <Other /> },
-      { path: "transportandenergy", element: <TransportAndEnergy /> },
       // Climate Paths
       { path: "climate/disasters", element: <Disasters /> },
       { path: "climate/emissions", element: <Emissions /> },

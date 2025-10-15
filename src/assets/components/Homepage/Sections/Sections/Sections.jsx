@@ -10,9 +10,12 @@ import waterBackground from "./Backgrounds/Water/background.jpg";
 // Nature
 import { text as natureText } from "./Texts/Nature/text";
 import natureBackground from "./Backgrounds/Nature/background.jpg";
-// Transport and Energy
-import { text as transportAndEnergyText } from "./Texts/TransportAndEnergy/text";
-import transportAndEnergyBackground from "./Backgrounds/TransportAndEnergy/background.jpg";
+// Transport
+import { text as transportText } from "./Texts/Transport/text";
+import transportBackground from "./Backgrounds/Transport/background.jpg";
+// Energy
+import { text as energyText } from "./Texts/Energy/text";
+import energyBackground from "./Backgrounds/Energy/background.jpg";
 // Reports
 import { text as reportsText } from "./Texts/Reports/text";
 import reportsBackground from "./Backgrounds/Reports/background.jpg";
@@ -40,14 +43,19 @@ const Sections = [
     href: "water",
   },
   {
+    text: transportText,
+    background: transportBackground,
+    href: "transport",
+  },
+  {
+    text: energyText,
+    background: energyBackground,
+    href: "energy",
+  },
+  {
     text: climateText,
     background: climateBackground,
     href: "climate",
-  },
-  {
-    text: transportAndEnergyText,
-    background: transportAndEnergyBackground,
-    href: "transportandenergy",
   },
   {
     text: reportsText,
