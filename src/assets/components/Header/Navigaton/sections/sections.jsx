@@ -125,7 +125,7 @@ const sections = [
   },
 
   {
-    name_ge: "ენერგია",
+    name_ge: "ენერგეტიკა",
     name_en: "Energy",
     id: 7,
     href: "energy",
