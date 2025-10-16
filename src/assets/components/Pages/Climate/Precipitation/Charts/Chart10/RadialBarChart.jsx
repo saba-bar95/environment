@@ -30,7 +30,7 @@ const RadialBarChartComponent = ({ chartInfo }) => {
         ]);
 
         const rawData = dataResult?.data?.data || [];
-        
+
         // Custom mapping for atmospheric-precipitation data indices to region names
         // Variable: ნალექის წლიური გადახრა ნალექის ისტორიული საშუალო რაოდენობიდან (%)
         // Based on API data for 2022:
@@ -41,13 +41,16 @@ const RadialBarChartComponent = ({ chartInfo }) => {
         const regionMapping = {
           2: language === "ge" ? "საქართველო" : "Georgia",
           7: language === "ge" ? "თბილისი" : "Tbilisi",
-          12: language === "ge" ? "სამეგრელო-ზემო სვანეთი" : "Samegrelo-Zemo Svaneti",
+          12:
+            language === "ge"
+              ? "სამეგრელო-ზემო სვანეთი"
+              : "Samegrelo-Zemo Svaneti",
           17: language === "ge" ? "ქვემო ქართლი" : "Kvemo Kartli",
         };
 
         // Get 2022 year data specifically
-        const data2022 = rawData.find(item => item.year === 2022);
-        
+        const data2022 = rawData.find((item) => item.year === 2022);
+
         if (!data2022) {
           throw new Error("No data available for 2022");
         }
@@ -57,7 +60,7 @@ const RadialBarChartComponent = ({ chartInfo }) => {
           const value = parseFloat(data2022[String(index)]) || 0;
           // Convert to percentage (0.93 -> 93)
           const percentValue = value * 100;
-          
+
           return {
             name: regionMapping[index],
             value: percentValue,
@@ -154,12 +157,20 @@ const RadialBarChartComponent = ({ chartInfo }) => {
   // Custom Legend Component
   const CustomLegend = ({ payload }) => {
     return (
-      <ul className="recharts-default-legend" style={{ display: 'flex', justifyContent: 'center', gap: '15px', flexWrap: 'wrap' }}>
+      <ul
+        className="recharts-default-legend"
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          gap: "15px",
+          flexWrap: "wrap",
+        }}
+      >
         {payload.map((entry, index) => (
           <li
             key={`legend-item-${index}`}
             className="recharts-legend-item"
-            style={{ display: 'flex', alignItems: 'center', gap: '5px' }}
+            style={{ display: "flex", alignItems: "center", gap: "5px" }}
           >
             <span
               className="recharts-legend-item-icon"
@@ -168,7 +179,6 @@ const RadialBarChartComponent = ({ chartInfo }) => {
                 width: 12,
                 height: 12,
                 display: "inline-block",
-                borderRadius: '50%',
               }}
             ></span>
             <span className="recharts-legend-item-text">{entry.value}</span>
@@ -200,12 +210,11 @@ const RadialBarChartComponent = ({ chartInfo }) => {
             <span>
               <span
                 style={{
-                  backgroundColor: data.fill,
+                  backgroundColor: data.payload.fill,
                   width: 12,
                   height: 12,
                   display: "inline-block",
                   marginRight: 8,
-                  borderRadius: '50%',
                 }}
                 className="before-span"
               ></span>
@@ -287,11 +296,11 @@ const RadialBarChartComponent = ({ chartInfo }) => {
           />
           <RadialBar
             minAngle={15}
-            label={{ 
-              position: 'insideStart', 
-              fill: '#fff',
+            label={{
+              position: "insideStart",
+              fill: "#fff",
               fontSize: 14,
-              fontWeight: 'bold',
+              fontWeight: "bold",
             }}
             background
             clockWise
@@ -311,7 +320,7 @@ const RadialBarChartComponent = ({ chartInfo }) => {
             textAnchor="middle"
             dominantBaseline="middle"
             className="radial-chart-center-text"
-            style={{ fontSize: '16px', fontWeight: 'bold' }}
+            style={{ fontSize: "16px", fontWeight: "bold" }}
           >
             {language === "ge" ? "საშ. გადახრა" : "Avg. Deviation"}
           </text>
@@ -321,12 +330,14 @@ const RadialBarChartComponent = ({ chartInfo }) => {
             textAnchor="middle"
             dominantBaseline="middle"
             className="radial-chart-center-value"
-            style={{ fontSize: '24px', fontWeight: 'bold' }}
+            style={{ fontSize: "24px", fontWeight: "bold" }}
           >
-            {chartData.length > 0 
-              ? `${(chartData.reduce((sum, item) => sum + item.value, 0) / chartData.length).toFixed(0)}.0%`
-              : '0%'
-            }
+            {chartData.length > 0
+              ? `${(
+                  chartData.reduce((sum, item) => sum + item.value, 0) /
+                  chartData.length
+                ).toFixed(0)}.0%`
+              : "0%"}
           </text>
         </RadialBarChart>
       </ResponsiveContainer>
