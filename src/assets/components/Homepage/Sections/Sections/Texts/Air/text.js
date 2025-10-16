@@ -1,12 +1,12 @@
 const text = {
   ge: {
     header1: "ჰაერის ხარისხი",
-    header2: "ემისიები, AQI და ოზონის სტატისტიკა",
+    header2: "ემისიები",
   },
 
   en: {
     header1: "Air Quality",
-    header2: "Emissions, AQI and Ozone Statistics",
+    header2: "Emissions",
   },
 };
 

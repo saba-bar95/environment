@@ -213,9 +213,13 @@ const PieChartComponent = ({ chartInfo }) => {
     return (
       <ul className="recharts-default-legend" id="pie-chart-legend">
         {selectedTexts.map((text, index) => {
-          const value = selectedYearData
-            ? (selectedYearData[text.name] || 0).toFixed(1)
-            : "0.0";
+          const num = selectedYearData ? selectedYearData[text.name] || 0 : 0;
+          const value = num
+            .toLocaleString("fr-FR", {
+              minimumFractionDigits: 1,
+              maximumFractionDigits: 1,
+            })
+            .replace(",", ".");
 
           return (
             <li
@@ -369,6 +373,8 @@ const PieChartComponent = ({ chartInfo }) => {
         ? adjustedAngle + 180
         : adjustedAngle;
 
+    const formattedValue = value.toLocaleString("fr-FR").replace(",", ".");
+
     return (
       <text
         x={xOffset}
@@ -382,7 +388,7 @@ const PieChartComponent = ({ chartInfo }) => {
           fontSize: "12px",
           fontWeight: "bold",
         }}>
-        {value.toLocaleString()}
+        {formattedValue}
       </text>
     );
   };

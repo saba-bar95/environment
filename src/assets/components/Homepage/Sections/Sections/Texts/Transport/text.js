@@ -5,7 +5,7 @@ const text = {
   },
 
   en: {
-    header1: "Transport and energy",
+    header1: "Transport",
     header2: "Transport indicators",
   },
 };

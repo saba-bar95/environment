@@ -106,8 +106,8 @@ const Waste = () => {
         <div className="overlay"></div> {/* New overlay div */}
         <h1>
           {language === "en"
-            ? "Other Environmental Topics"
-            : "სხვა გარემოსდაცვითი თემები"}
+            ? "Other Environmental Indicators"
+            : "სხვა გარემოსდაცვითი მაჩვენებლები"}
         </h1>
       </div>
       <div className="header-container1">

@@ -1,11 +1,11 @@
 const text = {
   ge: {
-    header1: "ენერგიტიკა",
+    header1: "ენერგეტიკა",
     header2: "ენერგიის მოხმარება და განახლებადი რესურსები",
   },
 
   en: {
-    header1: "Transport and energy",
+    header1: "Energy",
     header2: "Energy consumption and renewable resources",
   },
 };

@@ -8,10 +8,10 @@ import Major from "./Svgs/Water/Major";
 import Protection from "./Svgs/Water/Protection";
 import SupplyAndLosses from "./Svgs/Water/SupplyAndLosses";
 // import Trace from "./Svgs/Water/Trace";
-////// Nature Svgs
-import ProtectedAreas from "./Svgs/Nature/ProtectedAreas";
-import ForestArea from "./Svgs/Nature/ForestArea";
-import ForestAndFieldFires from "./Svgs/Nature/ForestAndFieldFires";
+////// Biodiversity Svgs
+import ProtectedAreas from "./Svgs/Biodiversity/ProtectedAreas";
+import ForestArea from "./Svgs/Biodiversity/ForestArea";
+import ForestAndFieldFires from "./Svgs/Biodiversity/ForestAndFieldFires";
 
 const sections = [
   {
@@ -27,10 +27,10 @@ const sections = [
     href: "air",
   },
   {
-    name_ge: "ბუნება",
-    name_en: "Nature",
+    name_ge: "ბიომრავალფეროვნება",
+    name_en: "Biodiversity",
     id: 5,
-    href: "nature",
+    href: "biodiversity",
     links: [
       {
         header_ge: "დაცული ტერიტორიები",
@@ -39,8 +39,8 @@ const sections = [
         svg: ProtectedAreas,
       },
       {
-        header_ge: "ტყის ფართობი",
-        header_en: "Forest Area",
+        header_ge: "ტყე",
+        header_en: "Forest",
         link: "forestarea",
         svg: ForestArea,
       },

@@ -2,17 +2,13 @@ const text = {
   ge: {
     header: "რესურსების პროდუქტიულობა",
     number1: "1.19",
-    unit1: "ლარი მშპ-დან თითო კგ მასალაზე - 2023",
-    number2: "7%",
-    para: "წინა წელთან შედარებით",
+    unit1: "ლარი/კგ (2023)",
   },
 
   en: {
     header: "Resource productivity",
     number1: "1.19",
-    unit1: "GEL from GDP per kg of material - 2023",
-    number2: "7%",
-    para: "Compared to the previous year",
+    unit1: "GEL/kg (2023)",
   },
 };
 

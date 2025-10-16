@@ -225,7 +225,7 @@ const AreaCharts = ({ chartInfo }) => {
                   className="before-span"></span>
                 {text?.name} :
                 <span style={{ fontWeight: 900, marginLeft: "5px" }}>
-                  {value?.toFixed(2)}
+                  {value?.toFixed(1)}
                 </span>
               </p>
             );

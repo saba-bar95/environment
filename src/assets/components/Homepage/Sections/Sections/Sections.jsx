@@ -8,8 +8,8 @@ import climateBackground from "./Backgrounds/Climate/background.jpg";
 import { text as waterText } from "./Texts/Water/text";
 import waterBackground from "./Backgrounds/Water/background.jpg";
 // Nature
-import { text as natureText } from "./Texts/Nature/text";
-import natureBackground from "./Backgrounds/Nature/background.jpg";
+import { text as natureText } from "./Texts/Biodiversity/text";
+import natureBackground from "./Backgrounds/Biodiversity/background.jpg";
 // Transport
 import { text as transportText } from "./Texts/Transport/text";
 import transportBackground from "./Backgrounds/Transport/background.jpg";
@@ -35,7 +35,7 @@ const Sections = [
   {
     text: natureText,
     background: natureBackground,
-    href: "nature",
+    href: "biodiversity",
   },
   {
     text: waterText,
