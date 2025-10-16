@@ -16,6 +16,7 @@ const RadialBarChartComponent = ({ chartInfo }) => {
   const [chartData, setChartData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [hiddenItems, setHiddenItems] = useState({});
 
   useEffect(() => {
     const getData = async () => {
@@ -155,7 +156,14 @@ const RadialBarChartComponent = ({ chartInfo }) => {
   }
 
   // Custom Legend Component
-  const CustomLegend = ({ payload }) => {
+  const CustomLegend = () => {
+    const handleLegendClick = (name) => {
+      setHiddenItems((prev) => ({
+        ...prev,
+        [name]: !prev[name],
+      }));
+    };
+
     return (
       <ul
         className="recharts-default-legend"
@@ -166,24 +174,34 @@ const RadialBarChartComponent = ({ chartInfo }) => {
           flexWrap: "wrap",
         }}
       >
-        {payload.map((entry, index) => (
-          <li
-            key={`legend-item-${index}`}
-            className="recharts-legend-item"
-            style={{ display: "flex", alignItems: "center", gap: "5px" }}
-          >
-            <span
-              className="recharts-legend-item-icon"
+        {chartData.map((item, index) => {
+          const isHidden = hiddenItems[item.name];
+          return (
+            <li
+              key={`legend-item-${index}`}
+              className="recharts-legend-item"
+              onClick={() => handleLegendClick(item.name)}
               style={{
-                backgroundColor: entry.color,
-                width: 12,
-                height: 12,
-                display: "inline-block",
+                display: "flex",
+                alignItems: "center",
+                gap: "5px",
+                cursor: "pointer",
+                opacity: isHidden ? 0.5 : 1,
               }}
-            ></span>
-            <span className="recharts-legend-item-text">{entry.value}</span>
-          </li>
-        ))}
+            >
+              <span
+                className="recharts-legend-item-icon"
+                style={{
+                  backgroundColor: item.fill,
+                  width: 12,
+                  height: 12,
+                  display: "inline-block",
+                }}
+              ></span>
+              <span className="recharts-legend-item-text">{item.name}</span>
+            </li>
+          );
+        })}
       </ul>
     );
   };
@@ -260,6 +278,9 @@ const RadialBarChartComponent = ({ chartInfo }) => {
     );
   }
 
+  // Filter out hidden items
+  const visibleData = chartData.filter((item) => !hiddenItems[item.name]);
+
   return (
     <div className="chart-wrapper" id={chartInfo.chartID}>
       <div className="header">
@@ -286,7 +307,7 @@ const RadialBarChartComponent = ({ chartInfo }) => {
           innerRadius="20%"
           outerRadius="90%"
           barSize={30}
-          data={chartData}
+          data={visibleData}
         >
           <PolarAngleAxis
             type="number"
@@ -332,10 +353,10 @@ const RadialBarChartComponent = ({ chartInfo }) => {
             className="radial-chart-center-value"
             style={{ fontSize: "24px", fontWeight: "bold" }}
           >
-            {chartData.length > 0
+            {visibleData.length > 0
               ? `${(
-                  chartData.reduce((sum, item) => sum + item.value, 0) /
-                  chartData.length
+                  visibleData.reduce((sum, item) => sum + item.value, 0) /
+                  visibleData.length
                 ).toFixed(0)}.0%`
               : "0%"}
           </text>
