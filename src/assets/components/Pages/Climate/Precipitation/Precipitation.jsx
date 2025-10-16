@@ -10,6 +10,7 @@ import PieCharts from "./Charts/Chart5/PieCharts.jsx";
 import BarCharts from "./Charts/Chart6/BarCharts.jsx";
 import HorizontalBarCharts from "./Charts/Chart7/HorizontalBarCharts.jsx";
 import ScatterCharts from "./Charts/Chart8/ScatterChart.jsx";
+import AreaCharts9 from "./Charts/Chart9/AreaCharts.jsx";
 
 const Precipitation = () => {
   const { language } = useParams();
@@ -129,6 +130,17 @@ const Precipitation = () => {
       unit_ge: "წლიური vs. თვიური ექსტრემუმები",
       unit_en: "yearly vs. monthly extremes",
     },
+    {
+      title_ge: info[8].title_ge,
+      title_en: info[8].title_en,
+      colors: ["#de61f0"],
+      id: "atmospheric-precipitation",
+      types: ["data", "metadata"],
+      selectedIndices: [1],
+      chartID: info[8].chartID,
+      unit_ge: "ყველაზე ნოტიო და მშრალი წლები",
+      unit_en: "most wet and dry years",
+    },
   ];
 
   return (
@@ -160,6 +172,7 @@ const Precipitation = () => {
           <BarCharts chartInfo={ChartInfo[5]} />
           <HorizontalBarCharts chartInfo={ChartInfo[6]} />
           <ScatterCharts chartInfo={ChartInfo[7]} />
+          <AreaCharts9 chartInfo={ChartInfo[8]} />
         </div>
       </div>
     </div>
