@@ -405,8 +405,8 @@ const rawCharts = {
     {
       majors: [
         {
-          title_ge: "ძირითადი მდინარეები",
-          title_en: "Major rivers",
+          title_ge: "ძირითადი მდინარეები (სიგრძე ქვეყნის ტერიტორიაზე)",
+          title_en: "Major rivers (length within the country)",
           path_ge: "საქართველოს მთავარი მდინარეები და ტბები",
           path_en: "Main Rivers and Lakes of Georgia",
         },
@@ -424,17 +424,17 @@ const rawCharts = {
           title_ge: "წყლის აღება ბუნებრივი ობიექტებიდან",
           title_en: "Water extraction from natural sources",
           path_ge:
-            "ბუნებრივი ობიექტებიდან წყლის აღების ტრენდები საქართველოში (2017-2023)",
+            "ბუნებრივი ობიექტებიდან წყლის აღების ტენდენციები საქართველოში (2012-2023)",
           path_en:
-            "Trends in Water Abstraction from Natural Sources in Georgia (2017-2023)",
+            "Trends in Water Abstraction from Natural Sources in Georgia (2012-2023)",
         },
         {
           title_ge: "წყლის გამოყენება სექტორების მიხედვით",
           title_en: "Water use by sector",
           path_ge:
-            "ბუნებრივი ობიექტებიდან წყლის აღების ტრენდები საქართველოში (2017-2023)",
+            "ბუნებრივი ობიექტებიდან წყლის აღების ტენდენციები საქართველოში (2012-2023)",
           path_en:
-            "Trends in Water Abstraction from Natural Sources in Georgia (2017-2023)",
+            "Trends in Water Abstraction from Natural Sources in Georgia (2012-2023)",
         },
         {
           title_ge:
@@ -442,25 +442,25 @@ const rawCharts = {
           title_en:
             "Water losses during transportation and circulating and secondary sequential water supply",
           path_ge:
-            "ბუნებრივი ობიექტებიდან წყლის აღების ტრენდები საქართველოში (2017-2023)",
+            "ბუნებრივი ობიექტებიდან წყლის აღების ტენდენციები საქართველოში (2012-2023)",
           path_en:
-            "Trends in Water Abstraction from Natural Sources in Georgia (2017-2023)",
+            "Trends in Water Abstraction from Natural Sources in Georgia (2012-2023)",
         },
         {
           title_ge: "ჩამდინარე წყლის ჩაშვება ზედაპირული წყლის ობიექტებში, სულ",
           title_en: "Wastewater discharge into surface water bodies, total",
           path_ge:
-            "ბუნებრივი ობიექტებიდან წყლის აღების ტრენდები საქართველოში (2017-2023)",
+            "ბუნებრივი ობიექტებიდან წყლის აღების ტენდენციები საქართველოში (2012-2023)",
           path_en:
-            "Trends in Water Abstraction from Natural Sources in Georgia (2017-2023)",
+            "Trends in Water Abstraction from Natural Sources in Georgia (2012-2023)",
         },
         {
           title_ge: "წყლის გამოყენების განაწილება სექტორების მიხედვით, %",
           title_en: "Distribution of water use by sectors, %",
           path_ge:
-            "ბუნებრივი ობიექტებიდან წყლის აღების ტრენდები საქართველოში (2017-2023)",
+            "ბუნებრივი ობიექტებიდან წყლის აღების ტენდენციები საქართველოში (2012-2023)",
           path_en:
-            "Trends in Water Abstraction from Natural Sources in Georgia (2017-2023)",
+            "Trends in Water Abstraction from Natural Sources in Georgia (2012-2023)",
         },
       ],
     },
@@ -645,12 +645,49 @@ const rawCharts = {
     {
       temperature: [
         {
-          title_ge: "წყლის აღება ბუნებრივი ობიექტებიდან",
-          title_en: "Water extraction from natural sources",
-          path_ge:
-            "ბუნებრივი ობიექტებიდან წყლის აღების ტრენდები საქართველოში (2017-2023)",
-          path_en:
-            "Trends in Water Abstraction from Natural Sources in Georgia (2017-2023)",
+          title_ge:
+            "საქართველოს დათბობის ტენდენცია: საშუალო წლიური ტემპერატურა",
+          title_en: "Georgia's warming trend: Average annual temperature",
+          path_ge: "ჰაერის ტემპერატურა",
+          path_en: "Air Temperature",
+        },
+        {
+          title_ge:
+            "საქართველოს წლიური ტემპერატურული ანომალია, გადახრა 1961-1990 წლების საშუალოდან",
+          title_en:
+            "Georgia's annual temperature anomaly, deviation from the 1961-1990 average",
+          path_ge: "ჰაერის ტემპერატურა",
+          path_en: "Air Temperature",
+        },
+        {
+          title_ge:
+            "ქვეყნის, თბილისის და საქართველოს ყველაზე გრილი და თბილი რეგიონების ტემპერატურის ტენდენციები",
+          title_en:
+            "Temperature trends of the coldest and warmest regions of the country, Tbilisi and Georgia",
+          path_ge: "ჰაერის ტემპერატურა",
+          path_en: "Air Temperature",
+        },
+        {
+          title_ge:
+            "ექსტრემალური ცვლილებები: თბილისის ყველაზე ცხელი და ცივი თვეების საშუალო ტემპერატურა",
+          title_en:
+            "Extreme changes: Average temperatures of Tbilisi's hottest and coldest months",
+          path_ge: "ჰაერის ტემპერატურა",
+          path_en: "Air Temperature",
+        },
+        {
+          title_ge: "გურიის პროფილი (2022 წ. საბაზისოსთან შედარებით)",
+          title_en: "Guria Profile (Compared to 2022 Baseline)",
+          path_ge: "ჰაერის ტემპერატურა",
+          path_en: "Air Temperature",
+        },
+        {
+          title_ge:
+            "ყველაზე ცხელი წლები 1990 წლიდან დღემდე: ტოპ 7 ტემპერატურული გადახრის მიხედვით",
+          title_en:
+            "The hottest years since 1990: Top 7 by temperature deviation",
+          path_ge: "ჰაერის ტემპერატურა",
+          path_en: "Air Temperature",
         },
       ],
     },

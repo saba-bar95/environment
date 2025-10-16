@@ -18,11 +18,6 @@ const Emissions = () => {
             ? "Greenhouse Gas Emissions in Georgia"
             : "სათბურის აირების გაფრქვევები საქართველოში"}
         </h1>
-        <h2>
-          {language === "en"
-            ? "Interactive dashboard of emissions for the period from 2000 to 2017"
-            : "გაფრქვევების ინტერაქტიული პანელი 2000-დან 2017 წლამდე პერიოდისთვის"}
-        </h2>
       </div>
     </div>
   );
