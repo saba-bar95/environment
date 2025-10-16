@@ -9,6 +9,7 @@ import {
   Legend,
   ResponsiveContainer,
   Brush,
+  Line,
 } from "recharts";
 import { useParams } from "react-router-dom";
 import commonData from "../../../../../../fetchFunctions/commonData";
@@ -40,10 +41,25 @@ const AreaCharts = ({ chartInfo }) => {
             (region, i) => ({ name: region, id: i })
           ) || [];
 
-        // Select specific regions based on chartInfo.selectedIndices
-        const selected = chartInfo.selectedIndices
+        // Separate index 0 for Line and rest for Areas
+        const lineIndex = 0;
+        const areaIndices = chartInfo.selectedIndices.filter(index => index !== lineIndex);
+
+        // Create entries for areas
+        const areaEntries = areaIndices
           .map((index) => valueTexts[index])
           .filter(Boolean);
+
+        // Create entry for line (index 0)
+        const lineEntry = valueTexts[lineIndex] ? {
+          ...valueTexts[lineIndex],
+          isLine: true
+        } : null;
+
+        // Combine with line entry at the end
+        const selected = lineEntry 
+          ? [...areaEntries, lineEntry]
+          : areaEntries;
 
         setSelectedTexts(selected);
 
@@ -209,8 +225,9 @@ const AreaCharts = ({ chartInfo }) => {
           <p className="tooltip-label">
             {label} {language === "en" ? "Year" : "წელი"}
           </p>
-          {payload.map(({ value, fill, dataKey }) => {
+          {payload.map(({ value, fill, stroke, dataKey }) => {
             const text = selectedTexts.find((t) => t.name === dataKey);
+            const color = stroke || fill; // Use stroke for Line, fill for Area
             return (
               <p
                 key={`item-${dataKey}`}
@@ -224,7 +241,7 @@ const AreaCharts = ({ chartInfo }) => {
                 <span>
                   <span
                     style={{
-                      backgroundColor: fill,
+                      backgroundColor: color,
                       width: 12,
                       height: 12,
                       display: "inline-block",
@@ -298,7 +315,26 @@ const AreaCharts = ({ chartInfo }) => {
         <AreaChart data={chartData}>
           <CartesianGrid strokeDasharray="3 3" vertical={false} />
           <XAxis dataKey="year" tick={{ fontSize: 15 }} tickLine={false} />
-          <YAxis tick={{ fontSize: 12 }} />
+          
+          {/* Left Y-axis for Area charts */}
+          <YAxis 
+            yAxisId="left"
+            tick={{ fontSize: 12 }}
+            stroke="#666"
+            orientation="left"
+            width={60}
+          />
+          
+          {/* Right Y-axis for Line chart */}
+          <YAxis 
+            yAxisId="right"
+            domain={[1000, 1100]}
+            tick={{ fontSize: 12 }}
+            stroke="#1678e7"
+            orientation="right"
+            width={60}
+          />
+          
           <Tooltip content={<CustomTooltip />} />
           <Legend
             wrapperStyle={{ marginBottom: -20 }}
@@ -308,16 +344,41 @@ const AreaCharts = ({ chartInfo }) => {
           />
           {selectedTexts.map((text, index) =>
             visibleLines[text.name] ? (
-              <Area
-                key={`area-${text.name}`}
-                type="monotone"
-                dataKey={text.name}
-                stackId="1"
-                fill={chartInfo.colors[index % chartInfo.colors.length]}
-                stroke={chartInfo.colors[index % chartInfo.colors.length]}
-                name={text.name}
-                strokeWidth={2}
-              />
+              text.isLine ? (
+                // Render Line for index 0 with right Y-axis
+                <Line
+                  key={`line-${text.name}`}
+                  type="monotone"
+                  dataKey={text.name}
+                  yAxisId="right"
+                  stroke={chartInfo.colors[index % chartInfo.colors.length]}
+                  strokeWidth={3}
+                  dot={{
+                    fill: chartInfo.colors[index % chartInfo.colors.length],
+                    strokeWidth: 2,
+                    r: 4,
+                  }}
+                  name={text.name}
+                  activeDot={{
+                    r: 6,
+                    fill: chartInfo.colors[index % chartInfo.colors.length],
+                    strokeWidth: 2,
+                  }}
+                />
+              ) : (
+                // Render Area for other indices with left Y-axis
+                <Area
+                  key={`area-${text.name}`}
+                  type="monotone"
+                  dataKey={text.name}
+                  yAxisId="left"
+                  stackId="1"
+                  fill={chartInfo.colors[index % chartInfo.colors.length]}
+                  stroke={chartInfo.colors[index % chartInfo.colors.length]}
+                  name={text.name}
+                  strokeWidth={2}
+                />
+              )
             ) : null
           )}
           <Brush
