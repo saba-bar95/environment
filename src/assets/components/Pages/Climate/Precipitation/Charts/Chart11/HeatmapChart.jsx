@@ -215,12 +215,12 @@ const HeatmapChart = ({ chartInfo }) => {
         </div>
       </div>
       <div style={{ width: "100%", overflowX: "auto", padding: "20px" }}>
-        <div style={{ minWidth: "800px" }}>
+        <div style={{ minWidth: "600px", maxWidth: "1000px", margin: "0 auto" }}>
           {/* Heatmap Table */}
-          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "12px" }}>
+          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "14px" }}>
             <thead>
               <tr>
-                <th style={{ border: "1px solid #ddd", padding: "8px", background: "#f5f5f5", fontWeight: "bold" }}>
+                <th style={{ border: "1px solid #ddd", padding: "12px", background: "#f5f5f5", fontWeight: "bold", fontSize: "14px" }}>
                   {language === "ge" ? "დეკადა" : "Decade"}
                 </th>
                 {regionMapping.map((region) => (
@@ -228,10 +228,11 @@ const HeatmapChart = ({ chartInfo }) => {
                     key={region.name} 
                     style={{ 
                       border: "1px solid #ddd", 
-                      padding: "8px", 
+                      padding: "12px", 
                       background: "#f5f5f5", 
                       fontWeight: "bold",
-                      textAlign: "center"
+                      textAlign: "center",
+                      fontSize: "14px"
                     }}
                   >
                     {region.name}
@@ -242,7 +243,7 @@ const HeatmapChart = ({ chartInfo }) => {
             <tbody>
               {chartData.map((decadeRow) => (
                 <tr key={decadeRow.decade}>
-                  <td style={{ border: "1px solid #ddd", padding: "8px", fontWeight: "bold", background: "#fafafa" }}>
+                  <td style={{ border: "1px solid #ddd", padding: "12px", fontWeight: "bold", background: "#fafafa", fontSize: "14px" }}>
                     {decadeRow.decade}
                   </td>
                   {regionMapping.map((region) => {
@@ -252,13 +253,14 @@ const HeatmapChart = ({ chartInfo }) => {
                         key={region.key}
                         style={{
                           border: "1px solid #ddd",
-                          padding: "12px",
+                          padding: "16px",
                           textAlign: "center",
                           background: getColor(value),
                           color: value >= 1100 ? "#fff" : "#000",
-                          fontWeight: "500",
+                          fontWeight: "600",
                           cursor: "pointer",
                           transition: "all 0.2s",
+                          fontSize: "15px"
                         }}
                         title={`${region.name} (${decadeRow.decade}): ${value}${language === "ge" ? " მმ" : " mm"}`}
                       >
@@ -275,15 +277,15 @@ const HeatmapChart = ({ chartInfo }) => {
           <div style={{ marginTop: "30px", display: "flex", justifyContent: "center", gap: "20px", flexWrap: "wrap" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
               <div style={{ width: "30px", height: "20px", background: "#f4a261", border: "1px solid #ddd" }}></div>
-              <span style={{ fontSize: "12px" }}>{language === "ge" ? "მშრალი (<950 მმ)" : "Dry (<950 mm)"}</span>
+              <span style={{ fontSize: "14px", color: "#000" }}>{language === "ge" ? "მშრალი (<950 მმ)" : "Dry (<950 mm)"}</span>
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
               <div style={{ width: "30px", height: "20px", background: "#95d5b2", border: "1px solid #ddd" }}></div>
-              <span style={{ fontSize: "12px" }}>{language === "ge" ? "საშუალო (950-1100 მმ)" : "Average (950-1100 mm)"}</span>
+              <span style={{ fontSize: "14px", color: "#000" }}>{language === "ge" ? "საშუალო (950-1100 მმ)" : "Average (950-1100 mm)"}</span>
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
               <div style={{ width: "30px", height: "20px", background: "#2d6a4f", border: "1px solid #ddd" }}></div>
-              <span style={{ fontSize: "12px", color: "#fff" }}>{language === "ge" ? "ნოტიო (>1100 მმ)" : "Wet (>1100 mm)"}</span>
+              <span style={{ fontSize: "14px", color: "#000" }}>{language === "ge" ? "ნოტიო (>1100 მმ)" : "Wet (>1100 mm)"}</span>
             </div>
           </div>
         </div>

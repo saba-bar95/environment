@@ -198,7 +198,7 @@ const Precipitation = () => {
           <ScatterCharts chartInfo={ChartInfo[7]} />
           <AreaCharts9 chartInfo={ChartInfo[8]} />
           <RadialBarChart chartInfo={ChartInfo[9]} />
-          {/* <HeatmapChart chartInfo={ChartInfo[10]} /> */}
+          <HeatmapChart chartInfo={ChartInfo[10]} />
         </div>
       </div>
     </div>
