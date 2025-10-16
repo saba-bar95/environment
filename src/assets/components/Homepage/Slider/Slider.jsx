@@ -5,6 +5,7 @@ import Slides from "./Slides/Slides";
 import Left from "./Svgs/Left";
 import Right from "./Svgs/Right";
 import Rise from "./Svgs/Rise";
+import Drop from "./Svgs/Drop";
 import Arrow from "./Svgs/Arrow";
 import AnimatedNumber from "./AnimatedNumber";
 import { Link } from "react-router-dom";
@@ -40,39 +41,51 @@ const Slider = () => {
     setCurrentSlide(Slides[index]);
   };
 
-  const slideContents = Slides.map((slide, index) => (
-    <div
-      className={`slide-content ${
-        currentIndex === index ? "active" : ""
-      } slide-${slideDirection}`}
-      key={index}>
-      <h2>{slide.text[language].header}</h2>
-      <div className="stats">
-        <div
-          className="left"
-          style={{ backgroundImage: `url(${slide.background2})` }}></div>
-        <div className="right">
-          <div className="top">
-            <span className="number-1">
-              <AnimatedNumber
-                targetValue={slide.text[language].number1}
-                duration={1000}
-              />
-              {slide.text[language].unit2 && slide.text[language].unit2}
-            </span>
-            <span className="unit">{slide.text[language].unit1}</span>
-          </div>
-          <div className="bot">
-            <div style={{ display: "flex", alignItems: "center" }}>
-              <Rise />
-              <span className="number">{slide.text[language].number2}</span>
+  const slideContents = Slides.map((slide, index) => {
+    const number2Str = slide.text[language].number2 || "";
+    const number2 = parseFloat(number2Str.replace("%", ""));
+    return (
+      <div
+        className={`slide-content ${
+          currentIndex === index ? "active" : ""
+        } slide-${slideDirection}`}
+        key={index}>
+        <h2>{slide.text[language].header}</h2>
+        <div className="stats">
+          <div
+            className="left"
+            style={{ backgroundImage: `url(${slide.background2})` }}></div>
+          <div className="right">
+            <div className="top">
+              <span className="number-1">
+                <AnimatedNumber
+                  targetValue={slide.text[language].number1}
+                  duration={1000}
+                />
+                {slide.text[language].unit2 && slide.text[language].unit2}
+              </span>
+              <span className="unit">{slide.text[language].unit1}</span>
             </div>
-            <span className="para">{slide.text[language].para}</span>
+            {!isNaN(number2) && (
+              <div className="bot">
+                <div style={{ display: "flex", alignItems: "center" }}>
+                  {number2 > 0 ? <Rise /> : <Drop />}
+                  <span
+                    className="number"
+                    style={{
+                      color: number2 < 0 ? "red" : "rgb(29, 191, 115)",
+                    }}>
+                    {number2Str}
+                  </span>
+                </div>
+                <span className="para">{slide.text[language].para}</span>
+              </div>
+            )}
           </div>
         </div>
       </div>
-    </div>
-  ));
+    );
+  });
 
   return (
     <div className="slider">

@@ -85,6 +85,9 @@ const Quality = () => {
                 </span>
                 {language === "en" ? "minutes ago" : "წუთის წინ"}
               </p>
+              <p style={{ marginTop: "10px" }}>
+                {language === "en" ? "Source: air.gov.ge" : "წყარო: air.gov.ge"}
+              </p>
             </div>
           </div>
         ))}

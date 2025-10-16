@@ -1,19 +1,19 @@
 const text = {
   ge: {
-    header: "წყლის ქსელის დანაკარგი",
-    number1: "68.3",
+    header: "წყლის სისტემის დანაკარგები",
+    number1: "67.0",
     unit2: "%",
-    unit1: "საშუალო დანაკარგი ტრასპორტირებისას - 2023",
-    number2: "1%",
+    unit1: "საშუალო დანაკარგი ტრასპორტირებისას - 2024",
+    number2: "-3%",
     para: "წინა წელთან შედარებით",
   },
 
   en: {
-    header: "Water network loss",
+    header: "Water system losses",
     unit2: "%",
-    number1: "68.3",
-    unit1: "Average loss during transportation - 2023",
-    number2: "1%",
+    number1: "67.0",
+    unit1: "Average loss during transportation - 2024",
+    number2: "-3%",
     para: "Compared to the previous year",
   },
 };

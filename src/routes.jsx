@@ -4,13 +4,12 @@ import Homepage from "./assets/components/Homepage/Homepage";
 import Air from "./assets/components/Pages/Air/Air";
 import Climate from "./assets/components/Pages/Climate/Climate";
 import Water from "./assets/components/Pages/Water/Water";
-import Nature from "./assets/components/Pages/Nature/Nature";
+import Biodiversity from "./assets/components/Pages/Biodiversity/Biodiversity";
 import Energy from "./assets/components/Pages/Energy/Energy";
 import Transport from "./assets/components/Pages/Transport/Transport";
 import Waste from "./assets/components/Pages/Waste/Waste";
 import Other from "./assets/components/Pages/Other/Other";
 import Reports from "./assets/components/Pages/Reports/Reports";
-import TransportAndEnergy from "./assets/components/Pages/TransportAndEnergy/TransportAndEnergy";
 // Climate Children Pages
 import Disasters from "./assets/components/Pages/Climate/Disasters/Disasters";
 import Emissions from "./assets/components/Pages/Climate/Emissions/Emissions";
@@ -21,14 +20,12 @@ import Majors from "./assets/components/Pages/Water/Majors/Majors";
 import Protection from "./assets/components/Pages/Water/Protection/Protection";
 import SupplyAndLosses from "./assets/components/Pages/Water/SupplyAndLosses/SupplyAndLosses";
 import Trace from "./assets/components/Pages/Water/Trace/Trace";
-// Nature Children Pages
-import ProtectedAreas from "./assets/components/Pages/Nature/ProtectedAreas/ProtectedAreas";
-import ForestAndFieldFires from "./assets/components/Pages/Nature/ForestAndFieldFires/ForestAndFieldFires";
-import ForestArea from "./assets/components/Pages/Nature/ForestArea/ForestArea";
+// Biodiversity Children Pages
+import ProtectedAreas from "./assets/components/Pages/Biodiversity/ProtectedAreas/ProtectedAreas";
+import ForestAndFieldFires from "./assets/components/Pages/Biodiversity/ForestAndFieldFires/ForestAndFieldFires";
+import ForestArea from "./assets/components/Pages/Biodiversity/ForestArea/ForestArea";
 // ForestArea Pages
-import ForestResources from "./assets/components/Pages/Nature/ForestArea/ForestResources/ForestResources";
-import Inventorization from "./assets/components/Pages/Nature/ForestArea/Inventorization/Inventorization";
-import Timber from "./assets/components/Pages/Nature/ForestArea/Timber/Timber";
+import ForestResources from "./assets/components/Pages/Biodiversity/ForestArea/ForestResources/ForestResources";
 
 const routes = [
   {
@@ -43,13 +40,12 @@ const routes = [
       { path: "air", element: <Air /> },
       { path: "climate", element: <Climate /> },
       { path: "water", element: <Water /> },
-      { path: "nature", element: <Nature /> },
+      { path: "biodiversity", element: <Biodiversity /> },
       { path: "reports", element: <Reports /> },
       { path: "energy", element: <Energy /> },
       { path: "transport", element: <Transport /> },
       { path: "waste", element: <Waste /> },
       { path: "other", element: <Other /> },
-      { path: "transportandenergy", element: <TransportAndEnergy /> },
       // Climate Paths
       { path: "climate/disasters", element: <Disasters /> },
       { path: "climate/emissions", element: <Emissions /> },
@@ -60,19 +56,17 @@ const routes = [
       { path: "water/protection", element: <Protection /> },
       { path: "water/supplyandlosses", element: <SupplyAndLosses /> },
       { path: "water/trace", element: <Trace /> },
-      // Nature Paths
-      { path: "nature/protectedareas", element: <ProtectedAreas /> },
-      { path: "nature/forestandfieldfires", element: <ForestAndFieldFires /> },
-      { path: "nature/forestarea", element: <ForestArea /> },
+      // Biodiversity Paths
+      { path: "biodiversity/protectedareas", element: <ProtectedAreas /> },
+      {
+        path: "biodiversity/forestandfieldfires",
+        element: <ForestAndFieldFires />,
+      },
+      { path: "biodiversity/forestarea", element: <ForestArea /> },
       // Forest Area Paths
       {
-        path: "nature/forestarea/forestresources",
+        path: "biodiversity/forestarea/forestresources",
         element: <ForestResources />,
-      },
-      { path: "nature/forestarea/timber", element: <Timber /> },
-      {
-        path: "nature/forestarea/inventorization",
-        element: <Inventorization />,
       },
     ],
   },

@@ -1,17 +1,17 @@
 const text = {
   ge: {
-    header: "მგზავრთა ტრანსპორტი",
-    number1: "10248",
-    unit1: "მილიონი მგზავრ-კმ მოგზაურობა - 2023",
-    number2: "3%",
+    header: "სამგზავრო ტრანსპორტი",
+    number1: "11175.1",
+    unit1: "მილიონი მგზავრ-კმ (2024)",
+    number2: "9%",
     para: "წინა წელთან შედარებით",
   },
 
   en: {
     header: "Passenger transport",
-    number1: "10248",
-    unit1: "Million passenger-km travelled - 2023",
-    number2: "3%",
+    number1: "11175.1",
+    unit1: "Million passenger-km (2024)",
+    number2: "9%",
     para: "Compared to the previous year",
   },
 };

@@ -148,26 +148,26 @@ const rawCharts = {
   ],
   energy: [
     {
-      title_ge: "მოხმარების ზრდა სექტორების მიხედვით",
-      title_en: "According to Consumption Growth",
+      title_ge: "ენერგიის საბოლოო მოხმარების ზრდა სექტორების მიხედვით",
+      title_en: "Final Energy Consumption Growth by Sectors",
       path_ge: "საქართველოს ენერგეტიკის გარემოსდაცვითი მაჩვენებლები",
       path_en: "environmental performance of georgian energy sector",
     },
     {
-      title_ge: "მოხმარების სტრუქტურა",
-      title_en: "Consumption Structure",
+      title_ge: "ენერგიის საბოლოო მოხმარების სტრუქტურა",
+      title_en: "Structure of Final Energy Consumption",
       path_ge: "საქართველოს ენერგეტიკის გარემოსდაცვითი მაჩვენებლები",
       path_en: "environmental performance of georgian energy sector",
     },
     {
-      title_ge: "მოხმარების სექტორების მიხედვით (%)",
-      title_en: "By Consumption Sectors (%)",
+      title_ge: "სექტორების წილი ენერგიის საბოლოო მოხმარებაში (%)",
+      title_en: "Share of Sectors in Final Energy Consumption",
       path_ge: "საქართველოს ენერგეტიკის გარემოსდაცვითი მაჩვენებლები",
       path_en: "environmental performance of georgian energy sector",
     },
     {
-      title_ge: "პირველადი მომარაგების შემადგენლობა",
-      title_en: "Composition of Primary Supply",
+      title_ge: "პირველადი ენერგომომარაგების შემადგენლობა",
+      title_en: "Composition of Primary Energy Supply",
       path_ge: "საქართველოს ენერგეტიკის გარემოსდაცვითი მაჩვენებლები",
       path_en: "environmental performance of georgian energy sector",
     },
@@ -190,7 +190,7 @@ const rawCharts = {
       path_en: "environmental performance of georgian energy sector",
     },
     {
-      title_ge: "განახლებადი ენერგიის მომარაგების ზრდა ტიპების მიხედვით",
+      title_ge: "განახლებადი ენერგიის მიწოდების ზრდა ტიპების მიხედვით",
       title_en: "Renewable Energy Supply Growth by Type",
       path_ge: "საქართველოს ენერგეტიკის გარემოსდაცვითი მაჩვენებლები",
       path_en: "environmental performance of georgian energy sector",
@@ -301,7 +301,7 @@ const rawCharts = {
       path_en: "Material Flow Accounts",
     },
   ],
-  nature: [
+  biodiversity: [
     {
       protectedAreas: [
         {
@@ -311,13 +311,13 @@ const rawCharts = {
           path_en: "Protected Areas",
         },
         {
-          title_ge: "ძირითადი მტაცებლების პოპულაციები",
-          title_en: "Populations of Key redators",
+          title_ge: "ძირითადი მტაცებლები",
+          title_en: "Key redators",
           path_ge: "ტყის ფართობი",
           path_en: "Protected Areas",
         },
         {
-          title_ge: "ბალახისმჭამელების პოპულაციები",
+          title_ge: "ძირითადი ბალახისმჭამელები",
           title_en: "Herbivore Populations",
           path_ge: "ტყის ფართობი",
           path_en: "Protected Areas",
@@ -329,26 +329,26 @@ const rawCharts = {
           path_en: "Protected Areas",
         },
         {
-          title_ge: "ძუძუმწოვრების პოპულაციები დაცულ ტერიტორიებზე",
-          title_en: "Mammal Populations in Protected Areas",
+          title_ge: "ძუძუმწოვრები დაცულ ტერიტორიებზე",
+          title_en: "Mammal in Protected Areas",
           path_ge: "ტყის ფართობი",
           path_en: "Protected Areas",
         },
         {
-          title_ge: "ძირითადი მტაცებელი ფრინველების პოპულაციები",
+          title_ge: "ძირითადი მტაცებელი ფრინველები",
           title_en: "Population of Major Birds of Prey",
           path_ge: "ტყის ფართობი",
           path_en: "Protected Areas",
         },
         {
-          title_ge: "სანადირო ფრინველების პოპულაციები",
-          title_en: "Populations of Game Birds",
+          title_ge: "სანადიროდ პოპულარული ფრინველები",
+          title_en: "Popular birds for hunting",
           path_ge: "ტყის ფართობი",
           path_en: "Protected Areas",
         },
         {
-          title_ge: "ფრინველების პოპულაციები დაცულ ტერიტორიებზე",
-          title_en: "Bird Populations in Protected Areas",
+          title_ge: "ფრინველები დაცულ ტერიტორიებზე",
+          title_en: "Bird in Protected Areas",
           path_ge: "ტყის ფართობი",
           path_en: "Protected Areas",
         },
@@ -606,6 +606,14 @@ const rawCharts = {
             "სეზონური სტიქიური მოვლენების პროფილი (ყოველთვიური საშუალო, 2013-2023)",
           title_en:
             "Seasonal Natural Disasters Profile (Monthly Average, 2013-2023)",
+          path_ge: "სტიქიური მოვლენები საქართველოში",
+          path_en: "Natural Disasters in Georgia",
+        },
+        {
+          title_ge:
+            "სტიქიური მოვლენების პროფილი: ჯამური შემთხვევები და სიკვდილიანობა (2016-2023)",
+          title_en:
+            "Natural Disaster Profile: Total Incidents and Mortality (2016-2023)",
           path_ge: "სტიქიური მოვლენები საქართველოში",
           path_en: "Natural Disasters in Georgia",
         },

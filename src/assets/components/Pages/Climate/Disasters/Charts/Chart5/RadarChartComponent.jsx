@@ -38,8 +38,8 @@ const RadarChartComponent = ({ chartInfo }) => {
 
   const isSmallScreen = screenWidth < 1200;
   const chartHeight = isSmallScreen ? 400 : 460;
-  const outerRadius = isSmallScreen ? "70%" : "80%";
-  const tickFontSize = isSmallScreen ? 12 : 15;
+  const outerRadius = isSmallScreen ? "70%" : "75%";
+  const tickFontSize = isSmallScreen ? 12 : 13;
   const legendMarginTop = isSmallScreen ? 8 : 10;
 
   // Fetch and process data
@@ -309,7 +309,7 @@ const RadarChartComponent = ({ chartInfo }) => {
                   {text?.name} :
                 </span>
                 <span style={{ fontWeight: 900, marginLeft: "5px" }}>
-                  {value?.toFixed(2)}
+                  {value}
                 </span>
               </p>
             );

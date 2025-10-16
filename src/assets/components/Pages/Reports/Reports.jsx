@@ -42,6 +42,7 @@ const Reports = () => {
       types: ["data", "metadata"],
       selectedIndices: [5, 4],
       chartID: info[1].chartID,
+      isChart2: true,
     },
     {
       title_ge: info[2].title_ge,

@@ -1,12 +1,12 @@
 const text = {
   ge: {
     header1: "სხვა",
-    header2: "მუნიციპალური ნარჩენების განთავსება",
+    header2: "სხვა გარემოსდაცვითი მაჩვენებლები",
   },
 
   en: {
     header1: "Other",
-    header2: "Rural environmental reports, wild animals and birds",
+    header2: "Other environmental indicators",
   },
 };
 

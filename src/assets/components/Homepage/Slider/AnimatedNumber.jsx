@@ -15,11 +15,19 @@ const AnimatedNumber = ({ targetValue, duration = 3000 }) => {
       const percentage = Math.min(progress / duration, 1);
       const easedPercentage = easeOutExpo(percentage);
 
-      setAnimatedValue(Math.floor(easedPercentage * targetValue * 100) / 100);
-
-      if (progress < duration) {
-        animationFrameRef.current = requestAnimationFrame(animate);
+      if (percentage >= 1) {
+        // Force exact final value to avoid any rounding/precision discrepancies
+        setAnimatedValue(targetValue);
+        return;
       }
+
+      // Use Math.round for proper rounding to 2 decimals
+      const calculatedValue =
+        Math.round(easedPercentage * targetValue * 100) / 100;
+
+      setAnimatedValue(calculatedValue);
+
+      animationFrameRef.current = requestAnimationFrame(animate);
     };
 
     animationFrameRef.current = requestAnimationFrame(animate);

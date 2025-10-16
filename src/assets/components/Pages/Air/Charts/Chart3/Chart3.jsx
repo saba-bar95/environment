@@ -210,7 +210,9 @@ const Chart3 = ({ chartInfo }) => {
         ...mobileFiltered.map((d) => d.year),
         ...stationaryFiltered.map((d) => d.year),
       ]),
-    ].sort((a, b) => a - b);
+    ]
+      .filter((year) => year >= 2010 && year <= 2022)
+      .sort((a, b) => a - b);
 
     const merged = years.map((year) => ({
       year,
@@ -480,7 +482,7 @@ const Chart3 = ({ chartInfo }) => {
           <CartesianGrid strokeDasharray="3 3" vertical={false} />
           <XAxis dataKey="year" tick={{ fontSize: 15 }} tickLine={false} />
           <YAxis tick={{ fontSize: 12 }} />
-          <Tooltip content={<CustomTooltip />} />`
+          <Tooltip content={<CustomTooltip />} />
           <Legend
             wrapperStyle={{ marginBottom: -20 }}
             content={<CustomLegend />}
