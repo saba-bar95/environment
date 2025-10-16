@@ -9,8 +9,7 @@ const downloadPDF = (
   isPieChart,
   bcwy,
   language,
-  year,
-  sbcwp
+  year
 ) => {
   const isGeorgian = language === "ge";
 
@@ -35,27 +34,18 @@ const downloadPDF = (
   const nameHeader = isGeorgian ? "დასახელება" : "Name";
   const unitHeader = unit; // Use unit parameter as header
 
-  if (sbcwp) {
-    // Get headers for values (exclude 'year' and percentage fields)
-    const valueHeaders = Object.keys(data[0]).filter(
-      (key) => key !== "year" && !key.endsWith("_percent")
-    );
+  if (bcwy) {
     // Create table head
-    const tableHead = [[yearHeader, ...valueHeaders]];
+    const tableHead = [[yearHeader, nameHeader, unitHeader]];
 
     // Create table body
-    const tableBody = data.map((item) => {
-      const row = [item.year];
-      valueHeaders.forEach((header) => {
-        const value = Number(item[header]).toFixed(2);
-        const percentKey = `${header}_percent`;
-        const percentValue = item[percentKey];
-        const percentText =
-          percentValue >= 1 ? `${Number(percentValue).toFixed(1)}%` : "";
-        row.push(`${value} (${percentText})`);
-      });
-      return row;
-    });
+    const tableBody = Object.keys(data[0])
+      .filter((key) => key !== "name") // Exclude 'name' (year)
+      .map((category) => [
+        data[0].name, // Use the year from data[0].name
+        category,
+        Number(data[0][category]).toFixed(2), // Format numbers to 2 decimal places
+      ]);
 
     // Add table to PDF
     autoTable(doc, {
@@ -75,49 +65,7 @@ const downloadPDF = (
       margin: { top: 20 },
       columnStyles: {
         0: { cellWidth: 30 }, // Set width for year column
-      },
-    });
-
-    // Generate filename
-    const finalFilename = `${filename}.pdf`;
-
-    // Save the PDF
-    doc.save(finalFilename);
-    return;
-  }
-
-  if (bcwy) {
-    // Create table head
-    const tableHead = [[yearHeader, nameHeader, unitHeader]];
-
-    // Create table body
-    const tableBody = Object.keys(data[0])
-      .filter((key) => key !== "name")
-      .map((category) => [
-        data[0].name,
-        category,
-        Number(data[0][category]).toFixed(2),
-      ]);
-
-    // Add table to PDF
-    autoTable(doc, {
-      head: tableHead,
-      body: tableBody,
-      styles: {
-        font: isGeorgian ? "NotoSansGeorgian" : "helvetica",
-        fontStyle: "normal",
-        fontSize: 10,
-        cellPadding: 2,
-      },
-      headStyles: {
-        fontStyle: "bold",
-        fillColor: [200, 200, 200],
-        textColor: [0, 0, 0],
-      },
-      margin: { top: 20 },
-      columnStyles: {
-        0: { cellWidth: 30 },
-        1: { cellWidth: 80 },
+        1: { cellWidth: 80 }, // Wider width for name column to accommodate long text
       },
     });
 
@@ -137,7 +85,7 @@ const downloadPDF = (
     const tableBody = data.map((item) => [
       year,
       item.name,
-      Number(item.value).toFixed(2),
+      Number(item.value).toFixed(2), // Format numbers to 2 decimal places
     ]);
 
     // Add table to PDF
@@ -152,13 +100,13 @@ const downloadPDF = (
       },
       headStyles: {
         fontStyle: "bold",
-        fillColor: [200, 200, 200],
-        textColor: [0, 0, 0],
+        fillColor: [200, 200, 200], // Light gray background for header
+        textColor: [0, 0, 0], // Black text
       },
       margin: { top: 20 },
       columnStyles: {
-        0: { cellWidth: 30 },
-        1: { cellWidth: 80 },
+        0: { cellWidth: 30 }, // Set width for year column
+        1: { cellWidth: 80 }, // Wider width for name column to accommodate long text
       },
     });
 
@@ -181,7 +129,7 @@ const downloadPDF = (
   const tableBody = data.map((item) => {
     const row = [item.year];
     headers.forEach((header) => {
-      row.push(Number(item[header]).toFixed(2));
+      row.push(Number(item[header]).toFixed(2)); // Format numbers to 2 decimal places
     });
     return row;
   });
@@ -198,12 +146,12 @@ const downloadPDF = (
     },
     headStyles: {
       fontStyle: "bold",
-      fillColor: [200, 200, 200],
-      textColor: [0, 0, 0],
+      fillColor: [200, 200, 200], // Light gray background for header
+      textColor: [0, 0, 0], // Black text
     },
     margin: { top: 20 },
     columnStyles: {
-      0: { cellWidth: 30 },
+      0: { cellWidth: 30 }, // Set width for year column
     },
   });
 

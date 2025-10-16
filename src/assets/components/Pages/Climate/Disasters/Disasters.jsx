@@ -1,15 +1,14 @@
 import { useState, useEffect } from "react";
 import { useParams, useLocation } from "react-router-dom";
 import backgroundImg from "./Background/background.jpg";
-import HydrometeorologicalHazardsChart from "./HydrometeorologicalHazardsChart.jsx";
-import ScatterChartContainer from "./ScatterChartContainer.jsx";
 import Charts from "../../../../../Charts.jsx";
 import BarCharts from "./Charts/Chart1/Chart1.jsx";
 import AreaChartsWithLine from "./Charts/Chart3/AreaChartsWithLine.jsx";
 import StackedBarChartsWithNumbers from "./Charts/Chart4/StackedBarChartsWithNumbers.jsx";
 import RadarChartComponent from "./Charts/Chart5/RadarChartComponent.jsx";
 import BarChartComponent from "./Charts/Chart6/BarChartComponent.jsx";
-import LineChartsWithTwoApiCalls from "./Charts/Chart7/LineChartsWithTwoApiCalls.jsx";
+import LineChartWithTwoApiCalls from "./Charts/Chart7/LineChartWithTwoApiCalls.jsx";
+import ScatterChart from "./Charts/Chart8/ScatterChart.jsx";
 
 const Disasters = () => {
   const { language } = useParams();
@@ -45,7 +44,7 @@ const Disasters = () => {
       colors: ["#e94d74ff"],
       id: "geological-phenomena",
       types: ["data", "metadata"],
-      selectedIndices: [1, 3],
+      selectedIndices: [0, 1],
       chartID: info[0].chartID,
       unit_ge: "გარდაცვლილთა რაოდენობა",
       unit_en: "Number of casualties",
@@ -98,6 +97,31 @@ const Disasters = () => {
       selectedIndices: [0, 1, 2, 3, 4, 5],
       chartID: info[5].chartID,
     },
+    {
+      title_ge: info[6].title_ge,
+      title_en: info[6].title_en,
+      colors: ["#f7a72fff", "#e94d74ff"],
+      id: "geological-phenomena",
+      types: ["data", "metadata"],
+      selectedIndices: [0, 2],
+      chartID: info[6].chartID,
+      unit_ge: "შემთხვევების რაოდენობა",
+      unit_en: "Number of cases",
+      secontCall: {
+        id: "hydro-meteorological-hazards",
+        types: ["data", "metadata"],
+        selectedIndices: [0, 1, 2, 3, 4, 5],
+      },
+    },
+    {
+      title_ge: info[7].title_ge,
+      title_en: info[7].title_en,
+      colors: ["#692fc5ff"],
+      id: "hydro-meteorological-hazards",
+      types: ["data", "metadata"],
+      selectedIndices: [5, 6],
+      chartID: info[7].chartID,
+    },
   ];
 
   return (
@@ -120,7 +144,6 @@ const Disasters = () => {
 
       <div className="charts-section">
         <div className="chart-container" style={{ width: "100%" }}>
-          {/* <HydrometeorologicalHazardsChart language={language} /> */}
           <BarCharts chartInfo={ChartInfo[0]} />
           <AreaChartsWithLine chartInfo={ChartInfo[2]} />
           <StackedBarChartsWithNumbers chartInfo={ChartInfo[3]} />
@@ -131,13 +154,12 @@ const Disasters = () => {
             </div>
           ) : (
             <>
-              <RadarChartComponent chartInfo={ChartInfo[4]} />
               <BarChartComponent chartInfo={ChartInfo[5]} />
+              <RadarChartComponent chartInfo={ChartInfo[4]} />
             </>
           )}
 
-          {/* <LineChartsWithTwoApiCalls chartInfo={ChartInfo[6]} /> */}
-          {/* <ScatterChartContainer language={language} /> */}
+          <LineChartWithTwoApiCalls chartInfo={ChartInfo[6]} />
         </div>
       </div>
     </div>

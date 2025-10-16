@@ -11,7 +11,7 @@ import PDF from "../../../../../../Download/Svgs/PDF";
 import JPG from "../../../../../../Download/Svgs/JPG";
 import PNG from "../../../../../../Download/Svgs/PNG";
 
-const Download = ({ data, filename, unit, isPieChart, bcwy, year, sbcwp }) => {
+const Download = ({ data, filename, unit, isPieChart, bcwy, year }) => {
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef(null); // Create a ref for the dropdown
   const { language } = useParams();
@@ -64,8 +64,7 @@ const Download = ({ data, filename, unit, isPieChart, bcwy, year, sbcwp }) => {
                   isPieChart,
                   bcwy,
                   language,
-                  year,
-                  sbcwp
+                  year
                 );
                 setOpen(false); // Close dropdown
               }}>
@@ -82,8 +81,7 @@ const Download = ({ data, filename, unit, isPieChart, bcwy, year, sbcwp }) => {
                   isPieChart,
                   bcwy,
                   language,
-                  year,
-                  sbcwp
+                  year
                 );
                 setOpen(false); // Close dropdown
               }}>

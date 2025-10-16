@@ -14,11 +14,10 @@ import { useParams } from "react-router-dom";
 import commonData from "../../../../../../fetchFunctions/commonData";
 import Download from "./Download/Download";
 
-const LineChartsWithTwoApiCalls = ({ chartInfo }) => {
+const LineChartWithTwoApiCalls = ({ chartInfo }) => {
   const { language } = useParams();
   const [chartData, setChartData] = useState([]);
   const [selectedTexts, setSelectedTexts] = useState([]);
-  const [secondSelectedTexts, setSecondSelectedTexts] = useState([]);
   const [visibleLines, setVisibleLines] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -29,93 +28,167 @@ const LineChartsWithTwoApiCalls = ({ chartInfo }) => {
       setError(null);
 
       try {
-        // Fetch data and metadata for both calls concurrently
-        const [
-          dataResult,
-          metaDataResult,
-          secondDataResult,
-          secondMetaDataResult,
-        ] = await Promise.all([
+        // Fetch geological data (first dataset)
+        const [geoDataResult, geoMetaDataResult] = await Promise.all([
           commonData(chartInfo.id, chartInfo.types[0], language),
           commonData(chartInfo.id, chartInfo.types[1], language),
-          commonData(
-            chartInfo.secontCall.id,
-            chartInfo.secontCall.types[0],
-            language
-          ),
-          commonData(
-            chartInfo.secontCall.id,
-            chartInfo.secontCall.types[1],
-            language
-          ),
         ]);
 
-        // Process metadata for first call
-        const valueTexts =
-          metaDataResult?.data?.metadata?.variables[0].valueTexts.map(
-            (region, i) => ({ name: region, id: i, source: "first" })
-          ) || [];
-        const selected = chartInfo.selectedIndices
-          .map((index) => valueTexts[index])
-          .filter(Boolean);
-        setSelectedTexts(selected);
+        // Fetch natural disaster data (second dataset) - only if secontCall exists
+        let disasterData = null;
+        let disasterProcessedData = [];
 
-        // Process metadata for second call, prefixing names to ensure uniqueness
-        const secondValueTexts =
-          secondMetaDataResult?.data?.metadata?.variables[0].valueTexts.map(
-            (region, i) => ({
-              name: region, // Modify name to distinguish
-              id: i,
-              source: "second",
-            })
-          ) || [];
-        const secondSelected = chartInfo.secontCall.selectedIndices
-          .map((index) => secondValueTexts[index])
-          .filter(Boolean);
-        setSecondSelectedTexts(secondSelected);
+        if (chartInfo.secontCall) {
+          const [disasterDataResult, disasterMetaDataResult] =
+            await Promise.all([
+              commonData(
+                chartInfo.secontCall.id,
+                chartInfo.secontCall.types[0],
+                language
+              ),
+              commonData(
+                chartInfo.secontCall.id,
+                chartInfo.secontCall.types[1],
+                language
+              ),
+            ]);
 
-        // Initialize all lines as visible
-        const allSelected = [...selected, ...secondSelected];
-        setVisibleLines(
-          allSelected.reduce((acc, text) => {
-            acc[text.name] = true;
+          // Process natural disaster metadata
+          const disasterValueTexts =
+            disasterMetaDataResult?.data?.metadata?.variables[0].valueTexts.map(
+              (region, i) => ({ name: region, id: i })
+            ) || [];
+
+          const disasterYearData =
+            disasterMetaDataResult?.data?.metadata?.variables[1].valueTexts.map(
+              (year, i) => ({ year: year, id: i })
+            ) || [];
+
+          // Get raw disaster data
+          const disasterRawData = disasterDataResult?.data?.data || [];
+
+          // Create year mapping for natural disasters
+          const yearMapping = disasterYearData.reduce((acc, item) => {
+            acc[item.id] = item.year;
             return acc;
-          }, {})
-        );
+          }, {});
 
-        // Process year data
-        const yearData =
-          metaDataResult?.data?.metadata?.variables[1].valueTexts.map(
+          // Process natural disaster data (excluding December - month 12)
+          disasterProcessedData = disasterRawData
+            .map((yearEntry, yearIndex) => {
+              const yearId =
+                typeof yearEntry.year === "string"
+                  ? parseInt(yearEntry.year)
+                  : yearEntry.year;
+              const actualYear = yearMapping[yearId] || `Year ${yearIndex}`;
+
+              if (Number(actualYear) < 2013) return null;
+
+              let total = 0;
+
+              // Iterate through each disaster type (0-5) and each month (0-11 only)
+              disasterValueTexts.forEach((disaster) => {
+                for (let month = 0; month < 12; month++) {
+                  // Only months 0-11 (January to November)
+                  const key = `${disaster.id} - ${month}`;
+                  if (Object.prototype.hasOwnProperty.call(yearEntry, key)) {
+                    total += yearEntry[key] || 0;
+                  }
+                }
+              });
+
+              return { year: actualYear, total };
+            })
+            .filter(Boolean);
+
+          disasterData = {
+            processedData: disasterProcessedData,
+            yearData: disasterYearData,
+          };
+        }
+
+        // Define names based on language
+        const geoName =
+          language === "ge" ? "გეოლოგიური მოვლენები" : "Geological events";
+        const disasterName =
+          language === "ge"
+            ? "ჰიდრომეტეოროლოგიური მოვლენები"
+            : "Hydrometeorological events";
+
+        // Set selected texts
+        if (disasterData && disasterData.processedData.length > 0) {
+          // Both datasets available
+          setSelectedTexts([
+            { name: geoName, id: "geological" },
+            { name: disasterName, id: "disasters" },
+          ]);
+          setVisibleLines({ [geoName]: true, [disasterName]: true });
+        } else {
+          // Only geological data
+          setSelectedTexts([{ name: geoName, id: "geological" }]);
+          setVisibleLines({ [geoName]: true });
+        }
+
+        // Process geological year data
+        const geoYearData =
+          geoMetaDataResult?.data?.metadata?.variables[0].valueTexts.map(
             (year, i) => ({ year: year, id: i })
           ) || [];
 
-        const rawData = dataResult.data.data || [];
-        const secondRawData = secondDataResult.data.data || [];
+        const geoRawData = geoDataResult?.data?.data || [];
+        const selectedIndices = chartInfo.selectedIndices || [];
 
-        // Process data for the chart
-        const processedData = yearData
+        // Process geological data
+        const geoProcessedData = geoYearData
           .map(({ year }) => {
-            const dataItem = rawData.find((item) => item.year === Number(year));
-            const secondDataItem = secondRawData.find(
+            if (Number(year) < 2013) return null;
+            const dataItem = geoRawData.find(
               (item) => item.year === Number(year)
             );
-            if (!dataItem && !secondDataItem) return null;
-            const dataPoint = { year };
-            selected.forEach((text) => {
-              if (dataItem) {
-                dataPoint[text.name] = dataItem[String(text.id)];
-              }
-            });
-            secondSelected.forEach((text) => {
-              if (secondDataItem) {
-                dataPoint[text.name] = secondDataItem[String(text.id)];
-              }
-            });
-            return dataPoint;
+            if (!dataItem) return null;
+
+            const sum = selectedIndices.reduce((total, index) => {
+              const value = parseFloat(dataItem[String(index)]) || 0;
+              return total + value;
+            }, 0);
+
+            return { year, [geoName]: sum };
           })
           .filter(Boolean);
 
-        setChartData(processedData);
+        // Combine both datasets by year
+        let combinedData;
+
+        if (disasterData && disasterData.processedData.length > 0) {
+          const allYears = [
+            ...new Set([
+              ...geoProcessedData.map((d) => d.year),
+              ...disasterData.processedData.map((d) => d.year),
+            ]),
+          ].sort((a, b) => Number(a) - Number(b));
+
+          combinedData = allYears.map((year) => {
+            const geoData = geoProcessedData.find((d) => d.year === year) || {
+              year,
+              [geoName]: 0,
+            };
+            const disasterDataPoint = disasterData.processedData.find(
+              (d) => d.year === year
+            ) || { year, total: 0 };
+
+            return {
+              year,
+              [geoName]: geoData[geoName],
+              [disasterName]: disasterDataPoint.total,
+            };
+          });
+        } else {
+          // Only geological data
+          combinedData = geoProcessedData;
+        }
+
+        // Update chart data
+        setChartData(combinedData);
       } catch (error) {
         console.error("Error fetching data:", error);
         setError("Failed to load chart data. Please try again.");
@@ -199,16 +272,15 @@ const LineChartsWithTwoApiCalls = ({ chartInfo }) => {
     );
   }
 
-  // Custom Legend Component
+  // Custom Legend Component (unchanged)
   const CustomLegend = () => {
     const visibleLineCount = Object.values(visibleLines).filter(Boolean).length;
-    const allSelected = [...selectedTexts, ...secondSelectedTexts];
 
     return (
       <ul className="recharts-default-legend">
-        {allSelected.map((text, index) => (
+        {selectedTexts.map((text, index) => (
           <li
-            key={`legend-item-${text.name}-${text.source}`}
+            key={`legend-item-${text.name}`}
             className={`recharts-legend-item legend-item-${index}`}
             onClick={() => {
               if (visibleLines[text.name] && visibleLineCount === 1) return;
@@ -239,7 +311,7 @@ const LineChartsWithTwoApiCalls = ({ chartInfo }) => {
     );
   };
 
-  // Custom Tooltip Component
+  // Custom Tooltip Component (unchanged)
   const CustomTooltip = ({ active, payload, label }) => {
     if (!active || !payload || !payload.length) return null;
 
@@ -249,13 +321,11 @@ const LineChartsWithTwoApiCalls = ({ chartInfo }) => {
           <p className="tooltip-label">
             {label} {language === "en" ? "Year" : "წელი"}
           </p>
-          {payload.map(({ value, stroke, dataKey }, index) => {
-            const text = [...selectedTexts, ...secondSelectedTexts].find(
-              (t) => t.name === dataKey
-            );
+          {payload.map(({ value, stroke, dataKey }) => {
+            const text = selectedTexts.find((t) => t.name === dataKey);
             return (
               <p
-                key={`item-${dataKey}-${text?.source || index}`} // Unique key using source or index
+                key={`item-${dataKey}`}
                 className="text"
                 style={{
                   display: "flex",
@@ -276,7 +346,7 @@ const LineChartsWithTwoApiCalls = ({ chartInfo }) => {
                   {text?.name} :
                 </span>
                 <span style={{ fontWeight: 900, marginLeft: "5px" }}>
-                  {value?.toFixed(2)}
+                  {value}
                 </span>
               </p>
             );
@@ -318,7 +388,10 @@ const LineChartsWithTwoApiCalls = ({ chartInfo }) => {
   }
 
   return (
-    <div className="chart-wrapper" id={chartInfo.chartID}>
+    <div
+      className="chart-wrapper"
+      id={chartInfo.chartID}
+      style={chartInfo?.wrapperStyles}>
       <div className="header">
         <div className="right">
           <div className="ll"></div>
@@ -348,10 +421,10 @@ const LineChartsWithTwoApiCalls = ({ chartInfo }) => {
             verticalAlign="bottom"
             align="center"
           />
-          {[...selectedTexts, ...secondSelectedTexts].map((text, index) =>
+          {selectedTexts.map((text, index) =>
             visibleLines[text.name] ? (
               <Line
-                key={`line-${text.name}-${text.source}`} // Unique key using source
+                key={`line-${text.name}`}
                 type="monotone"
                 dataKey={text.name}
                 stroke={chartInfo.colors[index % chartInfo.colors.length]}
@@ -376,4 +449,4 @@ const LineChartsWithTwoApiCalls = ({ chartInfo }) => {
   );
 };
 
-export default LineChartsWithTwoApiCalls;
+export default LineChartWithTwoApiCalls;
