@@ -9,6 +9,7 @@ import LineChart from "./Charts/Chart4/LineCharts.jsx";
 import PieCharts from "./Charts/Chart5/PieCharts.jsx";
 import BarCharts from "./Charts/Chart6/BarCharts.jsx";
 import HorizontalBarCharts from "./Charts/Chart7/HorizontalBarCharts.jsx";
+import ScatterCharts from "./Charts/Chart8/ScatterChart.jsx";
 
 const Precipitation = () => {
   const { language } = useParams();
@@ -109,17 +110,24 @@ const Precipitation = () => {
     {
       title_ge: info[6].title_ge,
       title_en: info[6].title_en,
-      colors: ["#e94d74ff", "#55c079ff"],
+      colors: ["#dad153ff"],
       id: "atmospheric-precipitation",
       types: ["data", "metadata"],
       selectedIndices: [4, 3, 9, 8, 14, 13, 19, 18],
       chartID: info[6].chartID,
-      unit_ge: "მილიმეტრი",
-      unit_en: "millimeters",
-      legendStyles: {
-        flexDirection: "column",
-        gap: "5px",
-      },
+      unit_ge: "მინ/მაქს თვიური ნალექი (მმ)",
+      unit_en: "min/max monthly precipitation (mm)",
+    },
+    {
+      title_ge: info[7].title_ge,
+      title_en: info[7].title_en,
+      colors: ["#de61f0"],
+      id: "atmospheric-precipitation",
+      types: ["data", "metadata"],
+      selectedIndices: [1, 3],
+      chartID: info[7].chartID,
+      unit_ge: "წლიური vs. თვიური ექსტრემუმები",
+      unit_en: "yearly vs. monthly extremes",
     },
   ];
 
@@ -151,6 +159,7 @@ const Precipitation = () => {
           <PieCharts chartInfo={ChartInfo[4]} />
           <BarCharts chartInfo={ChartInfo[5]} />
           <HorizontalBarCharts chartInfo={ChartInfo[6]} />
+          <ScatterCharts chartInfo={ChartInfo[7]} />
         </div>
       </div>
     </div>
