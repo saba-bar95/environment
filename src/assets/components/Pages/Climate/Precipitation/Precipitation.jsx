@@ -12,6 +12,7 @@ import HorizontalBarCharts from "./Charts/Chart7/HorizontalBarCharts.jsx";
 import ScatterCharts from "./Charts/Chart8/ScatterChart.jsx";
 import AreaCharts9 from "./Charts/Chart9/AreaCharts.jsx";
 import RadialBarChart from "./Charts/Chart10/RadialBarChart.jsx";
+import HeatmapChart from "./Charts/Chart11/HeatmapChart.jsx";
 
 const Precipitation = () => {
   const { language } = useParams();
@@ -142,7 +143,7 @@ const Precipitation = () => {
       unit_ge: "ყველაზე ნოტიო და მშრალი წლები",
       unit_en: "most wet and dry years",
     },
-     {
+    {
       title_ge: info[9].title_ge,
       title_en: info[9].title_en,
       colors: ["#3DD8E8", "#F59A3D", "#A45EED", "#E94D74"],
@@ -152,6 +153,17 @@ const Precipitation = () => {
       chartID: info[9].chartID,
       unit_ge: "%",
       unit_en: "%",
+    },
+    {
+      title_ge: info[10].title_ge,
+      title_en: info[10].title_en,
+      colors: ["#3DD8E8", "#F59A3D", "#A45EED", "#E94D74"],
+      id: "atmospheric-precipitation",
+      types: ["data", "metadata"],
+      selectedIndices: [1, 6, 11, 16],
+      chartID: info[10].chartID,
+      unit_ge: "დეკადა (მმ)",
+      unit_en: "decade (mm)",
     },
   ];
 
@@ -186,6 +198,7 @@ const Precipitation = () => {
           <ScatterCharts chartInfo={ChartInfo[7]} />
           <AreaCharts9 chartInfo={ChartInfo[8]} />
           <RadialBarChart chartInfo={ChartInfo[9]} />
+          {/* <HeatmapChart chartInfo={ChartInfo[10]} /> */}
         </div>
       </div>
     </div>
