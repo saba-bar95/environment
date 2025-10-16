@@ -304,7 +304,11 @@ const AreaCharts = ({ chartInfo }) => {
         <AreaChart data={chartData}>
           <CartesianGrid strokeDasharray="3 3" vertical={false} />
           <XAxis dataKey="year" tick={{ fontSize: 15 }} tickLine={false} />
-          <YAxis tick={{ fontSize: 12 }} />
+          <YAxis 
+            tick={{ fontSize: 12 }} 
+            domain={[800, 'dataMax']}
+            allowDataOverflow={false}
+          />
           <Tooltip content={<CustomTooltip />} />
           <Legend
             wrapperStyle={{ marginBottom: -20 }}
@@ -318,7 +322,6 @@ const AreaCharts = ({ chartInfo }) => {
                 key={`area-${text.name}`}
                 type="monotone"
                 dataKey={text.name}
-                stackId="1"
                 fill={chartInfo.colors[index % chartInfo.colors.length]}
                 stroke={chartInfo.colors[index % chartInfo.colors.length]}
                 name={text.name}
