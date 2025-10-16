@@ -334,7 +334,7 @@ const AreaChartsWithLine = ({ chartInfo }) => {
           {/* Left Y-axis for Area charts */}
           <YAxis
             yAxisId="left"
-            domain={[0, 50]}
+            domain={[0, 1600]}
             tick={{ fontSize: 12 }}
             stroke="#666"
             orientation="left"
