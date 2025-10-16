@@ -214,13 +214,7 @@ const AreaChartsWithLine = ({ chartInfo }) => {
                 display: "inline-block",
                 marginRight: 8,
               }}></span>
-            <span className="recharts-legend-item-text">
-              {text.isSum ? (
-                <span style={{ fontStyle: "italic" }}>{text.name}</span>
-              ) : (
-                text.name
-              )}
-            </span>
+            <span className="recharts-legend-item-text">{text.name}</span>
           </li>
         ))}
       </ul>
@@ -266,7 +260,7 @@ const AreaChartsWithLine = ({ chartInfo }) => {
                   {displayName} :
                 </span>
                 <span style={{ fontWeight: 900, marginLeft: "5px" }}>
-                  {value?.toFixed(2)}
+                  {value}
                 </span>
               </p>
             );
@@ -335,11 +329,12 @@ const AreaChartsWithLine = ({ chartInfo }) => {
       <ResponsiveContainer width="100%" height={460}>
         <AreaChart data={chartData}>
           <CartesianGrid strokeDasharray="3 3" vertical={false} />
-          <XAxis dataKey="year" tick={{ fontSize: 15 }} tickLine={false} />
+          <XAxis dataKey="year" tick={{ fontSize: 13 }} tickLine={false} />
 
           {/* Left Y-axis for Area charts */}
           <YAxis
             yAxisId="left"
+            domain={[0, 50]}
             tick={{ fontSize: 12 }}
             stroke="#666"
             orientation="left"
@@ -349,6 +344,7 @@ const AreaChartsWithLine = ({ chartInfo }) => {
           {/* Right Y-axis for Line chart */}
           <YAxis
             yAxisId="right"
+            domain={[0, 50]}
             tick={{ fontSize: 12 }}
             stroke="#e94d74" // Match the line color
             orientation="right"

@@ -10,29 +10,26 @@ const downloadExcel = (data, filename, year, language) => {
   }
 
   const yearHeader = isGeorgian ? "წელი" : "Year";
-  const monthHeader = isGeorgian ? "თვე" : "Month";
-  const headers = Object.keys(data[0]).filter((key) => key !== "month");
+  const nameHeader = isGeorgian ? "დასახელება" : "Name";
+  const totalHeader = isGeorgian ? "სულ მოვლენა" : "Total Events";
+  const casualtiesHeader = isGeorgian ? "სულ გარდაცვლილი" : "Total Casualties";
 
-  const worksheetData = data.map((item) => {
-    const row = { [monthHeader]: item.month };
-    headers.forEach((header) => {
-      row[header] = item[header];
-    });
-    return row;
-  });
+  // Prepare worksheet data
+  const worksheetData = data.map((item) => ({
+    [nameHeader]: item.name,
+    [totalHeader]: item.total,
+    [casualtiesHeader]: item.casualties,
+  }));
 
   // Create worksheet and workbook
-  const worksheet = XLSX.utils.json_to_sheet(worksheetData, {
-    header: [monthHeader, ...headers], // Ensure month is the first column
-  });
-
+  const worksheet = XLSX.utils.json_to_sheet(worksheetData);
   const workbook = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(workbook, worksheet, "Data");
 
-  // Generate filename, include year if desired
+  // Generate filename
   const finalFilename = `${filename} ${year} ${yearHeader}.xlsx`;
 
-  // Generate and download the Excel file
+  // Save Excel file
   XLSX.writeFile(workbook, finalFilename);
 };
 

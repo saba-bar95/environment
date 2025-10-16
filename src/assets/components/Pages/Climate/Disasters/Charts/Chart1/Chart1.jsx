@@ -315,7 +315,7 @@ const BarCharts = ({ chartInfo }) => {
           data={chartData}
           margin={{ top: 0, right: 70, left: 0, bottom: 0 }}>
           <CartesianGrid strokeDasharray="3 3" vertical={false} />
-          <XAxis dataKey="year" tick={{ fontSize: 15 }} tickLine={false} />
+          <XAxis dataKey="year" tick={{ fontSize: 13 }} tickLine={false} />
           <YAxis domain={[0, 40]} tick={{ fontSize: 12 }} />
           <Tooltip content={<CustomTooltip />} />
           <Legend

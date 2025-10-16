@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import {
   BarChart,
   Bar,
+  Cell,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -17,6 +18,7 @@ import YearDropdown from "../../../../../YearDropdown/YearDropdown";
 const BarChartComponent = ({ chartInfo }) => {
   const { language } = useParams();
   const [chartData, setChartData] = useState([]);
+  const [fullData, setFullData] = useState([]);
   const [selectedTexts, setSelectedTexts] = useState([]);
   const [visibleBars, setVisibleBars] = useState({});
   const [year, setYear] = useState(null);
@@ -68,6 +70,7 @@ const BarChartComponent = ({ chartInfo }) => {
         }
 
         const raw = dataResult?.data?.data || [];
+
         setRawData(raw);
         setYearDataState(yearData);
       } catch (error) {
@@ -79,9 +82,8 @@ const BarChartComponent = ({ chartInfo }) => {
     };
 
     getData();
-  }, [language, chartInfo, year]); // Removed 'year' dep
+  }, [language, chartInfo, year]);
 
-  // Always process as single-year view (transform to [{name: category, value: total}])
   useEffect(() => {
     if (
       !rawData.length ||
@@ -89,6 +91,7 @@ const BarChartComponent = ({ chartInfo }) => {
       !selectedTexts.length ||
       year === null
     ) {
+      setFullData([]);
       setChartData([]);
       return;
     }
@@ -97,7 +100,9 @@ const BarChartComponent = ({ chartInfo }) => {
     const selectedYearId = yearDataState.find(
       (item) => +item.year === year
     )?.id;
+
     if (selectedYearId === undefined) {
+      setFullData([]);
       setChartData([]);
       return;
     }
@@ -105,7 +110,9 @@ const BarChartComponent = ({ chartInfo }) => {
     const dataItem = rawData.find(
       (item) => Number(item.year) === selectedYearId
     );
+
     if (!dataItem) {
+      setFullData([]);
       setChartData([]);
       return;
     }
@@ -114,22 +121,35 @@ const BarChartComponent = ({ chartInfo }) => {
     const categoryTotals = {};
     selectedTexts.forEach((text) => {
       let total = 0;
-      for (let month = 0; month <= 12; month++) {
+      for (let month = 0; month <= 11; month++) {
         const key = `${text.id} - ${month}`;
         total += Number(dataItem[key] || 0);
       }
       categoryTotals[text.name] = total;
     });
 
-    // Filter to visible categories and transform
-    const visibleCategories = selectedTexts.filter((t) => visibleBars[t.name]);
-    const transformed = visibleCategories.map((t) => ({
+    // Transform all categories
+    const transformed = selectedTexts.map((t, index) => ({
       name: t.name,
-      value: categoryTotals[t.name],
+      total: categoryTotals[t.name],
+      casualties: Number(dataItem[`${t.id} - ${12}`] || 0),
+      fill: chartInfo.colors[index % chartInfo.colors.length],
     }));
 
-    setChartData(transformed);
-  }, [rawData, yearDataState, selectedTexts, year, visibleBars]);
+    setFullData(transformed);
+  }, [rawData, yearDataState, selectedTexts, year, chartInfo]);
+
+  useEffect(() => {
+    if (!fullData.length) {
+      setChartData([]);
+      return;
+    }
+
+    // Filter to visible categories
+    const visibleCategories = fullData.filter((t) => visibleBars[t.name]);
+
+    setChartData(visibleCategories);
+  }, [fullData, visibleBars]);
 
   const toggleBar = (dataKey) => {
     setVisibleBars((prev) => {
@@ -140,6 +160,11 @@ const BarChartComponent = ({ chartInfo }) => {
         [dataKey]: !prev[dataKey],
       };
     });
+  };
+
+  const seriesLabels = {
+    total: language === "ge" ? "სულ" : "Total",
+    casualties: language === "ge" ? "სულ გარდაცვლილი" : "Total Casualties",
   };
 
   // Show loading state
@@ -218,32 +243,33 @@ const BarChartComponent = ({ chartInfo }) => {
   const CustomTooltip = ({ active, payload, label }) => {
     if (!active || !payload || !payload.length) return null;
 
-    const entry = payload[0];
-    const name = label; // category name
-    const value = entry.value;
-
     return (
       <div className="custom-tooltip">
         <div className="tooltip-container">
           <p className="tooltip-label">
-            {name} {language === "ge" ? "კატეგორია" : "Category"}
+            {label} {language === "ge" ? "კატეგორია" : "Category"}
           </p>
-          <p className="text">
-            <span
-              style={{
-                backgroundColor: chartInfo.colors[0],
-                flexShrink: 0,
-                width: 12,
-                height: 12,
-                display: "inline-block",
-                marginRight: 8,
-              }}
-              className="before-span"></span>
-            {name}:
-            <span style={{ fontWeight: 900, marginLeft: "5px" }}>
-              {value?.toFixed(2)}
-            </span>
-          </p>
+          {payload.map((entry, index) => (
+            <p key={index} className="text">
+              <span
+                style={{
+                  backgroundColor:
+                    entry.dataKey === "casualties"
+                      ? "#e41a1c"
+                      : entry.payload.fill,
+                  flexShrink: 0,
+                  width: 12,
+                  height: 12,
+                  display: "inline-block",
+                  marginRight: 8,
+                }}
+                className="before-span"></span>
+              {entry.dataKey === "total" ? label : seriesLabels[entry.dataKey]}:
+              <span style={{ fontWeight: 900, marginLeft: "5px" }}>
+                {entry.value}
+              </span>
+            </p>
+          ))}
         </div>
       </div>
     );
@@ -273,7 +299,8 @@ const BarChartComponent = ({ chartInfo }) => {
           <span
             className="recharts-legend-item-icon"
             style={{
-              backgroundColor: chartInfo.colors[0],
+              backgroundColor:
+                chartInfo.colors[index % chartInfo.colors.length],
               flexShrink: 0,
               width: 12,
               height: 12,
@@ -287,7 +314,7 @@ const BarChartComponent = ({ chartInfo }) => {
   );
 
   // Show empty state if no data
-  if (chartData.length === 0) {
+  if (fullData.length === 0) {
     return (
       <div className="chart-wrapper" id={chartInfo.chartID}>
         <div className="header">
@@ -336,7 +363,7 @@ const BarChartComponent = ({ chartInfo }) => {
             showAllOption={false} // No "all" option needed
           />
           <Download
-            data={chartData}
+            data={fullData}
             filename={`${chartInfo[`title_${language}`]}_${year}`}
             year={year}
           />
@@ -356,7 +383,16 @@ const BarChartComponent = ({ chartInfo }) => {
             align="center"
             wrapperStyle={{ marginTop: -20 }}
           />
-          <Bar dataKey="value" fill={chartInfo.colors[0]} />
+          <Bar dataKey="total">
+            {chartData.map((entry, index) => (
+              <Cell key={`total-cell-${index}`} fill={entry.fill} />
+            ))}
+          </Bar>
+          <Bar dataKey="casualties" minPointSize={1}>
+            {chartData.map((entry, index) => (
+              <Cell key={`casualties-cell-${index}`} fill="#e41a1c" />
+            ))}
+          </Bar>
         </BarChart>
       </ResponsiveContainer>
     </div>

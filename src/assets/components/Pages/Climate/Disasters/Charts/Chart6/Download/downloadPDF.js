@@ -5,7 +5,6 @@ import georgianFont from "../../../../../../../fonts/NotoSansGeorgian_ExtraConde
 const downloadPDF = (data, filename, year, language) => {
   const isGeorgian = language === "ge";
 
-  // Validate input data
   if (!data || !Array.isArray(data) || data.length === 0) {
     console.warn("No valid data provided for PDF download");
     return;
@@ -13,7 +12,6 @@ const downloadPDF = (data, filename, year, language) => {
 
   const doc = new jsPDF();
 
-  // Load Georgian font if needed
   if (isGeorgian) {
     doc.addFont(georgianFont, "NotoSansGeorgian", "normal");
     doc.addFont(georgianFont, "NotoSansGeorgian", "bold");
@@ -23,22 +21,22 @@ const downloadPDF = (data, filename, year, language) => {
   }
 
   const yearHeader = isGeorgian ? "წელი" : "Year";
-  const monthHeader = isGeorgian ? "თვე" : "Month";
 
-  // Get dynamic headers from the first data item (excluding 'month')
-  const headers = Object.keys(data[0]).filter((key) => key !== "month");
-
-  // Create table head
-  const tableHead = [[monthHeader, ...headers]];
+  // Create custom headers
+  const tableHead = [
+    [
+      isGeorgian ? "დასახელება" : "Name",
+      isGeorgian ? "სულ მოვლენა" : "Total Events",
+      isGeorgian ? "სულ გარდაცვლილი" : "Total Casualties",
+    ],
+  ];
 
   // Create table body
-  const tableBody = data.map((item) => {
-    const row = [item.month];
-    headers.forEach((header) => {
-      row.push(Number(item[header]).toFixed(2));
-    });
-    return row;
-  });
+  const tableBody = data.map((item) => [
+    `${item.name}`,
+    `${item.total}`,
+    `${item.casualties} `,
+  ]);
 
   // Add table to PDF
   autoTable(doc, {
@@ -57,14 +55,13 @@ const downloadPDF = (data, filename, year, language) => {
     },
     margin: { top: 20 },
     columnStyles: {
-      0: { cellWidth: 30 },
+      0: { cellWidth: 60 },
+      1: { cellWidth: 50 },
+      2: { cellWidth: 50 },
     },
   });
 
-  // Generate filename
   const finalFilename = `${filename} ${year} ${yearHeader}.pdf`;
-
-  // Save the PDF
   doc.save(finalFilename);
 };
 

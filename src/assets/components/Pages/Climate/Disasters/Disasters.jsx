@@ -2,10 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, useLocation } from "react-router-dom";
 import backgroundImg from "./Background/background.jpg";
 import HydrometeorologicalHazardsChart from "./HydrometeorologicalHazardsChart.jsx";
-import HazardTotalsContainer from "./HazardTotalsContainer.jsx";
-import CombinedTrendsContainer from "./CombinedTrendsContainer.jsx";
 import ScatterChartContainer from "./ScatterChartContainer.jsx";
-import DonutChartContainer from "./DonutChartContainer.jsx";
 import Charts from "../../../../../Charts.jsx";
 import BarCharts from "./Charts/Chart1/Chart1.jsx";
 import AreaChartsWithLine from "./Charts/Chart3/AreaChartsWithLine.jsx";
@@ -95,25 +92,11 @@ const Disasters = () => {
     {
       title_ge: info[5].title_ge,
       title_en: info[5].title_en,
-      colors: ["#1678e7ff", "#e94d74ff"],
+      colors: ["#1678e7ff", "#55c079ff", "#a9b8aeff", "#63b8e9ff", "#e94d74ff"],
       id: "hydro-meteorological-hazards",
       types: ["data", "metadata"],
       selectedIndices: [0, 1, 2, 3, 4, 5],
       chartID: info[5].chartID,
-    },
-    {
-      title_ge: info[6].title_ge,
-      title_en: info[6].title_en,
-      colors: ["#1678e7ff", "#f7a72fff"],
-      id: "passenger-turnover",
-      types: ["data", "metadata"],
-      selectedIndices: [0],
-      chartID: info[6].chartID,
-      secontCall: {
-        id: "freight-turnover",
-        types: ["data", "metadata"],
-        selectedIndices: [0],
-      },
     },
   ];
 
@@ -154,12 +137,7 @@ const Disasters = () => {
           )}
 
           {/* <LineChartsWithTwoApiCalls chartInfo={ChartInfo[6]} /> */}
-
-          {/* <RadarChartContainer language={language} /> */}
-          {/* <HazardTotalsContainer language={language} />
-          <CombinedTrendsContainer language={language} />
-          <ScatterChartContainer language={language} />
-          <DonutChartContainer language={language} /> */}
+          {/* <ScatterChartContainer language={language} /> */}
         </div>
       </div>
     </div>
