@@ -45,7 +45,7 @@ const Precipitation = () => {
     {
       title_ge: info[0].title_ge,
       title_en: info[0].title_en,
-      colors: ["#1678e7ff"],
+      colors: ["#1678e7ff", "#e94d74ff"],
       id: "atmospheric-precipitation",
       types: ["data", "metadata"],
       selectedIndices: [1],

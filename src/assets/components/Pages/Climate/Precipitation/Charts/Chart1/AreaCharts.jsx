@@ -319,10 +319,12 @@ const AreaCharts = ({ chartInfo }) => {
           {/* Left Y-axis for Area charts */}
           <YAxis 
             yAxisId="left"
+            domain={[800, "auto"]}
             tick={{ fontSize: 12 }}
             stroke="#666"
             orientation="left"
             width={60}
+            allowDataOverflow={false}
           />
           
           {/* Right Y-axis for Line chart */}
@@ -366,17 +368,17 @@ const AreaCharts = ({ chartInfo }) => {
                   }}
                 />
               ) : (
-                // Render Area for other indices with left Y-axis
+                // Render Area for other indices with left Y-axis (no stacking to allow domain control)
                 <Area
                   key={`area-${text.name}`}
                   type="monotone"
                   dataKey={text.name}
                   yAxisId="left"
-                  stackId="1"
                   fill={chartInfo.colors[index % chartInfo.colors.length]}
                   stroke={chartInfo.colors[index % chartInfo.colors.length]}
                   name={text.name}
                   strokeWidth={2}
+                  fillOpacity={0.6}
                 />
               )
             ) : null
