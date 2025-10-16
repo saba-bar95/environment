@@ -1,24 +1,24 @@
 import { useEffect, useState } from "react";
 import {
-  LineChart,
-  Line,
+  ScatterChart,
+  Scatter,
   XAxis,
   YAxis,
+  ZAxis,
   CartesianGrid,
   Tooltip,
-  Legend,
   ResponsiveContainer,
-  Brush,
 } from "recharts";
 import { useParams } from "react-router-dom";
 import commonData from "../../../../../../fetchFunctions/commonData";
 import Download from "./Download/Download";
 
-const ScatterChart = ({ chartInfo }) => {
+const ScatterChart1 = ({ chartInfo }) => {
   const { language } = useParams();
   const [chartData, setChartData] = useState([]);
-  const [selectedTexts, setSelectedTexts] = useState([]);
-  const [visibleLines, setVisibleLines] = useState({});
+  const [xKey, setXKey] = useState("");
+  const [yKey, setYKey] = useState("");
+  const [zKey, setZKey] = useState("");
   const [isLoading, setIsLoading] = useState(true); // Add loading state
   const [error, setError] = useState(null); // Optional: add error state
 
@@ -36,7 +36,7 @@ const ScatterChart = ({ chartInfo }) => {
 
         // Process metadata: map region names to objects with name and id
         const valueTexts =
-          metaDataResult?.data?.metadata?.variables[0].valueTexts.map(
+          metaDataResult?.data?.metadata?.variables[1].valueTexts.map(
             (region, i) => ({ name: region, id: i })
           ) || [];
 
@@ -45,19 +45,29 @@ const ScatterChart = ({ chartInfo }) => {
           .map((index) => valueTexts[index])
           .filter(Boolean);
 
-        setSelectedTexts(selected);
+        if (selected.length !== 4) {
+          throw new Error("Expected exactly four selected indices.");
+        }
 
-        // Initialize all lines as visible
-        setVisibleLines(
-          selected.reduce((acc, text) => {
-            acc[text.name] = true;
-            return acc;
-          }, {})
-        );
+        // Assume selected[0] is Y (index 5), selected[1] is X (index 6)
+        // selected[2] and selected[3] for Z sum (indices 2 and 4)
+        const yText = selected[0];
+        const xText = selected[1];
+        const zText1 = selected[2];
+        const zText2 = selected[3];
+
+        // Set keys for axes and tooltip
+        const xName = xText.name;
+        const yName = yText.name;
+        const zName =
+          language === "ge" ? "სულ გარდაცვლილი" : "Total Casualties";
+        setXKey(xName);
+        setYKey(yName);
+        setZKey(zName);
 
         // Process year data
         const yearData =
-          metaDataResult?.data?.metadata?.variables[1].valueTexts.map(
+          metaDataResult?.data?.metadata?.variables[0].valueTexts.map(
             (year, i) => ({ year: year, id: i })
           ) || [];
 
@@ -68,11 +78,12 @@ const ScatterChart = ({ chartInfo }) => {
           .map(({ year }) => {
             const dataItem = rawData.find((item) => item.year === Number(year));
             if (!dataItem) return null;
-            const dataPoint = { year };
-            selected.forEach((text) => {
-              dataPoint[text.name] = dataItem[String(text.id)];
-            });
-            return dataPoint;
+            const yVal = parseFloat(dataItem[String(yText.id)]) || 0;
+            const xVal = parseFloat(dataItem[String(xText.id)]) || 0;
+            const z1 = parseFloat(dataItem[String(zText1.id)]) || 0;
+            const z2 = parseFloat(dataItem[String(zText2.id)]) || 0;
+            const z = z1 + z2;
+            return { year, [xName]: xVal, [yName]: yVal, [zName]: z };
           })
           .filter(Boolean);
 
@@ -160,85 +171,92 @@ const ScatterChart = ({ chartInfo }) => {
     );
   }
 
-  // Custom Legend Component
-  const CustomLegend = () => {
-    const visibleLineCount = Object.values(visibleLines).filter(Boolean).length;
-
-    return (
-      <ul className="recharts-default-legend">
-        {selectedTexts.map((text, index) => (
-          <li
-            key={`legend-item-${text.name}`}
-            className={`recharts-legend-item legend-item-${index}`}
-            onClick={() => {
-              if (visibleLines[text.name] && visibleLineCount === 1) return;
-              setVisibleLines((prev) => ({
-                ...prev,
-                [text.name]: !prev[text.name],
-              }));
-            }}
-            style={{
-              cursor: "pointer",
-              opacity: visibleLines[text.name] ? 1 : 0.5,
-            }}>
-            <span
-              className="recharts-legend-item-icon"
-              style={{
-                backgroundColor:
-                  chartInfo.colors[index % chartInfo.colors.length],
-                flexShrink: 0,
-                width: 12,
-                height: 12,
-                display: "inline-block",
-                marginRight: 8,
-              }}></span>
-            <span className="recharts-legend-item-text">{text.name}</span>
-          </li>
-        ))}
-      </ul>
-    );
-  };
-
   // Custom Tooltip Component
-  const CustomTooltip = ({ active, payload, label }) => {
+  const CustomTooltip = ({ active, payload }) => {
     if (!active || !payload || !payload.length) return null;
+
+    const dataPoint = payload[0].payload;
+    const fillColor = chartInfo.colors[0];
 
     return (
       <div className="custom-tooltip">
         <div className="tooltip-container">
-          <p className="tooltip-label">
-            {label} {language === "en" ? "Year" : "წელი"}
+          <p className="tooltip-label" style={{ textDecoration: "underline" }}>
+            {language === "ge" ? "წელი: " : "Year: "}
+            {dataPoint.year}
           </p>
-          {payload.map(({ value, stroke, dataKey }) => {
-            const text = selectedTexts.find((t) => t.name === dataKey);
-            return (
-              <p
-                key={`item-${dataKey}`}
-                className="text"
+          <p
+            className="text"
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              gap: "10px",
+              alignItems: "center",
+            }}>
+            <span>
+              <span
                 style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  gap: "10px",
-                  alignItems: "center",
-                }}>
-                <span>
-                  <span
-                    style={{
-                      backgroundColor: stroke,
-                      width: 12,
-                      height: 12,
-                      display: "inline-block",
-                      marginRight: 8,
-                    }}
-                    className="before-span"></span>
-                  {text?.name} :
-                </span>
-                <span style={{ fontWeight: 900, marginLeft: "5px" }}>
-                  {value?.toFixed(1)}
-                </span>
-              </p>
-            );
-          })}
+                  backgroundColor: fillColor,
+                  width: 12,
+                  height: 12,
+                  display: "inline-block",
+                  marginRight: 8,
+                }}
+                className="before-span"></span>
+              {xKey} :
+            </span>
+            <span style={{ fontWeight: 900, marginLeft: "5px" }}>
+              {dataPoint[xKey]?.toFixed(0)}
+            </span>
+          </p>
+          <p
+            className="text"
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              gap: "10px",
+              alignItems: "center",
+            }}>
+            <span>
+              <span
+                style={{
+                  backgroundColor: fillColor,
+                  width: 12,
+                  height: 12,
+                  display: "inline-block",
+                  marginRight: 8,
+                }}
+                className="before-span"></span>
+              {yKey} :
+            </span>
+            <span style={{ fontWeight: 900, marginLeft: "5px" }}>
+              {dataPoint[yKey]?.toFixed(0)}
+            </span>
+          </p>
+          <p
+            className="text"
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              gap: "10px",
+              alignItems: "center",
+            }}>
+            <span>
+              <span
+                style={{
+                  backgroundColor: fillColor,
+                  width: 12,
+                  height: 12,
+                  display: "inline-block",
+                  marginRight: 8,
+                }}
+                className="before-span"></span>
+              {zKey} :
+            </span>
+            <span style={{ fontWeight: 900, marginLeft: "5px" }}>
+              {dataPoint[zKey]?.toFixed(0)}
+            </span>
+          </p>
         </div>
       </div>
     );
@@ -295,43 +313,54 @@ const ScatterChart = ({ chartInfo }) => {
         </div>
       </div>
       <ResponsiveContainer width="100%" height={460}>
-        <LineChart data={chartData}>
+        <ScatterChart margin={{ top: 20, right: 20, left: 30, bottom: 30 }}>
           <CartesianGrid strokeDasharray="3 3" vertical={false} />
-          <XAxis dataKey="year" tick={{ fontSize: 15 }} tickLine={false} />
-          <YAxis tick={{ fontSize: 12 }} />
+          <XAxis
+            type="number"
+            dataKey={xKey}
+            name={xKey}
+            tick={{ fontSize: 12, fill: "#666" }}
+            tickLine={true}
+            axisLine={true}
+            stroke="#ccc"
+            label={{
+              value: xKey,
+              position: "insideBottom",
+              offset: 0,
+              fontSize: 11,
+              dy: 20,
+              fontFamily: "FiraGO",
+            }}
+          />
+          <YAxis
+            type="number"
+            dataKey={yKey}
+            name={yKey}
+            tick={{ fontSize: 12, fill: "#666" }}
+            tickLine={true}
+            axisLine={true}
+            stroke="#ccc"
+            label={{
+              value: yKey,
+              angle: -90,
+              position: "inside",
+              fontSize: 11,
+              fontFamily: "FiraGO",
+              dx: -20,
+              // dy: 50,
+            }}
+          />
+          <ZAxis dataKey={zKey} range={[30, 1000]} />
           <Tooltip content={<CustomTooltip />} />
-          <Legend
-            wrapperStyle={{ marginBottom: -20 }}
-            content={<CustomLegend />}
-            verticalAlign="bottom"
-            align="center"
+          <Scatter
+            data={chartData}
+            fill={chartInfo.colors[0]}
+            name="Vulnerable Objects"
           />
-          {selectedTexts.map((text, index) =>
-            visibleLines[text.name] ? (
-              <Line
-                key={`line-${text.name}`}
-                type="monotone"
-                dataKey={text.name}
-                stroke={chartInfo.colors[index % chartInfo.colors.length]}
-                name={text.name}
-                strokeWidth={3}
-                dot={{
-                  r: 3,
-                  fill: chartInfo.colors[index % chartInfo.colors.length],
-                }}
-              />
-            ) : null
-          )}
-          <Brush
-            dataKey="year"
-            height={20}
-            stroke="#8884d8"
-            travellerWidth={5}
-          />
-        </LineChart>
+        </ScatterChart>
       </ResponsiveContainer>
     </div>
   );
 };
 
-export default ScatterChart;
+export default ScatterChart1;

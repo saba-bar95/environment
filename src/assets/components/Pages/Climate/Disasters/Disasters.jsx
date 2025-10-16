@@ -9,6 +9,7 @@ import RadarChartComponent from "./Charts/Chart5/RadarChartComponent.jsx";
 import BarChartComponent from "./Charts/Chart6/BarChartComponent.jsx";
 import LineChartWithTwoApiCalls from "./Charts/Chart7/LineChartWithTwoApiCalls.jsx";
 import ScatterChart from "./Charts/Chart8/ScatterChart.jsx";
+import PieChartWithYears from "./Charts/Chart9/PieChartWithYears.jsx";
 
 const Disasters = () => {
   const { language } = useParams();
@@ -117,10 +118,19 @@ const Disasters = () => {
       title_ge: info[7].title_ge,
       title_en: info[7].title_en,
       colors: ["#692fc5ff"],
-      id: "hydro-meteorological-hazards",
+      id: "geological-phenomena",
       types: ["data", "metadata"],
-      selectedIndices: [5, 6],
+      selectedIndices: [5, 6, 1, 3],
       chartID: info[7].chartID,
+    },
+    {
+      title_ge: info[8].title_ge,
+      title_en: info[8].title_en,
+      colors: ["#1678e7ff", "#692fc5ff", "#63b8e9ff", "#f7a72fff"],
+      id: "geological-phenomena",
+      types: ["data", "metadata"],
+      selectedIndices: [0, 2],
+      chartID: info[8].chartID,
     },
   ];
 
@@ -158,8 +168,18 @@ const Disasters = () => {
               <RadarChartComponent chartInfo={ChartInfo[4]} />
             </>
           )}
-
-          <LineChartWithTwoApiCalls chartInfo={ChartInfo[6]} />
+          {width > 1200 ? (
+            <div style={{ display: "flex", gap: "40px" }}>
+              <LineChartWithTwoApiCalls chartInfo={ChartInfo[6]} />
+              <ScatterChart chartInfo={ChartInfo[7]} />
+            </div>
+          ) : (
+            <>
+              <LineChartWithTwoApiCalls chartInfo={ChartInfo[6]} />
+              <ScatterChart chartInfo={ChartInfo[7]} />
+            </>
+          )}
+          <PieChartWithYears chartInfo={ChartInfo[8]} />
         </div>
       </div>
     </div>
