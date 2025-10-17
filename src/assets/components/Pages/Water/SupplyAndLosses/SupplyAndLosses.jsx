@@ -13,6 +13,7 @@ import LineCharts from "./Charts/LineCharts";
 import StackedBarCharts from "./Charts/StackedBarCharts";
 import BarCharts from "./Charts/BarCharts";
 import AreaCharts from "./Charts/AreaCharts";
+import LineChartBoth from "./Charts/LineChartBoth";
 
 const SupplyAndLosses = () => {
   const { language } = useParams();
@@ -326,7 +327,7 @@ const SupplyAndLosses = () => {
       <div className="header-container1">
         <h1 className="title-text">
           {language === "en"
-            ? "Detailed Water Statistics"
+            ? "Detailed Water Supply Statistics"
             : "წყალმომარაგების დეტალური სტატისტიკა"}
         </h1>
       </div>
@@ -338,7 +339,7 @@ const SupplyAndLosses = () => {
           <LineCharts chartInfo={ChartInfo[3]} />
           <LineCharts chartInfo={ChartInfo[4]} />
           <StackedBarCharts chartInfo={ChartInfo[5]} />
-          <LineCharts chartInfo={ChartInfo[6]} />
+          <LineChartBoth chartInfo={ChartInfo[6]} />
           <LineCharts chartInfo={ChartInfo[7]} />
           <BarCharts chartInfo={ChartInfo[8]} />
           <StackedBarCharts chartInfo={ChartInfo[9]} />

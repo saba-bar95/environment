@@ -122,6 +122,8 @@ const Disasters = () => {
       types: ["data", "metadata"],
       selectedIndices: [5, 6, 1, 3],
       chartID: info[7].chartID,
+      unit_ge: "წრეწირის ზომა ასახავს გარდაცვლილთა რაოდენობას",
+      unit_en: "The size of the circle reflects the number of deaths",
     },
     {
       title_ge: info[8].title_ge,

@@ -3,10 +3,13 @@ import { useEffect } from "react";
 import backgroundImg from "./Background/background.jpg";
 import Charts from "../../../../../../Charts";
 import Chart1 from "./Charts/Chart1/Chart1";
+import SankeyChart from "./Charts/Sankey/SankeyChart";
+import SankeyChart2 from "./Charts/Sankey/SankeyChart2";
 
 const ForestResources = () => {
   const { language } = useParams();
   const location = useLocation();
+  const info = Charts.biodiversity[1].forestarea[0].forestResources;
 
   useEffect(() => {
     if (location.hash) {
@@ -17,6 +20,28 @@ const ForestResources = () => {
       }
     }
   }, [location.hash]);
+
+  const ChartInfo = [
+    {},
+    {
+      title_ge: info[1].title_ge,
+      title_en: info[1].title_en,
+      id: "forest-area",
+      types: ["data", "metadata"],
+      chartID: info[1].chartID,
+      unit_ge: "ათასი ჰექტარი",
+      unit_en: "Thousand tonnes",
+    },
+    {
+      title_ge: info[2].title_ge,
+      title_en: info[2].title_en,
+      id: "timber-by-cutting-purpose",
+      types: ["data", "metadata"],
+      chartID: info[2].chartID,
+      unit_ge: "კუბური მეტრი",
+      unit_en: "Cubic meter",
+    },
+  ];
 
   return (
     <div className="section-container">
@@ -36,9 +61,9 @@ const ForestResources = () => {
       </div>
       <div className="charts-section">
         <div className="chart-container">
-          <Chart1
-            chartInfo={Charts.biodiversity[1].forestarea[0].forestResources[0]}
-          />
+          <SankeyChart chartInfo={ChartInfo[1]} />
+          <Chart1 chartInfo={info[0]} />
+          <SankeyChart2 chartInfo={ChartInfo[2]} />
         </div>
       </div>
     </div>

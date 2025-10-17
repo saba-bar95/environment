@@ -318,7 +318,7 @@ const rawCharts = {
         },
         {
           title_ge: "ძირითადი ბალახისმჭამელები",
-          title_en: "Herbivore Populations",
+          title_en: "Key Herbivores",
           path_ge: "საქართველოს დაცული ტერიტორიები",
           path_en: "Protected Areas of Georgia",
         },
