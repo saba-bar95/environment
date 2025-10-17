@@ -1,7 +1,7 @@
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 import backgroundImg from "./Background/background.jpg";
 import Charts from "../../../../../Charts.jsx";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import AreaCharts from "./Charts/Chart1/AreaCharts.jsx";
 import PositiveAndNegativeBarChart from "./Charts/Chart2/PositiveAndNegativeBarChart.jsx";
 import PercentAreaCharts from "./Charts/Chart3/PercentAreaCharts.jsx";
@@ -12,24 +12,13 @@ import HorizontalBarCharts from "./Charts/Chart7/HorizontalBarCharts.jsx";
 import ScatterCharts from "./Charts/Chart8/ScatterChart.jsx";
 import AreaCharts9 from "./Charts/Chart9/AreaCharts.jsx";
 import RadialBarChart from "./Charts/Chart10/RadialBarChart.jsx";
-import HeatmapChart from "./Charts/Chart11/HeatmapChart.jsx";
+import PrecipitationHeatmapChart from "./Charts/Chart11/HeatmapChart.jsx";
 
 const Precipitation = () => {
   const { language } = useParams();
+  const location = useLocation();
 
   const info = Charts.climate[2].precipitation;
-  const [width, setWidth] = useState(window.innerWidth);
-
-  useEffect(() => {
-    const handleResize = () => {
-      const newWidth = window.innerWidth;
-      setWidth(newWidth);
-    };
-    window.addEventListener("resize", handleResize);
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, []);
 
   useEffect(() => {
     if (location.hash) {
@@ -39,7 +28,7 @@ const Precipitation = () => {
         element.scrollIntoView({ behavior: "smooth", block: "start" });
       }
     }
-  }, []);
+  }, [location.hash]);
 
   const ChartInfo = [
     {
@@ -157,13 +146,18 @@ const Precipitation = () => {
     {
       title_ge: info[10].title_ge,
       title_en: info[10].title_en,
-      colors: ["#3DD8E8", "#F59A3D", "#A45EED", "#E94D74"],
+      colors: ["#e94d74ff"],
       id: "atmospheric-precipitation",
       types: ["data", "metadata"],
-      selectedIndices: [1, 6, 11, 16],
+      selectedIndices: [6],
       chartID: info[10].chartID,
-      unit_ge: "დეკადა (მმ)",
-      unit_en: "decade (mm)",
+      unit_ge: "თითოეული უჯრა წარმოადგენს წელს",
+      unit_en: "Each cell represents a year",
+      wrapperStyles: {
+        gridColumn: "1/3",
+        width: "100%",
+        maxWidth: "100%",
+      },
     },
   ];
 
@@ -198,7 +192,7 @@ const Precipitation = () => {
           <ScatterCharts chartInfo={ChartInfo[7]} />
           <AreaCharts9 chartInfo={ChartInfo[8]} />
           <RadialBarChart chartInfo={ChartInfo[9]} />
-          {/* <HeatmapChart chartInfo={ChartInfo[10]} /> */}
+          <PrecipitationHeatmapChart chartInfo={ChartInfo[10]} />
         </div>
       </div>
     </div>

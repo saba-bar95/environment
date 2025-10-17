@@ -11,7 +11,7 @@ import PDF from "../../../../../../Download/Svgs/PDF";
 import JPG from "../../../../../../Download/Svgs/JPG";
 import PNG from "../../../../../../Download/Svgs/PNG";
 
-const Download = ({ data, filename, unit, isPieChart, bcwy, year }) => {
+const Download = ({ data, filename }) => {
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef(null); // Create a ref for the dropdown
   const { language } = useParams();
@@ -56,16 +56,8 @@ const Download = ({ data, filename, unit, isPieChart, bcwy, year }) => {
           <div className="upper">
             <div
               className="wrapper"
-              onClick={() => {
-                downloadExcel(
-                  data,
-                  filename,
-                  unit,
-                  isPieChart,
-                  bcwy,
-                  language,
-                  year
-                );
+              onClick={async () => {
+                await downloadExcel(data, filename, language);
                 setOpen(false); // Close dropdown
               }}>
               <Excel />
@@ -74,15 +66,7 @@ const Download = ({ data, filename, unit, isPieChart, bcwy, year }) => {
             <div
               className="wrapper"
               onClick={() => {
-                downloadPDF(
-                  data,
-                  filename,
-                  unit,
-                  isPieChart,
-                  bcwy,
-                  language,
-                  year
-                );
+                downloadPDF(data, filename, language);
                 setOpen(false); // Close dropdown
               }}>
               <PDF />

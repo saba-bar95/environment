@@ -1,99 +1,91 @@
-import * as XLSX from "xlsx";
+import ExcelJS from "exceljs";
+import { saveAs } from "file-saver";
 
-const downloadExcel = (
-  data,
-  filename,
-  unit,
-  isPieChart,
-  bcwy,
-  language,
-  year
-) => {
-  const isGeorgian = language === "ge";
-
-  // Validate input data
+const downloadExcel = async (data, filename) => {
   if (!data || !Array.isArray(data) || data.length === 0) {
     console.warn("No valid data provided for Excel download");
     return;
   }
 
-  const yearHeader = isGeorgian ? "წელი" : "Year";
-  const nameHeader = isGeorgian ? "დასახელება" : "Name";
-  const unitHeader = unit || " "; // Use unit parameter as header
+  const workbook = new ExcelJS.Workbook();
+  const worksheet = workbook.addWorksheet("Data");
 
-  if (bcwy) {
-    // For BarChartsWithYears, data is an array with one object where keys are categories
-    const worksheetData = Object.keys(data[0])
-      .filter((key) => key !== "name") // Exclude 'name' (year)
-      .map((category) => ({
-        [yearHeader]: data[0].name, // Use the year from data[0].name
-        [nameHeader]: category,
-        [unitHeader]: data[0][category] || " ",
-      }));
+  // Get headers from the first data item
+  const headers = Object.keys(data[0]);
 
-    // Create worksheet and workbook
-    const worksheet = XLSX.utils.json_to_sheet(worksheetData, {
-      header: [yearHeader, nameHeader, unitHeader], // Ensure correct column order
-    });
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "BarChartData");
+  // Define columns with headers
+  worksheet.columns = headers.map((header) => ({
+    header: header,
+    key: header,
+    width: Math.max(header.length + 5, 15), // Auto-size based on header length
+  }));
 
-    // Generate filename
-    const finalFilename = `${filename}.xlsx`;
-
-    // Generate and download the Excel file
-    XLSX.writeFile(workbook, finalFilename);
-    return;
-  }
-
-  if (isPieChart) {
-    // Create worksheet data with translated headers
-    const worksheetData = data.map((item) => ({
-      [yearHeader]: year,
-      [nameHeader]: item.name,
-      [unitHeader]: item.value,
-    }));
-
-    // Create worksheet and workbook
-    const worksheet = XLSX.utils.json_to_sheet(worksheetData, {
-      header: [yearHeader, nameHeader, unitHeader], // Ensure correct column order
-    });
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "PieChartData");
-
-    // Generate filename
-    const finalFilename = `${filename}.xlsx`;
-
-    // Generate and download the Excel file
-    XLSX.writeFile(workbook, finalFilename);
-    return;
-  }
-
-  // Original logic for non-pie chart data
-  // Get dynamic headers from the first data item (excluding 'year')
-  const headers = Object.keys(data[0]).filter((key) => key !== "year");
-
-  // Create worksheet data with translated year header and dynamic headers
-  const worksheetData = data.map((item) => {
-    const row = { [yearHeader]: item.year };
-    headers.forEach((header) => {
-      row[header] = item[header];
-    });
-    return row;
+  // Add data rows
+  data.forEach((item) => {
+    worksheet.addRow(item);
   });
 
-  // Create worksheet and workbook
-  const worksheet = XLSX.utils.json_to_sheet(worksheetData, {
-    header: [yearHeader, ...headers], // Ensure year is the first column
+  // Style the header row
+  const headerRow = worksheet.getRow(1);
+  headerRow.font = { bold: true, color: { argb: "FFFFFFFF" }, size: 11 };
+  headerRow.fill = {
+    type: "pattern",
+    pattern: "solid",
+    fgColor: { argb: "FF4472C4" }, // Blue background
+  };
+  headerRow.alignment = { vertical: "middle", horizontal: "center" };
+  headerRow.height = 25;
+
+  // Add borders to header
+  headerRow.eachCell((cell) => {
+    cell.border = {
+      top: { style: "thin", color: { argb: "FF000000" } },
+      left: { style: "thin", color: { argb: "FF000000" } },
+      bottom: { style: "thin", color: { argb: "FF000000" } },
+      right: { style: "thin", color: { argb: "FF000000" } },
+    };
   });
-  const workbook = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(workbook, worksheet, "Data");
 
-  // Generate filename
-  const finalFilename = `${filename}.xlsx`;
+  // Style data rows
+  worksheet.eachRow((row, rowNumber) => {
+    if (rowNumber === 1) return; // Skip header row
 
-  // Generate and download the Excel file
-  XLSX.writeFile(workbook, finalFilename);
+    row.height = 20;
+    row.alignment = { vertical: "middle", horizontal: "left" };
+
+    // Alternate row colors
+    if (rowNumber % 2 === 0) {
+      row.fill = {
+        type: "pattern",
+        pattern: "solid",
+        fgColor: { argb: "FFF2F2F2" }, // Light gray
+      };
+    }
+
+    // Add borders to data cells
+    row.eachCell((cell) => {
+      cell.border = {
+        top: { style: "thin", color: { argb: "FFD0D0D0" } },
+        left: { style: "thin", color: { argb: "FFD0D0D0" } },
+        bottom: { style: "thin", color: { argb: "FFD0D0D0" } },
+        right: { style: "thin", color: { argb: "FFD0D0D0" } },
+      };
+    });
+  });
+
+  // Auto-fit columns based on content
+  worksheet.columns.forEach((column) => {
+    let maxLength = column.header.length;
+    column.eachCell({ includeEmpty: false }, (cell) => {
+      const cellValue = cell.value ? cell.value.toString() : "";
+      maxLength = Math.max(maxLength, cellValue.length);
+    });
+    column.width = Math.min(maxLength + 3, 50); // Cap at 50
+  });
+
+  // Generate buffer and save
+  const buffer = await workbook.xlsx.writeBuffer();
+  saveAs(new Blob([buffer]), `${filename}.xlsx`);
 };
 
 export default downloadExcel;

@@ -1,77 +1,51 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import commonData from "../../../../../../fetchFunctions/commonData";
 import Download from "./Download/Download";
+import Svg from "./Svg";
+import "./HeatmapChart.scss";
 
-const HeatmapChart = ({ chartInfo }) => {
+/** Finds a specific variable (e.g., Year, Month) from the metadata array. */
+function findVariable(vars = [], candidates = []) {
+  const norm = (s) => (s || "").toString().toLowerCase();
+  for (const v of vars) {
+    const hay = `${norm(v.code)} ${norm(v.text)}`;
+    if (candidates.some((c) => hay.includes(norm(c)))) return v;
+  }
+  return vars[0] || null;
+}
+
+/** Determines cell color based on value. */
+function getBucketColor(v) {
+  if (v === 0) return "#e7eef7";
+  if (v <= 10) return "#ffe08a";
+  if (v <= 20) return "#f7a85b";
+  return "#ef6b6b";
+}
+
+const PrecipitationHeatmapChart = ({ chartInfo, columnWidth = 140 }) => {
   const { language } = useParams();
-  const [chartData, setChartData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [rawMeta, setRawMeta] = useState(null);
+  const [rawData, setRawData] = useState(null);
 
-  // Define region mapping outside useEffect for reuse
-  const regionMapping = useMemo(() => [
-    { key: language === "ge" ? "საქართველო" : "Georgia", name: language === "ge" ? "საქართველო" : "Georgia", index: 1 },
-    { key: language === "ge" ? "თბილისი" : "Tbilisi", name: language === "ge" ? "თბილისი" : "Tbilisi", index: 6 },
-    { key: language === "ge" ? "სამეგრელო-ზემო სვანეთი" : "Samegrelo-Zemo Svaneti", name: language === "ge" ? "სამეგრელო-ზემო სვანეთი" : "Samegrelo-Zemo Svaneti", index: 11 },
-    { key: language === "ge" ? "ქვემო ქართლი" : "Kvemo Kartli", name: language === "ge" ? "ქვემო ქართლი" : "Kvemo Kartli", index: 16 },
-  ], [language]);
-
+  // Fetch and process data
   useEffect(() => {
     const getData = async () => {
       setIsLoading(true);
       setError(null);
 
       try {
-        // Fetch data
-        const [dataResult] = await Promise.all([
+        const [dataResult, metaDataResult] = await Promise.all([
           commonData(chartInfo.id, chartInfo.types[0], language),
           commonData(chartInfo.id, chartInfo.types[1], language),
         ]);
 
-        const rawData = dataResult?.data?.data || [];
-
-        // Group data by decades
-        const decades = {
-          "1990-იანები": { decade: language === "ge" ? "1990-იანები" : "1990s", years: [] },
-          "2000-იანები": { decade: language === "ge" ? "2000-იანები" : "2000s", years: [] },
-          "2010-იანები": { decade: language === "ge" ? "2010-იანები" : "2010s", years: [] },
-          "2020-იანები": { decade: language === "ge" ? "2020-იანები" : "2020s", years: [] },
-        };
-
-        // Group years by decade
-        rawData.forEach(item => {
-          const year = item.year;
-          if (year >= 1990 && year < 2000) decades["1990-იანები"].years.push(item);
-          else if (year >= 2000 && year < 2010) decades["2000-იანები"].years.push(item);
-          else if (year >= 2010 && year < 2020) decades["2010-იანები"].years.push(item);
-          else if (year >= 2020 && year < 2030) decades["2020-იანები"].years.push(item);
-        });
-
-        // Calculate average for each decade and region
-        const heatmapData = Object.values(decades).map(decadeInfo => {
-          const decadeRow = { decade: decadeInfo.decade };
-          
-          // Use regionMapping (from component scope) for keys
-          regionMapping.forEach(region => {
-            // Calculate average precipitation for this region in this decade
-            const values = decadeInfo.years
-              .map(item => parseFloat(item[String(region.index)]) || 0)
-              .filter(val => val > 0);
-            
-            const average = values.length > 0 
-              ? Math.round(values.reduce((sum, val) => sum + val, 0) / values.length)
-              : 0;
-            
-            decadeRow[region.key] = average;
-          });
-          
-          return decadeRow;
-        });
-
-        setChartData(heatmapData);
+        setRawMeta(metaDataResult);
+        setRawData(dataResult);
       } catch (error) {
-        console.error("Error fetching data:", error);
+        console.log("Error fetching data:", error);
         setError("Failed to load chart data. Please try again.");
       } finally {
         setIsLoading(false);
@@ -79,7 +53,79 @@ const HeatmapChart = ({ chartInfo }) => {
     };
 
     getData();
-  }, [language, chartInfo, regionMapping]);
+  }, [language, chartInfo]);
+
+  // Process data
+  const { years, months, matrix } = useMemo(() => {
+    if (!rawMeta || !rawData) return { years: [], months: [], matrix: [] };
+
+    const metaVars = rawMeta?.data?.metadata?.variables || [];
+    const yearVar = findVariable(metaVars, ["year", "წელი"]);
+    const monthVar = findVariable(metaVars, ["month", "თვე"]);
+
+    const years = yearVar?.valueTexts || [];
+    const allMonths = monthVar?.valueTexts || [];
+    
+    // Filter out "ადამიანთა მსხვერპლი" (human casualties) from months
+    const monthsWithIndices = allMonths
+      .map((label, index) => ({ label, originalIndex: index }))
+      .filter(({ label }) => {
+        const normalized = (label || "").toString().toLowerCase();
+        return !normalized.includes("მსხვერპ") && !normalized.includes("casual");
+      });
+    
+    const months = monthsWithIndices.map(m => m.label);
+
+    // Use the hazard index from chartInfo.selectedIndices
+    const hazardIndex = chartInfo.selectedIndices?.[0];
+
+    if (hazardIndex === undefined) {
+      console.log("No selectedIndices found in chartInfo");
+      return { years: [], months: [], matrix: [] };
+    }
+
+    const records = rawData?.data?.data || [];
+
+    // Create matrix: rows = months (filtered), columns = years
+    const mat = monthsWithIndices.map(({ originalIndex: monthIdx }) =>
+      years.map((yearLabel, yearIdx) => {
+        // The year field in records contains the index (0, 1, 2...),
+        // while years array contains the labels (2013, 2014, 2015...)
+        const yearRecord = records.find((r) => r?.year === yearIdx);
+        if (!yearRecord) {
+          return 0;
+        }
+
+        // Get value for this specific hazard and month combination
+        // Format: "hazardIndex - monthIndex" (e.g., "6 - 0", "6 - 1", etc.)
+        const key = `${hazardIndex} - ${monthIdx}`;
+        const val = Number(yearRecord[key] ?? 0);
+        
+        return Number.isFinite(val) ? val : 0;
+      })
+    );
+
+    return { years, months, matrix: mat };
+  }, [rawMeta, rawData, chartInfo.selectedIndices]);
+
+  const hasData = years.length > 0 && months.length > 0 && matrix.length > 0;
+
+  // Prepare data for download (convert matrix to flat array format)
+  const downloadData = useMemo(() => {
+    if (!hasData) return [];
+    
+    const data = [];
+    months.forEach((monthLabel, rowIdx) => {
+      years.forEach((yearLabel, colIdx) => {
+        data.push({
+          [language === "ge" ? "თვე" : "Month"]: monthLabel,
+          [language === "ge" ? "წელი" : "Year"]: yearLabel,
+          [language === "ge" ? "მოვლენების რაოდენობა" : "Number of Events"]: matrix[rowIdx][colIdx]
+        });
+      });
+    });
+    return data;
+  }, [hasData, months, years, matrix, language]);
 
   // Show loading state
   if (isLoading) {
@@ -155,17 +201,8 @@ const HeatmapChart = ({ chartInfo }) => {
     );
   }
 
-  // Helper function to get color based on value (Annual precipitation in mm)
-  const getColor = (value) => {
-    // Define color scale based on precipitation levels
-    // Dry: <950mm, Average: 950-1100mm, Wet: >1100mm
-    if (value >= 1100) return "#2d6a4f"; // Dark green - Wet
-    if (value >= 950) return "#95d5b2"; // Light green - Average
-    return "#f4a261"; // Orange - Dry
-  };
-
   // Show empty state if no data
-  if (chartData.length === 0) {
+  if (!hasData) {
     return (
       <div className="chart-wrapper" id={chartInfo.chartID}>
         <div className="header">
@@ -196,12 +233,18 @@ const HeatmapChart = ({ chartInfo }) => {
   }
 
   return (
-    <div className="chart-wrapper" id={chartInfo.chartID}>
-      <div className="header">
+    <div className="chart-wrapper" id={chartInfo.chartID} style={chartInfo?.wrapperStyles}>
+      <div className="header" data-html2canvas-ignore="true">
         <div className="right">
           <div className="ll"></div>
           <div className="rr">
-            <h1>
+            <h1
+              style={{
+                display: "flex",
+                gap: "20px",
+                alignItems: "center",
+              }}>
+              <Svg />
               {language === "ge" ? chartInfo.title_ge : chartInfo.title_en}
             </h1>
             <p>{language === "ge" ? chartInfo.unit_ge : chartInfo.unit_en}</p>
@@ -209,84 +252,63 @@ const HeatmapChart = ({ chartInfo }) => {
         </div>
         <div className="left">
           <Download
-            data={chartData}
-            filename={chartInfo[`title_${language}`]}
+            data={downloadData}
+            filename={language === "ge" ? chartInfo.title_ge : chartInfo.title_en}
           />
         </div>
       </div>
-      <div style={{ width: "100%", overflowX: "auto", padding: "20px" }}>
-        <div style={{ minWidth: "600px", maxWidth: "1000px", margin: "0 auto" }}>
-          {/* Heatmap Table */}
-          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "14px" }}>
-            <thead>
-              <tr>
-                <th style={{ border: "1px solid #ddd", padding: "12px", background: "#f5f5f5", fontWeight: "bold", fontSize: "14px" }}>
-                  {language === "ge" ? "დეკადა" : "Decade"}
-                </th>
-                {regionMapping.map((region) => (
-                  <th 
-                    key={region.name} 
-                    style={{ 
-                      border: "1px solid #ddd", 
-                      padding: "12px", 
-                      background: "#f5f5f5", 
-                      fontWeight: "bold",
-                      textAlign: "center",
-                      fontSize: "14px"
-                    }}
-                  >
-                    {region.name}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {chartData.map((decadeRow) => (
-                <tr key={decadeRow.decade}>
-                  <td style={{ border: "1px solid #ddd", padding: "12px", fontWeight: "bold", background: "#fafafa", fontSize: "14px" }}>
-                    {decadeRow.decade}
-                  </td>
-                  {regionMapping.map((region) => {
-                    const value = decadeRow[region.key];
-                    return (
-                      <td
-                        key={region.key}
-                        style={{
-                          border: "1px solid #ddd",
-                          padding: "16px",
-                          textAlign: "center",
-                          background: getColor(value),
-                          color: value >= 1100 ? "#fff" : "#000",
-                          fontWeight: "600",
-                          cursor: "pointer",
-                          transition: "all 0.2s",
-                          fontSize: "15px"
-                        }}
-                        title={`${region.name} (${decadeRow.decade}): ${value}${language === "ge" ? " მმ" : " mm"}`}
-                      >
-                        {value}
-                      </td>
-                    );
-                  })}
-                </tr>
-              ))}
-            </tbody>
-          </table>
 
-          {/* Legend */}
-          <div style={{ marginTop: "30px", display: "flex", justifyContent: "center", gap: "20px", flexWrap: "wrap" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-              <div style={{ width: "30px", height: "20px", background: "#f4a261", border: "1px solid #ddd" }}></div>
-              <span style={{ fontSize: "14px", color: "#000" }}>{language === "ge" ? "მშრალი (<950 მმ)" : "Dry (<950 mm)"}</span>
-            </div>
-            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-              <div style={{ width: "30px", height: "20px", background: "#95d5b2", border: "1px solid #ddd" }}></div>
-              <span style={{ fontSize: "14px", color: "#000" }}>{language === "ge" ? "საშუალო (950-1100 მმ)" : "Average (950-1100 mm)"}</span>
-            </div>
-            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-              <div style={{ width: "30px", height: "20px", background: "#2d6a4f", border: "1px solid #ddd" }}></div>
-              <span style={{ fontSize: "14px", color: "#000" }}>{language === "ge" ? "ნოტიო (>1100 მმ)" : "Wet (>1100 mm)"}</span>
-            </div>
+      <div className="heatmap-container">
+        <div className="legend-row">
+          <span>
+            <i className="swatch" style={{ background: "#e7eef7" }} /> 0
+          </span>
+          <span>
+            <i className="swatch" style={{ background: "#ffe08a" }} /> 1–10
+          </span>
+          <span>
+            <i className="swatch" style={{ background: "#f7a85b" }} /> 11–20
+          </span>
+          <span>
+            <i className="swatch" style={{ background: "#ef6b6b" }} /> 21+
+          </span>
+        </div>
+
+        <div className="grid-wrapper">
+          <div
+            className="grid"
+            style={{
+              gridTemplateColumns: `180px repeat(${years.length}, ${columnWidth}px)`,
+            }}
+          >
+            {months.map((mLabel, r) => (
+              <div key={`row-${r}`} className="grid-row">
+                <div className="row-header">{mLabel}</div>
+                {matrix[r].map((v, c) => (
+                  <div
+                    key={`cell-${r}-${c}`}
+                    className="cell"
+                    style={{ background: getBucketColor(v) }}
+                  >
+                    {v}
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
+
+          <div
+            className="col-footer-row"
+            style={{
+              gridTemplateColumns: `180px repeat(${years.length}, ${columnWidth}px)`,
+            }}
+          >
+            <div />
+            {years.map((y, i) => (
+              <div key={`footer-${i}`} className="col-footer">
+                {y}
+              </div>
+            ))}
           </div>
         </div>
       </div>
@@ -294,4 +316,4 @@ const HeatmapChart = ({ chartInfo }) => {
   );
 };
 
-export default HeatmapChart;
+export default PrecipitationHeatmapChart;
