@@ -27,7 +27,7 @@ const Navigation = () => {
       if (ulRef.current && width < 769) {
         ulRef.current.style.overflowX = "scroll";
       }
-    }, 1000); // Delay for 1 second
+    }, 500); // Delay for 1 second
   };
 
   const handleLinkClick = () => {
