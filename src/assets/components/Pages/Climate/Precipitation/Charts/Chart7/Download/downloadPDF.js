@@ -129,7 +129,9 @@ const downloadPDF = (
   const tableBody = data.map((item) => {
     const row = [item.year];
     headers.forEach((header) => {
-      row.push(Number(item[header]).toFixed(2)); // Format numbers to 2 decimal places
+      const value = item[header];
+      // Check if value is a number, if so format it, otherwise use as-is (for strings like region names)
+      row.push(typeof value === 'number' ? Number(value).toFixed(2) : value);
     });
     return row;
   });

@@ -57,6 +57,7 @@ const Download = ({ data, filename, unit, isPieChart, bcwy, year }) => {
             <div
               className="wrapper"
               onClick={() => {
+                console.log("Excel download clicked, data:", data); // Debug log
                 downloadExcel(
                   data,
                   filename,
@@ -74,6 +75,7 @@ const Download = ({ data, filename, unit, isPieChart, bcwy, year }) => {
             <div
               className="wrapper"
               onClick={() => {
+                console.log("PDF download clicked, data:", data); // Debug log
                 downloadPDF(
                   data,
                   filename,

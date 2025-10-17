@@ -7,6 +7,7 @@ import Download from "./Download/Download";
 const HorizontalBarCharts = ({ chartInfo }) => {
   const { language } = useParams();
   const [chartData, setChartData] = useState([]);
+  const [downloadData, setDownloadData] = useState([]); // Flat format for Excel/PDF
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -57,6 +58,7 @@ const HorizontalBarCharts = ({ chartInfo }) => {
 
         if (!data2022) {
           setChartData([]);
+          setDownloadData([]);
           return;
         }
 
@@ -82,6 +84,22 @@ const HorizontalBarCharts = ({ chartInfo }) => {
         ];
 
         setChartData(apexData);
+
+        // Create flat format for Download component (Excel/PDF)
+        const flatData = regions.map((region) => {
+          const minValue = parseFloat(data2022[String(region.minIndex)]) || 0;
+          const maxValue = parseFloat(data2022[String(region.maxIndex)]) || 0;
+
+          return {
+            year: 2022, // Add year for Excel/PDF download
+            [language === "ge" ? "რეგიონი" : "Region"]: region.name,
+            [language === "ge" ? "მინიმალური" : "Minimum"]: minValue,
+            [language === "ge" ? "მაქსიმალური" : "Maximum"]: maxValue,
+          };
+        });
+
+        setDownloadData(flatData);
+        // console.log("Download data set:", flatData); // Debug log
       } catch (error) {
         console.log("Error fetching data:", error);
         setError("Failed to load chart data. Please try again.");
@@ -292,7 +310,7 @@ const HorizontalBarCharts = ({ chartInfo }) => {
         </div>
         <div className="left">
           <Download
-            data={chartData}
+            data={downloadData}
             filename={chartInfo[`title_${language}`]}
             unit={chartInfo[`unit_${language}`]}
           />
