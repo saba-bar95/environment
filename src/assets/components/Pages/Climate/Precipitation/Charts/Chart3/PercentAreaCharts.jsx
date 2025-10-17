@@ -36,7 +36,7 @@ const PercentAreaCharts = ({ chartInfo }) => {
           const maxValue = parseFloat(item[String(maxIndex)]) || 0;
 
           return {
-            x: item.year,
+            x: parseInt(item.year), // Ensure year is an integer
             y: [minValue, maxValue],
           };
         });
@@ -200,6 +200,9 @@ const PercentAreaCharts = ({ chartInfo }) => {
         style: {
           fontSize: "12px",
           colors: "#6b7280",
+        },
+        formatter: function (value) {
+          return Math.floor(value).toString(); // Show years as integers without decimals
         },
       },
     },
