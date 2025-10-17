@@ -17,7 +17,6 @@ import PrecipitationHeatmapChart from "./Charts/Chart11/HeatmapChart.jsx";
 const Precipitation = () => {
   const { language } = useParams();
   const location = useLocation();
-
   const info = Charts.climate[2].precipitation;
 
   useEffect(() => {
@@ -154,17 +153,17 @@ const Precipitation = () => {
       unit_ge: "თითოეული უჯრა წარმოადგენს წელს",
       unit_en: "Each cell represents a year",
       wrapperStyles: {
-        // gridColumn: "1/3",
         width: "auto",
         height: "auto",
         minHeight: "auto",
-        // maxWidth: "100%",
+        overflow: "auto",
+        margin: "initial",
       },
     },
   ];
 
   return (
-    <div className="section-container supply-and-losses">
+    <div className="section-container">
       <div
         className="background-container"
         style={{ backgroundImage: `url(${backgroundImg})` }}>
