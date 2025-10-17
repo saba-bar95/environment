@@ -5,16 +5,6 @@ import Download from "./Download/Download";
 import Svg from "./Svg";
 import "./HeatmapChart.scss";
 
-/** Finds a specific variable (e.g., Year, Month) from the metadata array. */
-function findVariable(vars = [], candidates = []) {
-  const norm = (s) => (s || "").toString().toLowerCase();
-  for (const v of vars) {
-    const hay = `${norm(v.code)} ${norm(v.text)}`;
-    if (candidates.some((c) => hay.includes(norm(c)))) return v;
-  }
-  return vars[0] || null;
-}
-
 /** Determines cell color based on precipitation value. */
 function getBucketColor(v) {
   if (!v || v === 0) return "#ffffff"; // No data - white
@@ -59,24 +49,6 @@ const PrecipitationHeatmapChart = ({ chartInfo, columnWidth = 140 }) => {
   const { decades, years, matrix } = useMemo(() => {
     if (!rawMeta || !rawData) return { decades: [], years: [], matrix: [] };
 
-    const metaVars = rawMeta?.data?.metadata?.variables || [];
-    const yearVar = findVariable(metaVars, ["year", "წელი"]);
-    const locationVar = findVariable(metaVars, ["location", "ლოკაცია", "საქართველო"]);
-
-    const allYears = yearVar?.valueTexts || [];
-    const allLocations = locationVar?.valueTexts || [];
-    
-    // Filter for "საქართველო" (Georgia) location only
-    const georgiaLocationIndex = allLocations.findIndex((loc) => {
-      const normalized = (loc || "").toString().toLowerCase();
-      return normalized.includes("საქართველო") || normalized.includes("georgia");
-    });
-
-    if (georgiaLocationIndex === -1) {
-      console.log("Georgia location not found in data");
-      return { decades: [], years: [], matrix: [] };
-    }
-
     // Use the precipitation variable index from chartInfo.selectedIndices
     const precipitationIndex = chartInfo.selectedIndices?.[0];
 
@@ -86,6 +58,11 @@ const PrecipitationHeatmapChart = ({ chartInfo, columnWidth = 140 }) => {
     }
 
     const records = rawData?.data?.data || [];
+    
+    console.log("=== Heatmap Debug Info ===");
+    console.log("Total records:", records.length);
+    console.log("Sample record:", records[0]);
+    console.log("Precipitation index:", precipitationIndex);
 
     // Group years into decades
     const decadeGroups = {
@@ -95,42 +72,46 @@ const PrecipitationHeatmapChart = ({ chartInfo, columnWidth = 140 }) => {
       "2020-იანები": []
     };
 
-    allYears.forEach((yearLabel, yearIdx) => {
-      const year = parseInt(yearLabel);
-      if (year >= 1990 && year < 2000) decadeGroups["1990-იანები"].push({ yearLabel, yearIdx });
-      else if (year >= 2000 && year < 2010) decadeGroups["2000-იანები"].push({ yearLabel, yearIdx });
-      else if (year >= 2010 && year < 2020) decadeGroups["2010-იანები"].push({ yearLabel, yearIdx });
-      else if (year >= 2020 && year < 2030) decadeGroups["2020-იანები"].push({ yearLabel, yearIdx });
+    // Process each record and group by decade
+    records.forEach((record) => {
+      
+      // Get the actual year value from the record
+      const yearValue = parseInt(record?.year);
+      if (!yearValue || isNaN(yearValue)) return;
+      
+      // Get precipitation value
+      const precipValue = Number(record?.[precipitationIndex] ?? 0);
+      if (!Number.isFinite(precipValue) || precipValue <= 0) return;
+      
+      // Group by decade
+      if (yearValue >= 1990 && yearValue < 2000) {
+        decadeGroups["1990-იანები"].push({ year: yearValue, value: precipValue });
+      } else if (yearValue >= 2000 && yearValue < 2010) {
+        decadeGroups["2000-იანები"].push({ year: yearValue, value: precipValue });
+      } else if (yearValue >= 2010 && yearValue < 2020) {
+        decadeGroups["2010-იანები"].push({ year: yearValue, value: precipValue });
+      } else if (yearValue >= 2020 && yearValue < 2030) {
+        decadeGroups["2020-იანები"].push({ year: yearValue, value: precipValue });
+      }
     });
 
     // Find max years in any decade to create uniform grid
     const maxYearsPerDecade = Math.max(
-      ...Object.values(decadeGroups).map(g => g.length)
+      ...Object.values(decadeGroups).map(g => g.length),
+      10 // At least 10 columns
     );
 
     // Create matrix: rows = decades, columns = years (0-9 in each decade)
     const decades = Object.keys(decadeGroups);
     const mat = decades.map((decadeLabel) => {
       const decadeYears = decadeGroups[decadeLabel];
-      const row = [];
+      // Sort by year
+      decadeYears.sort((a, b) => a.year - b.year);
       
+      const row = [];
       for (let i = 0; i < maxYearsPerDecade; i++) {
         if (i < decadeYears.length) {
-          const { yearIdx } = decadeYears[i];
-          // Find record for this year and Georgia location
-          const yearRecord = records.find((r) => 
-            r?.year === yearIdx && r?.location === georgiaLocationIndex
-          );
-          
-          if (!yearRecord) {
-            row.push(null);
-            continue;
-          }
-
-          // Get precipitation value
-          // Format: precipitationIndex (e.g., "6" for წლიური ნალექიანობა)
-          const val = Number(yearRecord[precipitationIndex] ?? 0);
-          row.push(Number.isFinite(val) && val > 0 ? val : null);
+          row.push(decadeYears[i].value);
         } else {
           row.push(null); // Empty cell for missing years
         }
@@ -141,6 +122,11 @@ const PrecipitationHeatmapChart = ({ chartInfo, columnWidth = 140 }) => {
 
     // Create year labels (0-9 for each position in decade)
     const yearLabels = Array.from({ length: maxYearsPerDecade }, (_, i) => i.toString());
+
+    console.log("Decade groups:", decadeGroups);
+    console.log("Matrix:", mat);
+    console.log("Decades:", decades);
+    console.log("Year labels:", yearLabels);
 
     return { decades, years: yearLabels, matrix: mat };
   }, [rawMeta, rawData, chartInfo.selectedIndices]);
