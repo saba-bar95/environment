@@ -146,10 +146,10 @@ const Precipitation = () => {
     {
       title_ge: info[10].title_ge,
       title_en: info[10].title_en,
-      colors: ["#e94d74ff"],
+      colors: ["#fecaca", "#93c5fd", "#2563eb"],
       id: "atmospheric-precipitation",
       types: ["data", "metadata"],
-      selectedIndices: [6],
+      selectedIndices: [1], // წლიური ნალექიანობა (მმ) - Annual precipitation
       chartID: info[10].chartID,
       unit_ge: "თითოეული უჯრა წარმოადგენს წელს",
       unit_en: "Each cell represents a year",

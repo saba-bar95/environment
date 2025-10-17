@@ -15,12 +15,12 @@ function findVariable(vars = [], candidates = []) {
   return vars[0] || null;
 }
 
-/** Determines cell color based on value. */
+/** Determines cell color based on precipitation value. */
 function getBucketColor(v) {
-  if (v === 0) return "#e7eef7";
-  if (v <= 10) return "#ffe08a";
-  if (v <= 20) return "#f7a85b";
-  return "#ef6b6b";
+  if (!v || v === 0) return "#ffffff"; // No data - white
+  if (v < 950) return "#fecaca"; // Dry (მშრალი) - light red
+  if (v <= 1100) return "#93c5fd"; // Average (საშუალო) - light blue
+  return "#2563eb"; // Wet (ნოტიო) - blue
 }
 
 const PrecipitationHeatmapChart = ({ chartInfo, columnWidth = 140 }) => {
@@ -56,76 +56,116 @@ const PrecipitationHeatmapChart = ({ chartInfo, columnWidth = 140 }) => {
   }, [language, chartInfo]);
 
   // Process data
-  const { years, months, matrix } = useMemo(() => {
-    if (!rawMeta || !rawData) return { years: [], months: [], matrix: [] };
+  const { decades, years, matrix } = useMemo(() => {
+    if (!rawMeta || !rawData) return { decades: [], years: [], matrix: [] };
 
     const metaVars = rawMeta?.data?.metadata?.variables || [];
     const yearVar = findVariable(metaVars, ["year", "წელი"]);
-    const monthVar = findVariable(metaVars, ["month", "თვე"]);
+    const locationVar = findVariable(metaVars, ["location", "ლოკაცია", "საქართველო"]);
 
-    const years = yearVar?.valueTexts || [];
-    const allMonths = monthVar?.valueTexts || [];
+    const allYears = yearVar?.valueTexts || [];
+    const allLocations = locationVar?.valueTexts || [];
     
-    // Filter out "ადამიანთა მსხვერპლი" (human casualties) from months
-    const monthsWithIndices = allMonths
-      .map((label, index) => ({ label, originalIndex: index }))
-      .filter(({ label }) => {
-        const normalized = (label || "").toString().toLowerCase();
-        return !normalized.includes("მსხვერპ") && !normalized.includes("casual");
-      });
-    
-    const months = monthsWithIndices.map(m => m.label);
+    // Filter for "საქართველო" (Georgia) location only
+    const georgiaLocationIndex = allLocations.findIndex((loc) => {
+      const normalized = (loc || "").toString().toLowerCase();
+      return normalized.includes("საქართველო") || normalized.includes("georgia");
+    });
 
-    // Use the hazard index from chartInfo.selectedIndices
-    const hazardIndex = chartInfo.selectedIndices?.[0];
+    if (georgiaLocationIndex === -1) {
+      console.log("Georgia location not found in data");
+      return { decades: [], years: [], matrix: [] };
+    }
 
-    if (hazardIndex === undefined) {
+    // Use the precipitation variable index from chartInfo.selectedIndices
+    const precipitationIndex = chartInfo.selectedIndices?.[0];
+
+    if (precipitationIndex === undefined) {
       console.log("No selectedIndices found in chartInfo");
-      return { years: [], months: [], matrix: [] };
+      return { decades: [], years: [], matrix: [] };
     }
 
     const records = rawData?.data?.data || [];
 
-    // Create matrix: rows = months (filtered), columns = years
-    const mat = monthsWithIndices.map(({ originalIndex: monthIdx }) =>
-      years.map((yearLabel, yearIdx) => {
-        // The year field in records contains the index (0, 1, 2...),
-        // while years array contains the labels (2013, 2014, 2015...)
-        const yearRecord = records.find((r) => r?.year === yearIdx);
-        if (!yearRecord) {
-          return 0;
-        }
+    // Group years into decades
+    const decadeGroups = {
+      "1990-იანები": [],
+      "2000-იანები": [],
+      "2010-იანები": [],
+      "2020-იანები": []
+    };
 
-        // Get value for this specific hazard and month combination
-        // Format: "hazardIndex - monthIndex" (e.g., "6 - 0", "6 - 1", etc.)
-        const key = `${hazardIndex} - ${monthIdx}`;
-        const val = Number(yearRecord[key] ?? 0);
-        
-        return Number.isFinite(val) ? val : 0;
-      })
+    allYears.forEach((yearLabel, yearIdx) => {
+      const year = parseInt(yearLabel);
+      if (year >= 1990 && year < 2000) decadeGroups["1990-იანები"].push({ yearLabel, yearIdx });
+      else if (year >= 2000 && year < 2010) decadeGroups["2000-იანები"].push({ yearLabel, yearIdx });
+      else if (year >= 2010 && year < 2020) decadeGroups["2010-იანები"].push({ yearLabel, yearIdx });
+      else if (year >= 2020 && year < 2030) decadeGroups["2020-იანები"].push({ yearLabel, yearIdx });
+    });
+
+    // Find max years in any decade to create uniform grid
+    const maxYearsPerDecade = Math.max(
+      ...Object.values(decadeGroups).map(g => g.length)
     );
 
-    return { years, months, matrix: mat };
+    // Create matrix: rows = decades, columns = years (0-9 in each decade)
+    const decades = Object.keys(decadeGroups);
+    const mat = decades.map((decadeLabel) => {
+      const decadeYears = decadeGroups[decadeLabel];
+      const row = [];
+      
+      for (let i = 0; i < maxYearsPerDecade; i++) {
+        if (i < decadeYears.length) {
+          const { yearIdx } = decadeYears[i];
+          // Find record for this year and Georgia location
+          const yearRecord = records.find((r) => 
+            r?.year === yearIdx && r?.location === georgiaLocationIndex
+          );
+          
+          if (!yearRecord) {
+            row.push(null);
+            continue;
+          }
+
+          // Get precipitation value
+          // Format: precipitationIndex (e.g., "6" for წლიური ნალექიანობა)
+          const val = Number(yearRecord[precipitationIndex] ?? 0);
+          row.push(Number.isFinite(val) && val > 0 ? val : null);
+        } else {
+          row.push(null); // Empty cell for missing years
+        }
+      }
+      
+      return row;
+    });
+
+    // Create year labels (0-9 for each position in decade)
+    const yearLabels = Array.from({ length: maxYearsPerDecade }, (_, i) => i.toString());
+
+    return { decades, years: yearLabels, matrix: mat };
   }, [rawMeta, rawData, chartInfo.selectedIndices]);
 
-  const hasData = years.length > 0 && months.length > 0 && matrix.length > 0;
+  const hasData = years.length > 0 && decades.length > 0 && matrix.length > 0;
 
   // Prepare data for download (convert matrix to flat array format)
   const downloadData = useMemo(() => {
     if (!hasData) return [];
     
     const data = [];
-    months.forEach((monthLabel, rowIdx) => {
-      years.forEach((yearLabel, colIdx) => {
-        data.push({
-          [language === "ge" ? "თვე" : "Month"]: monthLabel,
-          [language === "ge" ? "წელი" : "Year"]: yearLabel,
-          [language === "ge" ? "მოვლენების რაოდენობა" : "Number of Events"]: matrix[rowIdx][colIdx]
-        });
+    decades.forEach((decadeLabel, rowIdx) => {
+      years.forEach((yearInDecade, colIdx) => {
+        const value = matrix[rowIdx][colIdx];
+        if (value !== null) {
+          data.push({
+            [language === "ge" ? "დეკადა" : "Decade"]: decadeLabel,
+            [language === "ge" ? "წელი დეკადაში" : "Year in Decade"]: yearInDecade,
+            [language === "ge" ? "წლიური ნალექი (მმ)" : "Annual Precipitation (mm)"]: value
+          });
+        }
       });
     });
     return data;
-  }, [hasData, months, years, matrix, language]);
+  }, [hasData, decades, years, matrix, language]);
 
   // Show loading state
   if (isLoading) {
@@ -261,16 +301,16 @@ const PrecipitationHeatmapChart = ({ chartInfo, columnWidth = 140 }) => {
       <div className="heatmap-container">
         <div className="legend-row">
           <span>
-            <i className="swatch" style={{ background: "#e7eef7" }} /> 0
+            <i className="swatch" style={{ background: "#fecaca" }} />
+            {language === "ge" ? " მშრალი (<950მმ)" : " Dry (<950mm)"}
           </span>
           <span>
-            <i className="swatch" style={{ background: "#ffe08a" }} /> 1–10
+            <i className="swatch" style={{ background: "#93c5fd" }} />
+            {language === "ge" ? " საშუალო" : " Average"}
           </span>
           <span>
-            <i className="swatch" style={{ background: "#f7a85b" }} /> 11–20
-          </span>
-          <span>
-            <i className="swatch" style={{ background: "#ef6b6b" }} /> 21+
+            <i className="swatch" style={{ background: "#2563eb" }} />
+            {language === "ge" ? " ნოტიო (>1100მმ)" : " Wet (>1100mm)"}
           </span>
         </div>
 
@@ -281,16 +321,17 @@ const PrecipitationHeatmapChart = ({ chartInfo, columnWidth = 140 }) => {
               gridTemplateColumns: `180px repeat(${years.length}, ${columnWidth}px)`,
             }}
           >
-            {months.map((mLabel, r) => (
+            {decades.map((decadeLabel, r) => (
               <div key={`row-${r}`} className="grid-row">
-                <div className="row-header">{mLabel}</div>
+                <div className="row-header">{decadeLabel}</div>
                 {matrix[r].map((v, c) => (
                   <div
                     key={`cell-${r}-${c}`}
                     className="cell"
                     style={{ background: getBucketColor(v) }}
+                    title={v !== null ? `${v.toFixed(2)} mm` : language === "ge" ? "მონაცემები არ არის" : "No data"}
                   >
-                    {v}
+                    {v !== null ? v.toFixed(2) : ""}
                   </div>
                 ))}
               </div>
