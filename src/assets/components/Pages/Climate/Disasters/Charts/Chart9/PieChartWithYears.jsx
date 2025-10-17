@@ -220,7 +220,7 @@ const PieChartWithYears = ({ chartInfo }) => {
           const num = pieData.find((d) => d.name === text.name)?.value || 0; // Full value
           const value = num
             .toLocaleString("fr-FR", {
-              minimumFractionDigits: 1,
+              minimumFractionDigits: 0,
               maximumFractionDigits: 1,
             })
             .replace(",", ".");

@@ -52,6 +52,8 @@ const Reports = () => {
       types: ["data", "metadata"],
       selectedIndices: [3],
       chartID: info[2].chartID,
+      unit_ge: "ტონა",
+      unit_en: "tonnes",
     },
     {
       title_ge: info[3].title_ge,
@@ -61,6 +63,8 @@ const Reports = () => {
       types: ["data", "metadata"],
       selectedIndices: [1, 23],
       chartID: info[3].chartID,
+      unit_ge: "ათასი ტონა",
+      unit_en: "Thousand tonnes",
     },
     {
       title_ge: info[4].title_ge,
@@ -92,6 +96,8 @@ const Reports = () => {
       types: ["data", "metadata"],
       selectedIndices: [14],
       chartID: info[6].chartID,
+      unit_ge: "ათასი ტონა",
+      unit_en: "Thousand Tonnes",
     },
     {
       title_ge: info[7].title_ge,
@@ -101,6 +107,8 @@ const Reports = () => {
       types: ["data", "metadata"],
       selectedIndices: [15, 16, 17, 18, 19],
       chartID: info[7].chartID,
+      unit_ge: "ათასი ტონა",
+      unit_en: "Thousand Tonnes",
     },
     {
       title_ge: info[8].title_ge,
@@ -112,6 +120,7 @@ const Reports = () => {
       chartID: info[8].chartID,
       unit_ge: "ათასი ტონა",
       unit_en: "Thousand Tonnes",
+      isChart9: true,
     },
     {
       title_ge: info[9].title_ge,
@@ -155,8 +164,8 @@ const Reports = () => {
         <h2>
           {" "}
           {language === "en"
-            ? "Trends in Georgia's material resources, consumption and trade in 2014-2023"
-            : "საქართველოს მატერიალური რესურსების, მოხმარებისა და ვაჭრობის ტენდენციები 2014-2023 წლებში"}{" "}
+            ? "Trends in Georgia's material resources, consumption and trade"
+            : "საქართველოს მატერიალური რესურსების, მოხმარებისა და ვაჭრობის ტენდენციები"}{" "}
         </h2>
       </div>
 

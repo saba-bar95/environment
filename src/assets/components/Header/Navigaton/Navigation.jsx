@@ -11,43 +11,47 @@ const Navigation = () => {
   const [hoveredSectionId, setHoveredSectionId] = useState(null);
   const ulRef = useRef(null);
   const [width, setWidth] = useState(window.innerWidth);
+  const hideTimeoutRef = useRef(null); // Ref to store timeout
 
   const handleMouseEnter = (id) => {
+    clearTimeout(hideTimeoutRef.current); // Cancel any pending hide
     setHoveredSectionId(id);
     if (ulRef.current && width < 769 && id) {
-      ulRef.current.style.overflowX = "clip"; // Only clip on mobile when hovering section with links
+      ulRef.current.style.overflowX = "clip";
     }
   };
 
   const handleMouseLeave = () => {
-    setHoveredSectionId(null);
-    if (ulRef.current && width < 769) {
-      ulRef.current.style.overflowX = "scroll"; // Only scroll on mobile
-    }
+    hideTimeoutRef.current = setTimeout(() => {
+      setHoveredSectionId(null);
+      if (ulRef.current && width < 769) {
+        ulRef.current.style.overflowX = "scroll";
+      }
+    }, 1000); // Delay for 1 second
   };
 
   const handleLinkClick = () => {
-    setHoveredSectionId(null); // Hide dropdown on link click
+    clearTimeout(hideTimeoutRef.current); // Cancel hide if link is clicked
+    setHoveredSectionId(null);
   };
 
   useEffect(() => {
     const handleResize = () => {
       const newWidth = window.innerWidth;
       setWidth(newWidth);
-      // Reset overflow-x based on width
       if (ulRef.current) {
         ulRef.current.style.overflowX = newWidth < 769 ? "scroll" : "visible";
       }
     };
 
     window.addEventListener("resize", handleResize);
-    // Set initial overflow-x based on current width
     if (ulRef.current) {
       ulRef.current.style.overflowX = width < 769 ? "scroll" : "visible";
     }
 
     return () => {
       window.removeEventListener("resize", handleResize);
+      clearTimeout(hideTimeoutRef.current); // Clean up timeout
     };
   }, [width]);
 

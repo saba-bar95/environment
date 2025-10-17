@@ -286,8 +286,6 @@ const BarChartsHorizontal = ({ chartInfo }) => {
   // Get top 7 years
   const top7Data = sortedData.slice(0, 7);
 
-  console.log(top7Data);
-
   return (
     <div className="chart-wrapper" id={chartInfo.chartID}>
       <div className="header">

@@ -236,7 +236,7 @@ const StackedBarCharts = ({ chartInfo }) => {
                   {text?.name} :
                 </span>
                 <span style={{ fontWeight: 900, marginLeft: "5px" }}>
-                  {value?.toFixed(2)}
+                  {chartInfo.isChart5 ? value?.toFixed(1) : value?.toFixed(2)}
                 </span>
               </p>
             );

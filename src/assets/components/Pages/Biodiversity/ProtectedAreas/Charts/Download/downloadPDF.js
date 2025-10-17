@@ -41,10 +41,7 @@ const downloadPDF = (
     const tableHead = [[nameHeader, unitHeader]];
 
     // Create table body
-    const tableBody = data.map((item) => [
-      item.name,
-      Number(item.value).toFixed(2),
-    ]);
+    const tableBody = data.map((item) => [item.name, Number(item.value)]);
 
     // Add table to PDF
     autoTable(doc, {
@@ -88,7 +85,7 @@ const downloadPDF = (
     const tableBody = data.map((item) => {
       const row = [item.year];
       valueHeaders.forEach((header) => {
-        const value = Number(item[header]).toFixed(2);
+        const value = Number(item[header]);
         const percentKey = `${header}_percent`;
         const percentValue = item[percentKey];
         const percentText =
@@ -137,7 +134,7 @@ const downloadPDF = (
       .map((category) => [
         data[0].name,
         category,
-        Number(data[0][category]).toFixed(2),
+        Number(data[0][category]).toFixed(1),
       ]);
 
     // Add table to PDF
@@ -175,11 +172,7 @@ const downloadPDF = (
     const tableHead = [[yearHeader, nameHeader, unitHeader]];
 
     // Create table body
-    const tableBody = data.map((item) => [
-      year,
-      item.name,
-      Number(item.value).toFixed(2),
-    ]);
+    const tableBody = data.map((item) => [year, item.name, Number(item.value)]);
 
     // Add table to PDF
     autoTable(doc, {
@@ -222,7 +215,7 @@ const downloadPDF = (
   const tableBody = data.map((item) => {
     const row = [item.year];
     headers.forEach((header) => {
-      row.push(Number(item[header]).toFixed(2));
+      row.push(Number(item[header]));
     });
     return row;
   });

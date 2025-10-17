@@ -9,8 +9,6 @@ const downloadExcel = (data, filename, language) => {
     return;
   }
 
-  console.log(data);
-
   const metricHeader = isGeorgian ? "დასახელება" : "Name";
 
   // Get dynamic year headers from the first data item (excluding 'metric')

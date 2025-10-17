@@ -25,6 +25,12 @@ import reportsBackground2 from "./Backgrounds/Reports/background2.jpg";
 
 const Slides = [
   {
+    text: transportText,
+    background1: transportBackground1,
+    background2: transportBackground2,
+    href: "transport",
+  },
+  {
     text: wasteText,
     background1: wasteBackground1,
     background2: wasteBackground2,
@@ -47,12 +53,6 @@ const Slides = [
     background1: energyBackground1,
     background2: energyBackground2,
     href: "energy",
-  },
-  {
-    text: transportText,
-    background1: transportBackground1,
-    background2: transportBackground2,
-    href: "transport",
   },
   {
     text: reportsText,

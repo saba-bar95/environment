@@ -194,8 +194,6 @@ const BarChartsFull = ({ chartInfo }) => {
             <span
               className="recharts-legend-item-icon"
               style={{
-                backgroundColor:
-                  chartInfo.colors[index % chartInfo.colors.length],
                 flexShrink: 0,
                 width: 12,
                 height: 12,
@@ -236,7 +234,7 @@ const BarChartsFull = ({ chartInfo }) => {
                   className="before-span"></span>
                 {text?.name} :
                 <span style={{ fontWeight: 900, marginLeft: "5px" }}>
-                  {value?.toFixed(2)}
+                  {value?.toFixed(1)}
                 </span>
               </p>
             );

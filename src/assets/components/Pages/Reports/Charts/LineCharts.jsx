@@ -234,7 +234,7 @@ const LineChart1 = ({ chartInfo }) => {
                   {text?.name} :
                 </span>
                 <span style={{ fontWeight: 900, marginLeft: "5px" }}>
-                  {chartInfo?.isChart2 ? value?.toFixed(2) : value?.toFixed(1)}
+                  {chartInfo?.isChart2 ? value?.toFixed(2) : value}
                 </span>
               </p>
             );

@@ -234,7 +234,7 @@ const LineChart1 = ({ chartInfo }) => {
                   {text?.name} :
                 </span>
                 <span style={{ fontWeight: 900, marginLeft: "5px" }}>
-                  {value?.toFixed(1)}
+                  {value}
                 </span>
               </p>
             );

@@ -134,8 +134,8 @@ const Waste = () => {
           }}>
           <Waste1 />
           {language === "en"
-            ? "Landfill trends (2015-2023)"
-            : "ნარჩენების ნაგავსაყრელზე განთავსების ტენდენციები (2015-2023)"}
+            ? "Landfill trends"
+            : "ნარჩენების ნაგავსაყრელზე განთავსების ტენდენციები"}
         </h1>
       </div>
       <div className="charts-section">
