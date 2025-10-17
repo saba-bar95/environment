@@ -1,10 +1,22 @@
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
+import { useEffect } from "react";
 import backgroundImg from "./Background/background.jpg";
 import Charts from "../../../../../../Charts";
 import Chart1 from "./Charts/Chart1/Chart1";
 
 const ForestResources = () => {
   const { language } = useParams();
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.hash) {
+      const chartId = location.hash.replace("#", "");
+      const element = document.getElementById(chartId);
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }
+  }, [location.hash]);
 
   return (
     <div className="section-container">

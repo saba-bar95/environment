@@ -42,6 +42,8 @@ const Protection = () => {
       types: ["data", "metadata"],
       selectedIndices: [0, 1],
       chartID: info[0].chartID,
+      unit_ge: "მილიონი მ³",
+      unit_en: "Million m³",
     },
     {
       title_ge: info[1].title_ge,
@@ -51,6 +53,8 @@ const Protection = () => {
       types: ["data", "metadata"],
       selectedIndices: [3, 4, 5],
       chartID: info[0].chartID,
+      unit_ge: "მილიონი მ³",
+      unit_en: "Million m³",
     },
     {
       title_ge: info[2].title_ge,
@@ -60,6 +64,8 @@ const Protection = () => {
       types: ["data", "metadata"],
       selectedIndices: [8, 9],
       chartID: info[2].chartID,
+      unit_ge: "მილიონი მ³",
+      unit_en: "Million m³",
     },
     {
       title_ge: info[3].title_ge,
@@ -69,6 +75,8 @@ const Protection = () => {
       types: ["data", "metadata"],
       selectedIndices: [6, 7],
       chartID: info[3].chartID,
+      unit_ge: "მილიონი მ³",
+      unit_en: "Million m³",
     },
     {
       title_ge: info[4].title_ge,
@@ -76,8 +84,10 @@ const Protection = () => {
       colors: ["#1464dbff", "#63b8e9ff", "#4de9d4ff"],
       id: "water-abstraction",
       types: ["data", "metadata"],
-      selectedIndices: [3, 4, 6],
+      selectedIndices: [3, 4, 5],
       chartID: info[4].chartID,
+      unit_ge: "მილიონი მ³",
+      unit_en: "Million m³",
     },
   ];
 
@@ -92,8 +102,8 @@ const Protection = () => {
         <div className="overlay" />
         <h1>
           {language === "en"
-            ? "Trends in Water Abstraction from Natural Sources in Georgia (2017-2023)"
-            : "ბუნებრივი ობიექტებიდან წყლის აღების ტრენდები საქართველოში (2017-2023)"}
+            ? "Trends in Water Abstraction from Natural Sources in Georgia (2012-2023)"
+            : "ბუნებრივი ობიექტებიდან წყლის აღების ტენდენციები საქართველოში (2012-2023)"}
         </h1>
       </div>
       <div className="charts-section">

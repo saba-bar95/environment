@@ -45,7 +45,7 @@ const Precipitation = () => {
     {
       title_ge: info[0].title_ge,
       title_en: info[0].title_en,
-      colors: ["#1678e7ff"],
+      colors: ["#1678e7ff", "#e94d74ff"],
       id: "atmospheric-precipitation",
       types: ["data", "metadata"],
       selectedIndices: [1],
@@ -198,7 +198,7 @@ const Precipitation = () => {
           <ScatterCharts chartInfo={ChartInfo[7]} />
           <AreaCharts9 chartInfo={ChartInfo[8]} />
           <RadialBarChart chartInfo={ChartInfo[9]} />
-          <HeatmapChart chartInfo={ChartInfo[10]} />
+          {/* <HeatmapChart chartInfo={ChartInfo[10]} /> */}
         </div>
       </div>
     </div>

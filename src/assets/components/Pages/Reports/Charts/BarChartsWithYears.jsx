@@ -329,7 +329,7 @@ const BarChartsWithYears = ({ chartInfo }) => {
                   className="before-span"></span>
                 {dataKey} :
               </span>
-              <span style={{ fontWeight: 900 }}>{value?.toFixed(1)}</span>
+              <span style={{ fontWeight: 900 }}>{value}</span>
             </p>
           ))}
         </div>

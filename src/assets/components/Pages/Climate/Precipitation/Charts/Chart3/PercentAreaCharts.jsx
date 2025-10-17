@@ -1,15 +1,5 @@
 import { useEffect, useState } from "react";
-import {
-  AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-  Brush,
-} from "recharts";
+import ReactApexChart from "react-apexcharts";
 import { useParams } from "react-router-dom";
 import commonData from "../../../../../../fetchFunctions/commonData";
 import Download from "./Download/Download";
@@ -17,10 +7,9 @@ import Download from "./Download/Download";
 const PercentAreaCharts = ({ chartInfo }) => {
   const { language } = useParams();
   const [chartData, setChartData] = useState([]);
-  const [selectedTexts, setSelectedTexts] = useState([]);
-  const [visibleLines, setVisibleLines] = useState({});
-  const [isLoading, setIsLoading] = useState(true); // Add loading state
-  const [error, setError] = useState(null); // Add error state
+  const [downloadData, setDownloadData] = useState([]); // Flat format for Excel/PDF
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const getData = async () => {
@@ -28,58 +17,61 @@ const PercentAreaCharts = ({ chartInfo }) => {
       setError(null); // Reset error state
 
       try {
-        // Fetch data and metadata concurrently
-        const [dataResult, metaDataResult] = await Promise.all([
-          commonData(chartInfo.id, chartInfo.types[0], language),
-          commonData(chartInfo.id, chartInfo.types[1], language),
-        ]);
-
-        // Process metadata: map region names to objects with name and id
-        const valueTexts =
-          metaDataResult?.data?.metadata?.variables[2].valueTexts.map(
-            (region, i) => ({ name: region, id: i })
-          ) || [];
-
-        // Select specific regions based on chartInfo.selectedIndices
-        const selected = chartInfo.selectedIndices
-          .map((index) => valueTexts[index])
-          .filter(Boolean);
-
-        setSelectedTexts(selected);
-
-        // Initialize all areas as visible
-        setVisibleLines(
-          selected.reduce((acc, text) => {
-            acc[text.name] = true;
-            return acc;
-          }, {})
+        // Fetch data only
+        const dataResult = await commonData(
+          chartInfo.id,
+          chartInfo.types[0],
+          language
         );
-
-        // Process year data
-        const yearData =
-          metaDataResult?.data?.metadata?.variables[1].valueTexts.map(
-            (year, i) => ({ year: year, id: i })
-          ) || [];
 
         const rawData = dataResult.data.data || [];
 
-        // Process data for the chart
-        const processedData = yearData
-          .map(({ year }) => {
-            const dataItem = rawData.find((item) => item.year === Number(year));
-            if (!dataItem) return null;
-            const dataPoint = { year };
-            selected.forEach((text) => {
-              dataPoint[text.name] = dataItem[String(text.id)];
-            });
-            return dataPoint;
-          })
-          .filter(Boolean);
+        // chartInfo.selectedIndices should be [maxIndex, minIndex] e.g., [3, 4]
+        const maxIndex = chartInfo.selectedIndices[0]; // Index 3 - MAX_MONTHLY
+        const minIndex = chartInfo.selectedIndices[1]; // Index 4 - MIN_MONTHLY
 
-        setChartData(processedData);
+        // Create ApexCharts range area format: array of {x: year, y: [min, max]}
+        const rangeData = rawData.map((item) => {
+          const minValue = parseFloat(item[String(minIndex)]) || 0;
+          const maxValue = parseFloat(item[String(maxIndex)]) || 0;
+
+          return {
+            x: parseInt(item.year), // Ensure year is an integer
+            y: [minValue, maxValue],
+          };
+        });
+
+        // ApexCharts format: series with single object containing data array
+        const apexData = [
+          {
+            name:
+              language === "ge"
+                ? "თვიური ნალექის დიაპაზონი (მმ)"
+                : "Monthly Precipitation Range (mm)",
+            data: rangeData,
+          },
+        ];
+
+        setChartData(apexData);
+
+        // Create flat format for Download component (Excel/PDF)
+        const flatData = rawData.map((item) => {
+          const minValue = parseFloat(item[String(minIndex)]) || 0;
+          const maxValue = parseFloat(item[String(maxIndex)]) || 0;
+
+          return {
+            year: item.year,
+            [language === "ge" ? "მინიმალური" : "Minimum"]: minValue,
+            [language === "ge" ? "მაქსიმალური" : "Maximum"]: maxValue,
+          };
+        });
+
+        setDownloadData(flatData);
       } catch (error) {
         console.error("Error fetching data:", error);
         setError("Failed to load chart data. Please try again.");
+        setChartData([]);
+        setDownloadData([]);
       } finally {
         setIsLoading(false); // Set loading to false when done
       }
@@ -160,92 +152,132 @@ const PercentAreaCharts = ({ chartInfo }) => {
     );
   }
 
-  // Custom Legend Component
-  const CustomLegend = () => {
-    const visibleLineCount = Object.values(visibleLines).filter(Boolean).length;
+  // ApexCharts configuration
+  const chartOptions = {
+    chart: {
+      type: "rangeArea",
+      toolbar: {
+        show: false,
+        tools: {
+          zoom: true,
+          zoomin: true,
+          zoomout: true,
+          pan: true,
+          reset: true,
+        },
+      },
+      animations: {
+        enabled: true,
+        easing: "easeinout",
+        speed: 800,
+      },
+    },
+    colors: ["#8b5cf6"],
+    dataLabels: {
+      enabled: false,
+    },
+    fill: {
+      type: "solid",
+      opacity: 0.6,
+    },
+    stroke: {
+      curve: "smooth",
+      width: 2.5,
+    },
+    xaxis: {
+      type: "numeric",
+      title: {
+        text: language === "ge" ? "წელი" : "Year",
+        offsetY: -15,
+        style: {
+          fontSize: "11px",
+          fontWeight: 900,
+          color: "#373d3f",
+        },
+      },
+      labels: {
+        rotate: -45,
+        rotateAlways: true,
+        style: {
+          fontSize: "12px",
+          colors: "#6b7280",
+        },
+        formatter: function (value) {
+          return Math.floor(value).toString(); // Show years as integers without decimals
+        },
+      },
+    },
+    yaxis: {
+      title: {
+        text: language === "ge" ? "ნალექები (მმ)" : "Precipitation (mm)",
+        style: {
+          fontSize: "11px",
+          fontWeight: 900,
+          color: "#373d3f",
+        },
+      },
+      labels: {
+        style: {
+          fontSize: "11px",
+          colors: "#373d3f",
+        },
+        formatter: function (value) {
+          return value.toFixed(2);
+        },
+      },
+    },
+    grid: {
+      borderColor: "#e5e7eb",
+      strokeDashArray: 0,
+      xaxis: {
+        lines: {
+          show: false,
+        },
+      },
+      yaxis: {
+        lines: {
+          show: true,
+        },
+      },
+    },
+    tooltip: {
+      custom: function ({ seriesIndex, dataPointIndex, w }) {
+        const data = w.config.series[seriesIndex].data[dataPointIndex];
+        const year = data.x;
+        const minValue = data.y[0];
+        const maxValue = data.y[1];
+        const unit = language === "ge" ? "მმ" : "mm";
 
-    return (
-      <ul className="recharts-default-legend" style={chartInfo?.styles}>
-        {selectedTexts.map((text, index) => (
-          <li
-            key={`legend-item-${text.name}`}
-            className={`recharts-legend-item legend-item-${index}`}
-            onClick={() => {
-              if (visibleLines[text.name] && visibleLineCount === 1) return;
-              setVisibleLines((prev) => ({
-                ...prev,
-                [text.name]: !prev[text.name],
-              }));
-            }}
-            style={{
-              cursor: "pointer",
-              opacity: visibleLines[text.name] ? 1 : 0.5,
-            }}>
-            <span
-              className="recharts-legend-item-icon"
-              style={{
-                backgroundColor:
-                  chartInfo.colors[index % chartInfo.colors.length],
-                flexShrink: 0,
-                width: 12,
-                height: 12,
-                display: "inline-block",
-                marginRight: 8,
-              }}></span>
-            <span className="recharts-legend-item-text">{text.name}</span>
-          </li>
-        ))}
-      </ul>
-    );
-  };
-
-  // Custom Tooltip Component
-  const CustomTooltip = ({ active, payload, label }) => {
-    if (!active || !payload || !payload.length) return null;
-
-    return (
-      <div className="custom-tooltip">
-        <div className="tooltip-container">
-          <p className="tooltip-label">
-            {label} {language === "en" ? "Year" : "წელი"}
-          </p>
-          {payload.map(({ value, fill, dataKey }) => {
-            const text = selectedTexts.find((t) => t.name === dataKey);
-            return (
-              <p
-                key={`item-${dataKey}`}
-                className="text"
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  gap: "10px",
-                  alignItems: "center",
-                }}>
-                <span>
-                  <span
-                    style={{
-                      backgroundColor: fill,
-                      width: 12,
-                      height: 12,
-                      display: "inline-block",
-                      marginRight: 8,
-                    }}
-                    className="before-span"></span>
-                  {text?.name} :
-                </span>
-                <span style={{ fontWeight: 900, marginLeft: "5px" }}>
-                  {value?.toFixed(2)}
-                </span>
+        return `
+          <div class="custom-tooltip">
+            <div class="tooltip-container">
+              <p class="tooltip-label">${year}</p>
+              <p class="text">
+                <span class="before-span" style="background-color: #8b5cf6; width: 12px; height: 12px; display: inline-block; margin-right: 8px;"></span>
+                ${language === "ge" ? "მინიმალური" : "Minimum"}: 
+                <span style="font-weight: 900; margin-left: 5px;">${minValue.toFixed(
+                  2
+                )} ${unit}</span>
               </p>
-            );
-          })}
-        </div>
-      </div>
-    );
+              <p class="text">
+                <span class="before-span" style="background-color: #8b5cf6; width: 12px; height: 12px; display: inline-block; margin-right: 8px;"></span>
+                ${language === "ge" ? "მაქსიმალური" : "Maximum"}: 
+                <span style="font-weight: 900; margin-left: 5px;">${maxValue.toFixed(
+                  2
+                )} ${unit}</span>
+              </p>
+            </div>
+          </div>
+        `;
+      },
+    },
+    legend: {
+      show: false,
+    },
   };
 
   // Show empty state if no data
-  if (chartData.length === 0) {
+  if (!chartData || chartData.length === 0 || !chartData[0]?.data?.length) {
     return (
       <div className="chart-wrapper" id={chartInfo.chartID}>
         <div className="header">
@@ -289,45 +321,20 @@ const PercentAreaCharts = ({ chartInfo }) => {
         </div>
         <div className="left">
           <Download
-            data={chartData}
+            data={downloadData}
             filename={chartInfo[`title_${language}`]}
           />
         </div>
       </div>
-      <ResponsiveContainer width="100%" height={460}>
-        <AreaChart data={chartData}>
-          <CartesianGrid strokeDasharray="3 3" vertical={false} />
-          <XAxis dataKey="year" tick={{ fontSize: 15 }} tickLine={false} />
-          <YAxis tick={{ fontSize: 12 }} />
-          <Tooltip content={<CustomTooltip />} />
-          <Legend
-            wrapperStyle={{ marginBottom: -20 }}
-            content={<CustomLegend />}
-            verticalAlign="bottom"
-            align="center"
-          />
-          {selectedTexts.map((text, index) =>
-            visibleLines[text.name] ? (
-              <Area
-                key={`area-${text.name}`}
-                type="monotone"
-                dataKey={text.name}
-                stackId="1"
-                fill={chartInfo.colors[index % chartInfo.colors.length]}
-                stroke={chartInfo.colors[index % chartInfo.colors.length]}
-                name={text.name}
-                strokeWidth={2}
-              />
-            ) : null
-          )}
-          <Brush
-            dataKey="year"
-            height={20}
-            stroke="#8884d8"
-            travellerWidth={5}
-          />
-        </AreaChart>
-      </ResponsiveContainer>
+
+      <div style={{ marginTop: "20px" }}>
+        <ReactApexChart
+          options={chartOptions}
+          series={chartData}
+          type="rangeArea"
+          height={460}
+        />
+      </div>
     </div>
   );
 };

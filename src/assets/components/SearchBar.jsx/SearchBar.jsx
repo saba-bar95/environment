@@ -13,32 +13,30 @@ const SearchBar = ({ onSelectChart }) => {
 
   // Recursively flatten charts with full path
   const flattenCharts = (data, basePath = "") => {
-    return Object.entries(data).flatMap(([key, value]) => {
-      const currentPath = basePath ? `${basePath}/${key}` : key;
+    const result = [];
 
-      if (Array.isArray(value)) {
-        return value.flatMap((item) => {
-          const nestedKey = Object.keys(item)[0];
-          const nestedValue = item[nestedKey];
-
-          if (Array.isArray(nestedValue)) {
-            // Nested group (e.g., water > majors)
-            return nestedValue.map((chart) => ({
-              ...chart,
-              path: `${currentPath}/${nestedKey}`,
-            }));
-          }
-
-          // Direct chart object
-          return {
-            ...item,
+    const traverse = (node, currentPath) => {
+      if (Array.isArray(node)) {
+        node.forEach((item) => traverse(item, currentPath));
+      } else if (typeof node === "object" && node !== null) {
+        const keys = Object.keys(node);
+        if (keys.includes("chartID")) {
+          // It's a chart object
+          result.push({
+            ...node,
             path: currentPath,
-          };
-        });
+          });
+        } else {
+          keys.forEach((key) => {
+            const nextPath = currentPath ? `${currentPath}/${key}` : key;
+            traverse(node[key], nextPath);
+          });
+        }
       }
+    };
 
-      return [];
-    });
+    traverse(data, basePath);
+    return result;
   };
 
   // Filter charts based on query and language
@@ -97,9 +95,9 @@ const SearchBar = ({ onSelectChart }) => {
       />
       {isFocused && suggestions.length > 0 && (
         <ul className="absolute top-8 w-full bg-white border border-gray-300 rounded-lg shadow-md">
-          {suggestions.map((chart) => (
+          {suggestions.map((chart, i) => (
             <li
-              key={chart.chartID}
+              key={i}
               className="px-4 py-2 text-sm text-gray-800 cursor-pointer hover:bg-blue-100"
               onClick={() => handleSelect(chart)}>
               {chart[`title_${language}`]}

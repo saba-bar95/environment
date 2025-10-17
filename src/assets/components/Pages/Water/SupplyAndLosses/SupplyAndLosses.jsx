@@ -71,6 +71,7 @@ const SupplyAndLosses = () => {
       types: ["data", "metadata"],
       selectedIndices: [0, 2],
       chartID: info[0].chartID,
+      isChart1: true,
     },
     {
       title_ge: info[1].title_ge,
@@ -80,6 +81,7 @@ const SupplyAndLosses = () => {
       types: ["data", "metadata"],
       selectedIndices: [3],
       chartID: info[1].chartID,
+      isChart1: true,
     },
     {
       title_ge: info[2].title_ge,
@@ -98,6 +100,7 @@ const SupplyAndLosses = () => {
       types: ["data", "metadata"],
       selectedIndices: [5],
       chartID: info[3].chartID,
+      isChart1: true,
     },
     {
       title_ge: info[4].title_ge,
@@ -107,6 +110,7 @@ const SupplyAndLosses = () => {
       types: ["data", "metadata"],
       selectedIndices: [2],
       chartID: info[4].chartID,
+      isChart1: true,
     },
     {
       title_ge: info[5].title_ge,
@@ -116,6 +120,7 @@ const SupplyAndLosses = () => {
       types: ["data", "metadata"],
       selectedIndices: [0, 5],
       chartID: info[5].chartID,
+      isChart5: true,
     },
     {
       title_ge: info[6].title_ge,
@@ -123,8 +128,9 @@ const SupplyAndLosses = () => {
       colors: ["#1464dbff", "#e94d74ff"],
       id: "water-use-households",
       types: ["data", "metadata"],
-      selectedIndices: [5, 0],
+      selectedIndices: [1, 0],
       chartID: info[6].chartID,
+      isChart1: true,
     },
     {
       title_ge: info[7].title_ge,
@@ -143,6 +149,7 @@ const SupplyAndLosses = () => {
       types: ["data", "metadata"],
       selectedIndices: [4, 6],
       chartID: info[8].chartID,
+      isChart5: true,
     },
     {
       title_ge: info[9].title_ge,
@@ -161,6 +168,7 @@ const SupplyAndLosses = () => {
       types: ["data", "metadata"],
       selectedIndices: [8, 10, 12],
       chartID: info[10].chartID,
+      isChart5: true,
     },
     {
       title_ge: info[11].title_ge,
@@ -208,26 +216,26 @@ const SupplyAndLosses = () => {
                 </h1>
                 <p>
                   {language === "en"
-                    ? "In 2023, Georgia's centralized water supply systems supplied approximately 0.87 km³ (total volume) of drinking water."
-                    : "2023 წელს საქართველოს ცენტრალიზებულმა წყალმომარაგების სისტემებმა დაახლოებით 0.87 კმ³ (მთლიანი მოცულობა) სასმელი წყალი მიაწოდა."}
+                    ? "In 2024, Georgia's centralized water supply systems supplied approximately 868 m³ of drinking water."
+                    : "2024 წელს საქართველოს ცენტრალიზებულმა წყალმომარაგების სისტემებმა დაახლოებით 868.5 მილიონი მ³ სასმელი წყალი მიაწოდა."}
                 </p>
                 <div className="bottom">
                   <div className="rr">
                     <h2>
                       {language === "en"
-                        ? "Involved Population"
-                        : "ჩართული მოსახლეობა"}
+                        ? "Connected Population"
+                        : "მიერთებული მოსახლეობა"}
                     </h2>
-                    <div className="num">74.5%</div>
+                    <div className="num">75.4%</div>
                   </div>
                   <div className="border"></div>
                   <div className="ll">
                     <h2>
                       {language === "en"
-                        ? "Systemic Losses"
-                        : "სისტემური დანაკარგები"}
+                        ? "System Losses"
+                        : "სისტემის დანაკარგები"}
                     </h2>
-                    <div className="num">68.3%</div>
+                    <div className="num">67.0%</div>
                   </div>
                 </div>
               </div>
@@ -253,7 +261,7 @@ const SupplyAndLosses = () => {
               </div>
               <div className="text">
                 <h1>
-                  231
+                  239
                   <span>{language === "en" ? "L/day" : "ლ/დღე"}</span>
                 </h1>
               </div>
@@ -266,8 +274,8 @@ const SupplyAndLosses = () => {
               </h1>
               <p>
                 {language === "en"
-                  ? "In 2023, the average total water consumption per capita by households was 84.3 cubic meters per year (approx. 231 liters/day)."
-                  : "2023 წელს შინამეურნეობების მიერ წყლის საშუალო ჯამური მოხმარება ერთ სულ მოსახლეზე შეადგენდა 84.3 კუბურ მეტრს წელიწადში (დაახლ. 231 ლიტრი/დღეში)."}
+                  ? "In 2024, the water consumption per capita by households was 87.2 cubic meters per year (approx. 239 liters/day)."
+                  : "2024 წელს შინამეურნეობების მიერ წყლის მოხმარება ერთ სულ მოსახლეზე შეადგენდა 87.2 კუბურ მეტრს წელიწადში (დაახლ. 239 ლიტრი/დღეში)."}
               </p>
             </div>
           </div>
@@ -279,20 +287,20 @@ const SupplyAndLosses = () => {
               <div className="left" style={{ flex: 22 }}>
                 <h1>
                   {language === "en"
-                    ? "Through wastewater treatment plants"
-                    : "ჩამდინარე წყლების გამწმენდ ნაგებობებთან მიერთება"}
+                    ? "Connection to wastewater collection system and wastewater treatment facilities"
+                    : "წყალანირებაზე და ჩამდინარე წყლის გამწმენდ ნაგებობებთან მიერთება"}
                 </h1>
                 <p>
                   {language === "en"
-                    ? "In 2023, ~53.7% of the population was connected to a wastewater collection system, and ~41.2% to treatment facilities."
-                    : "2023 წელს მოსახლეობის ~53.7% მიერთებული იყო ჩამდინარე წყლების შემკრებ სისტემასთან, ხოლო ~41.2% - გამწმენდ ნაგებობებთან."}
+                    ? "In 2024, 54.1% of the population was connected to a wastewater collection system, and 41.2% to treatment facilities."
+                    : "2024 წელს მოსახლეობის დაახლოებით 54.1% მიერთებული იყო ჩამდინარე წყლების შემკრებ სისტემასთან, ხოლო დაახლოებით 41.2% - გამწმენდ ნაგებობებთან."}
                 </p>
                 <div className="bottom" style={{ gap: "50px" }}>
                   <div className="rr">
                     <h2>
                       {language === "en"
                         ? "Population connected to wastewater collection system"
-                        : "ჩამდინარე წყლების შემკრებ სისტემასთან მიერთებული მოსახლეობა"}
+                        : "წყალარინების ქსელთან მიერთებული მოსახლეობა"}
                     </h2>
                     <div className="num">53.7%</div>
                   </div>
@@ -303,7 +311,7 @@ const SupplyAndLosses = () => {
                         ? "Population connected to the wastewater treatment plant"
                         : "გამწმენდ ნაგებობასთან მიერთებული მოსახლეობა"}
                     </h2>
-                    <div className="num">41.2%</div>
+                    <div className="num">42.7%</div>
                   </div>
                 </div>
               </div>
@@ -318,8 +326,8 @@ const SupplyAndLosses = () => {
       <div className="header-container1">
         <h1 className="title-text">
           {language === "en"
-            ? "Detailed Water Statistics (2015-2023)"
-            : "წყლის დეტალური სტატისტიკა (2015-2023)"}
+            ? "Detailed Water Statistics"
+            : "წყალმომარაგების დეტალური სტატისტიკა"}
         </h1>
       </div>
       <div className="charts-section">

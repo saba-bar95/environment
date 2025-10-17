@@ -18,7 +18,7 @@ const cities = [
   {
     unit_ge: "მილიონი",
     unit_en: "Million",
-    name_ge: "მილიონი ადამიანი",
+    name_ge: "ადამიანი",
     name_en: "people",
     num: 3.69,
     color: "#704B3C",

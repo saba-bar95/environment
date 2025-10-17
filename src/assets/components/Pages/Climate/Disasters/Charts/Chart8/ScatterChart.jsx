@@ -196,7 +196,7 @@ const ScatterChart1 = ({ chartInfo }) => {
             <span>
               <span
                 style={{
-                  backgroundColor: fillColor,
+                  backgroundColor: "#1678e7ff",
                   width: 12,
                   height: 12,
                   display: "inline-block",
@@ -244,7 +244,7 @@ const ScatterChart1 = ({ chartInfo }) => {
             <span>
               <span
                 style={{
-                  backgroundColor: fillColor,
+                  backgroundColor: "#f7a72fff",
                   width: 12,
                   height: 12,
                   display: "inline-block",

@@ -235,7 +235,7 @@ const rawCharts = {
   ],
   reports: [
     {
-      title_ge: "შიდა მატერიალური მოხმარება და მშპ",
+      title_ge: "შიდა მატერიალური მოხმარება და მშპ ",
       title_en: "Domestic Material Consumption and GDP",
       path_ge: "მატერიალური ნაკადის ანგარიშები",
       path_en: "Material Flow Accounts",
@@ -306,51 +306,51 @@ const rawCharts = {
       protectedAreas: [
         {
           title_ge: "საქართველოს დაცული ტერიტორიები",
-          title_en: "Protected areas of Georgia",
-          path_ge: "ტყის ფართობი",
-          path_en: "Protected Areas",
+          title_en: "Protected Areas of Georgia of Georgia",
+          path_ge: "საქართველოს დაცული ტერიტორიები",
+          path_en: "Protected Areas of Georgia",
         },
         {
           title_ge: "ძირითადი მტაცებლები",
-          title_en: "Key redators",
-          path_ge: "ტყის ფართობი",
-          path_en: "Protected Areas",
+          title_en: "Key Predators",
+          path_ge: "საქართველოს დაცული ტერიტორიები",
+          path_en: "Protected Areas of Georgia",
         },
         {
           title_ge: "ძირითადი ბალახისმჭამელები",
           title_en: "Herbivore Populations",
-          path_ge: "ტყის ფართობი",
-          path_en: "Protected Areas",
+          path_ge: "საქართველოს დაცული ტერიტორიები",
+          path_en: "Protected Areas of Georgia",
         },
         {
           title_ge: "ქურციკის პოპულაციის აღდგენა",
           title_en: "Restoration of The Kurtsik Population",
-          path_ge: "ტყის ფართობი",
-          path_en: "Protected Areas",
+          path_ge: "საქართველოს დაცული ტერიტორიები",
+          path_en: "Protected Areas of Georgia",
         },
         {
           title_ge: "ძუძუმწოვრები დაცულ ტერიტორიებზე",
-          title_en: "Mammal in Protected Areas",
-          path_ge: "ტყის ფართობი",
-          path_en: "Protected Areas",
+          title_en: "Mammal in Protected Areas of Georgia",
+          path_ge: "საქართველოს დაცული ტერიტორიები",
+          path_en: "Protected Areas of Georgia",
         },
         {
           title_ge: "ძირითადი მტაცებელი ფრინველები",
           title_en: "Population of Major Birds of Prey",
-          path_ge: "ტყის ფართობი",
-          path_en: "Protected Areas",
+          path_ge: "საქართველოს დაცული ტერიტორიები",
+          path_en: "Protected Areas of Georgia",
         },
         {
           title_ge: "სანადიროდ პოპულარული ფრინველები",
           title_en: "Popular birds for hunting",
-          path_ge: "ტყის ფართობი",
-          path_en: "Protected Areas",
+          path_ge: "საქართველოს დაცული ტერიტორიები",
+          path_en: "Protected Areas of Georgia",
         },
         {
           title_ge: "ფრინველები დაცულ ტერიტორიებზე",
-          title_en: "Bird in Protected Areas",
-          path_ge: "ტყის ფართობი",
-          path_en: "Protected Areas",
+          title_en: "Bird in Protected Areas of Georgia",
+          path_ge: "საქართველოს დაცული ტერიტორიები",
+          path_en: "Protected Areas of Georgia",
         },
       ],
     },
@@ -365,26 +365,6 @@ const rawCharts = {
                 "Volume of harvested timber, illegal logging and forest regeneration in Georgia (2013–2023)",
               path_ge: "ტყის რესურსები",
               path_en: "Forest Resources",
-            },
-          ],
-        },
-        {
-          timber: [
-            {
-              title_ge: "",
-              title_en: "",
-              path_ge: "დაუმუშავებელი მერქნის იმპორტი და ექსპორტი",
-              path_en: "Import and Export of Unprocessed Timber",
-            },
-          ],
-        },
-        {
-          inventorization: [
-            {
-              title_ge: "",
-              title_en: "",
-              path_ge: "ტყის ეროვნული ინვენტარიზაცია",
-              path_en: "National Forest Inventory",
             },
           ],
         },
@@ -467,15 +447,16 @@ const rawCharts = {
     {
       supplyandlosses: [
         {
-          title_ge: "წყალმომარაგების სისტემაში გაშვებული და მიწოდებული წყალი",
+          title_ge:
+            "წყალმომარაგების სისტემაში გაშვებული და აბონენტებისთვის მიწოდებული წყლის მოცულობა",
           title_en: "Water supply released and delivered to the supply system",
           path_ge:
             "წყალმომარაგება, დანაკარგები და შინამეურნეობების მიერ წყლის მოხმარება",
           path_en: "Water supply, losses and household water consumption",
         },
         {
-          title_ge: "წყლის დანაკარგის პროცენტი ტრანსპორტირებისას",
-          title_en: "Water loss percentage during transportation",
+          title_ge: "წყლის დანაკარგები ტრანსპორტირებისას (%)",
+          title_en: "Water losses during transportation (%)",
           path_ge:
             "წყალმომარაგება, დანაკარგები და შინამეურნეობების მიერ წყლის მოხმარება",
           path_en: "Water supply, losses and household water consumption",
@@ -499,14 +480,15 @@ const rawCharts = {
         },
         {
           title_ge: "შინამეურნეობების მიერ წყლის მოხმარება ერთ სულზე (მ³/წელი)",
-          title_en: "Water consumption per capita by households (m³/year)",
+          title_en: "Water use per capita by households (m³/year)”",
           path_ge:
             "წყალმომარაგება, დანაკარგები და შინამეურნეობების მიერ წყლის მოხმარება",
           path_en: "Water supply, losses and household water consumption",
         },
         {
-          title_ge: "შინამეურნეობების მიერ წყლის მოხმარების წყაროები (მლნ მ³)",
-          title_en: "Water consumption sources by households (million m³)",
+          title_ge:
+            "შინამეურნეობების მიერ წყლის მოხმარება მიწოდების წყაროების მიხედვით (მლნ მ³)",
+          title_en: "Households water use by water supply sources",
           path_ge:
             "წყალმომარაგება, დანაკარგები და შინამეურნეობების მიერ წყლის მოხმარება",
           path_en: "Water supply, losses and household water consumption",
@@ -530,16 +512,16 @@ const rawCharts = {
         },
         {
           title_ge:
-            "წყალარინებაზე და ჩამდინარე წყლის გაწმენდაზე მიერთებული მოსახლეობის %",
+            "წყალარინების ქსელზე და ჩამდინარე წყლის გამწმენდ ნაგებობაზე მიერთებული მოსახლეობის %",
           title_en:
-            "Distribution of population connected to wastewater treatment and sewage systems (%)",
+            "Share of population connected to wastewater collecting system and wastewater treatment facilities (%)",
           path_ge:
             "წყალმომარაგება, დანაკარგები და შინამეურნეობების მიერ წყლის მოხმარება",
           path_en: "Water supply, losses and household water consumption",
         },
         {
           title_ge:
-            "ჩამდინარე წყლების გაწმენდის ტიპის მიხედვით მოსახლეობის რაოდენობა (მლნ)",
+            "მოსახლეობის რაოდენობა ჩამდინარე წყლის გაწმენდის ტიპის მიხედვით (მლნ)",
           title_en:
             "Distribution of population connected to wastewater treatment and sewage systems by type (million)",
           path_ge:
@@ -547,10 +529,9 @@ const rawCharts = {
           path_en: "Water supply, losses and household water consumption",
         },
         {
-          title_ge:
-            "ჩამდინარე წყლების გაწმენდის ტიპის მიხედვით მოსახლეობის რაოდენობა (%)",
+          title_ge: "მოსახლეობა ჩამდინარე წყლის გაწმენდის ტიპის მიხედვით (%)",
           title_en:
-            "Distribution of population connected to wastewater treatment and sewage systems by type (%)",
+            "Share of population connected to wastewater treatment facilities by type (%)",
           path_ge:
             "წყალმომარაგება, დანაკარგები და შინამეურნეობების მიერ წყლის მოხმარება",
           path_en: "Water supply, losses and household water consumption",
@@ -559,7 +540,7 @@ const rawCharts = {
           title_ge:
             "წყალარინების ქსელზე მიერთებული მოსახლეობა, ჩამდინარე წყლის გაწმენდის გარეშე",
           title_en:
-            "Distribution of population connected to wastewater treatment and sewage systems without treatment",
+            "Population connected to wastewater collecting system without subsequent treatment",
           path_ge:
             "წყალმომარაგება, დანაკარგები და შინამეურნეობების მიერ წყლის მოხმარება",
           path_en: "Water supply, losses and household water consumption",
@@ -568,7 +549,7 @@ const rawCharts = {
           title_ge:
             "წყალმომარაგების სისტემაზე მიერთებული მოსახლეობა, წყალარინების ქსელზე მიერთების გარეშე",
           title_en:
-            "Distribution of population connected to wastewater treatment and sewage systems without treatment",
+            "Population connected to water supply industry without connection to a wastewater collecting system",
           path_ge:
             "წყალმომარაგება, დანაკარგები და შინამეურნეობების მიერ წყლის მოხმარება",
           path_en: "Water supply, losses and household water consumption",
@@ -581,54 +562,46 @@ const rawCharts = {
       disasters: [
         {
           title_ge:
-            "წლიური სიკვდილიანობის დინამიკა (ყველა სტიქიური მოვლენის დროს)",
-          title_en: "Annual mortality dynamics during all natural events)",
+            "სიკვდიალიანობის წლიური დინამიკა (ყველა სტიქიური მოვლენის დროს)",
+          title_en: "Annual mortality dynamics (during all natural events)",
           path_ge: "სტიქიური მოვლენები საქართველოში",
           path_en: "Natural Disasters in Georgia",
         },
         {},
         {
           title_ge:
-            "გეოლოგიური მოვლენები და მასთან დაკავშირებული სიკვდილიანობა (1995-2023)",
-          title_en: "Geological events and related mortality (1995-2023)",
+            "გეოლოგიური მოვლენები და მასთან დაკავშირებული სიკვდილიანობა",
+          title_en: "Geological events and related mortality",
           path_ge: "სტიქიური მოვლენები საქართველოში",
           path_en: "Natural Disasters in Georgia",
         },
         {
-          title_ge:
-            "წლიური ჰიდრომეტეოროლოგიური მოვლენები ტიპების მიხედვით (2013-2023)",
-          title_en: "Annual hydrometeorological events by type (2013-2023)",
+          title_ge: "წლიური ჰიდრომეტეოროლოგიური მოვლენები ტიპების მიხედვით",
+          title_en: "Annual hydrometeorological events by type",
           path_ge: "სტიქიური მოვლენები საქართველოში",
           path_en: "Natural Disasters in Georgia",
         },
         {
-          title_ge:
-            "სეზონური სტიქიური მოვლენების პროფილი (ყოველთვიური საშუალო, 2013-2023)",
-          title_en:
-            "Seasonal Natural Disasters Profile (Monthly Average, 2013-2023)",
+          title_ge: "სეზონური სტიქიური მოვლენები",
+          title_en: "Seasonal Natural Disasters",
           path_ge: "სტიქიური მოვლენები საქართველოში",
           path_en: "Natural Disasters in Georgia",
         },
         {
-          title_ge:
-            "სტიქიური მოვლენების პროფილი: ჯამური შემთხვევები და სიკვდილიანობა (2016-2023)",
-          title_en:
-            "Natural Disaster Profile: Total Incidents and Mortality (2016-2023)",
+          title_ge: "სტიქიური მოვლენების ჯამური შემთხვევები და სიკვდილიანობა",
+          title_en: "Natural Disaster Profile: Total Incidents and Mortality",
           path_ge: "სტიქიური მოვლენები საქართველოში",
           path_en: "Natural Disasters in Georgia",
         },
         {
-          title_ge:
-            "გეოლოგიური და ჰიდრომეტეოროლოგიური მოვლენების ტენდენციები (2013-2023)",
-          title_en:
-            "Trends in geological and hydrometeorological events (2013-2023)",
+          title_ge: "გეოლოგიური და ჰიდრომეტეოროლოგიური მოვლენების ტენდენციები",
+          title_en: "Trends in geological and hydrometeorological events",
           path_ge: "სტიქიური მოვლენები საქართველოში",
           path_en: "Natural Disasters in Georgia",
         },
         {
-          title_ge:
-            "ზეგავლენა ინფრასტრუქტურასა და დასახლებულ პუნქტებზე (1995-2023)",
-          title_en: "Impact on infrastructure and settlements (1995-2023)",
+          title_ge: "ზეგავლენა ინფრასტრუქტურასა და დასახლებულ პუნქტებზე",
+          title_en: "Impact on infrastructure and settlements",
           path_ge: "სტიქიური მოვლენები საქართველოში",
           path_en: "Natural Disasters in Georgia",
         },
@@ -645,15 +618,14 @@ const rawCharts = {
     {
       temperature: [
         {
-          title_ge:
-            "საქართველოს დათბობის ტენდენცია: საშუალო წლიური ტემპერატურა",
-          title_en: "Georgia's warming trend: Average annual temperature",
+          title_ge: "საშუალო წლიური ტემპერატურა საქართველოში",
+          title_en: "Georgia's average annual temperature",
           path_ge: "ჰაერის ტემპერატურა",
           path_en: "Air Temperature",
         },
         {
           title_ge:
-            "საქართველოს წლიური ტემპერატურული ანომალია, გადახრა 1961-1990 წლების საშუალოდან",
+            "წლიური ტემპერატურული ანომალია საქართველოში, გადახრა 1961-1990 წლების საშუალოდან",
           title_en:
             "Georgia's annual temperature anomaly, deviation from the 1961-1990 average",
           path_ge: "ჰაერის ტემპერატურა",
@@ -661,9 +633,9 @@ const rawCharts = {
         },
         {
           title_ge:
-            "ქვეყნის, თბილისის და საქართველოს ყველაზე გრილი და თბილი რეგიონების ტემპერატურის ტენდენციები",
+            "ქვეყნის, თბილისისა და ყველაზე გრილი და თბილი რეგიონების ტემპერატურის ტენდენციები",
           title_en:
-            "Temperature trends of the coldest and warmest regions of the country, Tbilisi and Georgia",
+            "Temperature trends of the coldest and warmest regions of the country and Tbilisi",
           path_ge: "ჰაერის ტემპერატურა",
           path_en: "Air Temperature",
         },
@@ -713,7 +685,7 @@ const rawCharts = {
         },
         {
           title_ge:
-            "წლიური ნალექები ქვეყნის, თბილისის, საქართველოს ყველაზე უხვი და მცირე ნალექიანი რეგიონების მიხედვით",
+            "წლიური ნალექები ქვეყნის, თბილისის და ყველაზე უხვი და მცირე ნალექიანი რეგიონების მიხედვით",
           title_en:
             "Annual precipitation by region, Tbilisi, Georgia, with the most and least precipitation",
           path_ge: "ატმოსფერული ნალექები",
@@ -727,8 +699,8 @@ const rawCharts = {
           path_en: "Atmospheric Precipitation",
         },
         {
-          title_ge: "ექსტრემალური წლები",
-          title_en: "Extreme years",
+          title_ge: "ნალექიანობის ექსტრემალური წლები",
+          title_en: "Extreme precipitation years",
           path_ge: "ატმოსფერული ნალექები",
           path_en: "Atmospheric Precipitation",
         },
@@ -739,8 +711,8 @@ const rawCharts = {
           path_en: "Atmospheric Precipitation",
         },
         {
-          title_ge: "კორელაცია: წლიური vs. მაქს. თვიური ნალექი",
-          title_en: "Correlation: Annual vs. Max. Monthly Precipitation",
+          title_ge: "წლიური vs. მაქსიმალური თვიური ნალექი",
+          title_en: "Annual vs. Maximum Monthly Precipitation",
           path_ge: "ატმოსფერული ნალექები",
           path_en: "Atmospheric Precipitation",
         },

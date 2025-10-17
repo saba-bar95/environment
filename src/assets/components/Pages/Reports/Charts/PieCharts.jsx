@@ -216,7 +216,7 @@ const PieChartComponent = ({ chartInfo }) => {
           const num = selectedYearData ? selectedYearData[text.name] || 0 : 0;
           const value = num
             .toLocaleString("fr-FR", {
-              minimumFractionDigits: 1,
+              minimumFractionDigits: 0,
               maximumFractionDigits: 1,
             })
             .replace(",", ".");

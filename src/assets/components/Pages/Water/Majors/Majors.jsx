@@ -50,11 +50,6 @@ const Majors = () => {
             ? "Main Rivers and Lakes of Georgia"
             : "საქართველოს მთავარი მდინარეები და ტბები"}
         </h1>
-        <h2>
-          {language === "en"
-            ? "Interactive visualization of Georgia's water resources"
-            : "ინტერაქტიული ვიზუალიზაცია საქართველოს წყლის რესურსების შესახებ"}
-        </h2>
       </div>
       <div className="charts-section">
         <div className="chart-container" style={{ width: chartContainerWidth }}>

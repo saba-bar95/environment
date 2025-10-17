@@ -1,7 +1,6 @@
 import * as XLSX from "xlsx";
 
 const downloadExcel = (data, filename, language) => {
-  console.log(data);
   const isGeorgian = language === "ge";
 
   // Validate input data

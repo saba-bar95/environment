@@ -33,6 +33,7 @@ const Waste = () => {
       types: ["data", "metadata"],
       selectedIndices: [13],
       chartID: info[0].chartID,
+      isChart1: true,
     },
     {
       title_ge: info[1].title_ge,
