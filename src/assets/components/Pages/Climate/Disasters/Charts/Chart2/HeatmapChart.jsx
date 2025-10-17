@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import commonData from "../../../../../../fetchFunctions/commonData";
+import Download from "./Download/Download";
+import Svg from "./Svg";
 import "./HeatmapChart.scss";
 
 /** Finds a specific variable (e.g., Year, Month) from the metadata array. */
@@ -107,6 +109,23 @@ const HydroHazardsHeatmap = ({ chartInfo, columnWidth = 140 }) => {
   }, [rawMeta, rawData, chartInfo.selectedIndices]);
 
   const hasData = years.length > 0 && months.length > 0 && matrix.length > 0;
+
+  // Prepare data for download (convert matrix to flat array format)
+  const downloadData = useMemo(() => {
+    if (!hasData) return [];
+    
+    const data = [];
+    months.forEach((monthLabel, rowIdx) => {
+      years.forEach((yearLabel, colIdx) => {
+        data.push({
+          [language === "ge" ? "თვე" : "Month"]: monthLabel,
+          [language === "ge" ? "წელი" : "Year"]: yearLabel,
+          [language === "ge" ? "მოვლენების რაოდენობა" : "Number of Events"]: matrix[rowIdx][colIdx]
+        });
+      });
+    });
+    return data;
+  }, [hasData, months, years, matrix, language]);
 
   // Show loading state
   if (isLoading) {
@@ -215,18 +234,27 @@ const HydroHazardsHeatmap = ({ chartInfo, columnWidth = 140 }) => {
 
   return (
     <div className="chart-wrapper" id={chartInfo.chartID}>
-      <div className="header">
+      <div className="header" data-html2canvas-ignore="true">
         <div className="right">
           <div className="ll"></div>
           <div className="rr">
-            <h1>
+            <h1
+              style={{
+                display: "flex",
+                gap: "20px",
+                alignItems: "center",
+              }}>
+              <Svg />
               {language === "ge" ? chartInfo.title_ge : chartInfo.title_en}
             </h1>
             <p>{language === "ge" ? chartInfo.unit_ge : chartInfo.unit_en}</p>
           </div>
         </div>
         <div className="left">
-          {/* Add Download component here if needed */}
+          <Download
+            data={downloadData}
+            filename={language === "ge" ? chartInfo.title_ge : chartInfo.title_en}
+          />
         </div>
       </div>
 

@@ -21,21 +21,19 @@ const downloadPDF = (data, filename, language) => {
     doc.setFont("helvetica");
   }
 
-  const yearHeader = isGeorgian ? "წელი" : "Year";
-
-  // Get dynamic headers from the first data item (excluding 'year')
-  const headers = Object.keys(data[0]).filter((key) => key !== "year");
+  // Get all headers from the first data item
+  const headers = Object.keys(data[0]);
 
   // Create table head
-  const tableHead = [[yearHeader, ...headers]];
+  const tableHead = [headers];
 
   // Create table body
   const tableBody = data.map((item) => {
-    const row = [item.year];
-    headers.forEach((header) => {
-      row.push(Number(item[header]).toFixed(2)); // Format numbers to 2 decimal places
+    return headers.map((header) => {
+      const value = item[header];
+      // Format numbers to 0 decimal places for counts
+      return typeof value === 'number' ? value.toFixed(0) : value;
     });
-    return row;
   });
 
   // Add table to PDF
@@ -54,13 +52,10 @@ const downloadPDF = (data, filename, language) => {
       textColor: [0, 0, 0], // Black text
     },
     margin: { top: 20 },
-    columnStyles: {
-      0: { cellWidth: 30 }, // Set width for year column
-    },
   });
 
   // Generate filename
-  const finalFilename = isGeorgian ? `${filename}.pdf` : `${filename}.pdf`;
+  const finalFilename = `${filename}.pdf`;
 
   // Save the PDF
   doc.save(finalFilename);

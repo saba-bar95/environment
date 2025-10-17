@@ -56,8 +56,8 @@ const Download = ({ data, filename }) => {
           <div className="upper">
             <div
               className="wrapper"
-              onClick={() => {
-                downloadExcel(data, filename, language);
+              onClick={async () => {
+                await downloadExcel(data, filename, language);
                 setOpen(false); // Close dropdown
               }}>
               <Excel />
