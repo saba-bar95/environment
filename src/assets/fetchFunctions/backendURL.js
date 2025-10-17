@@ -1,3 +1,3 @@
-const backendURL = "http://192.168.1.27:3000";
+const backendURL = "https://environment-api.geostat.ge";
 
 export default backendURL;
