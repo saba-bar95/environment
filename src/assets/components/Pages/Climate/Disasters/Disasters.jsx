@@ -3,6 +3,7 @@ import { useParams, useLocation } from "react-router-dom";
 import backgroundImg from "./Background/background.jpg";
 import Charts from "../../../../../Charts.jsx";
 import BarCharts from "./Charts/Chart1/Chart1.jsx";
+import DisastersHeatmapChart from "./Charts/Chart2/HeatmapChart.jsx";
 import AreaChartsWithLine from "./Charts/Chart3/AreaChartsWithLine.jsx";
 import StackedBarChartsWithNumbers from "./Charts/Chart4/StackedBarChartsWithNumbers.jsx";
 import RadarChartComponent from "./Charts/Chart5/RadarChartComponent.jsx";
@@ -50,7 +51,17 @@ const Disasters = () => {
       unit_ge: "გარდაცვლილთა რაოდენობა",
       unit_en: "Number of casualties",
     },
-    {},
+    {
+      title_ge: info[1].title_ge,
+      title_en: info[1].title_en,
+      colors: ["#e94d74ff"],
+      id: "hydro-meteorological-hazards",
+      types: ["data", "metadata"],
+      selectedIndices: [6],
+      chartID: info[1].chartID,
+      unit_ge: "შემთხვევების რაოდენობა",
+      unit_en: "Number of cases",
+    },
     {
       title_ge: info[2].title_ge,
       title_en: info[2].title_en,
@@ -155,6 +166,7 @@ const Disasters = () => {
       <div className="charts-section">
         <div className="chart-container" style={{ width: "100%" }}>
           <BarCharts chartInfo={ChartInfo[0]} />
+          <DisastersHeatmapChart chartInfo={ChartInfo[1]} />
           <AreaChartsWithLine chartInfo={ChartInfo[2]} />
           <StackedBarChartsWithNumbers chartInfo={ChartInfo[3]} />
           {width > 1200 ? (
