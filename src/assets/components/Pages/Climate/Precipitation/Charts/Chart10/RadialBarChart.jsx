@@ -332,6 +332,7 @@ const RadialBarChartComponent = ({ chartInfo }) => {
             layout="horizontal"
             verticalAlign="bottom"
             align="center"
+            wrapperStyle={{ bottom: -5 }}
             content={<CustomLegend />}
           />
           <Tooltip content={<CustomTooltip />} />

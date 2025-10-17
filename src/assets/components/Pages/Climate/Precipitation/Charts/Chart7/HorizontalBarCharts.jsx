@@ -191,6 +191,13 @@ const HorizontalBarCharts = ({ chartInfo }) => {
       type: "rangeBar",
       toolbar: {
         show: false,
+        tools: {
+          zoom: false,
+          zoomin: false,
+          zoomout: false,
+          pan: false,
+          reset: false,
+        },
       },
     },
     plotOptions: {

@@ -188,6 +188,7 @@ const PercentAreaCharts = ({ chartInfo }) => {
       type: "numeric",
       title: {
         text: language === "ge" ? "წელი" : "Year",
+        offsetY: -15,
         style: {
           fontSize: "11px",
           fontWeight: 900,
