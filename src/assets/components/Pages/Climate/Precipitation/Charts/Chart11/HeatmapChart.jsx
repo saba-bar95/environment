@@ -95,33 +95,25 @@ const PrecipitationHeatmapChart = ({ chartInfo, columnWidth = 140 }) => {
       }
     });
 
-    // Find max years in any decade to create uniform grid
-    const maxYearsPerDecade = Math.max(
-      ...Object.values(decadeGroups).map(g => g.length),
-      10 // At least 10 columns
-    );
-
-    // Create matrix: rows = decades, columns = years (0-9 in each decade)
+    // Create matrix: rows = decades, columns = years (0-9 based on last digit)
     const decades = Object.keys(decadeGroups);
     const mat = decades.map((decadeLabel) => {
       const decadeYears = decadeGroups[decadeLabel];
-      // Sort by year
-      decadeYears.sort((a, b) => a.year - b.year);
       
-      const row = [];
-      for (let i = 0; i < maxYearsPerDecade; i++) {
-        if (i < decadeYears.length) {
-          row.push(decadeYears[i].value);
-        } else {
-          row.push(null); // Empty cell for missing years
-        }
-      }
+      // Create array with 10 slots (for years ending in 0-9)
+      const row = Array(10).fill(null);
+      
+      // Place each value in the correct position based on last digit of year
+      decadeYears.forEach(({ year, value }) => {
+        const lastDigit = year % 10; // Get last digit (1995 -> 5, 2003 -> 3)
+        row[lastDigit] = value;
+      });
       
       return row;
     });
 
-    // Create year labels (0-9 for each position in decade)
-    const yearLabels = Array.from({ length: maxYearsPerDecade }, (_, i) => i.toString());
+    // Create year labels (0-9 for last digit of year)
+    const yearLabels = Array.from({ length: 10 }, (_, i) => i.toString());
 
     console.log("Decade groups:", decadeGroups);
     console.log("Matrix:", mat);
@@ -315,9 +307,9 @@ const PrecipitationHeatmapChart = ({ chartInfo, columnWidth = 140 }) => {
                     key={`cell-${r}-${c}`}
                     className="cell"
                     style={{ background: getBucketColor(v) }}
-                    title={v !== null ? `${v.toFixed(2)} mm` : language === "ge" ? "მონაცემები არ არის" : "No data"}
+                    title={v !== null ? `${v.toFixed(0)} mm` : language === "ge" ? "მონაცემები არ არის" : "No data"}
                   >
-                    {v !== null ? v.toFixed(2) : ""}
+                    {v !== null ? v.toFixed(0) : ""}
                   </div>
                 ))}
               </div>
