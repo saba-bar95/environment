@@ -59,10 +59,10 @@ const PrecipitationHeatmapChart = ({ chartInfo, columnWidth = 140 }) => {
 
     const records = rawData?.data?.data || [];
     
-    console.log("=== Heatmap Debug Info ===");
-    console.log("Total records:", records.length);
-    console.log("Sample record:", records[0]);
-    console.log("Precipitation index:", precipitationIndex);
+    // console.log("=== Heatmap Debug Info ===");
+    // console.log("Total records:", records.length);
+    // console.log("Sample record:", records[0]);
+    // console.log("Precipitation index:", precipitationIndex);
 
     // Group years into decades
     const decadeGroups = {
@@ -115,10 +115,10 @@ const PrecipitationHeatmapChart = ({ chartInfo, columnWidth = 140 }) => {
     // Create year labels (0-9 for last digit of year)
     const yearLabels = Array.from({ length: 10 }, (_, i) => i.toString());
 
-    console.log("Decade groups:", decadeGroups);
-    console.log("Matrix:", mat);
-    console.log("Decades:", decades);
-    console.log("Year labels:", yearLabels);
+    // console.log("Decade groups:", decadeGroups);
+    // console.log("Matrix:", mat);
+    // console.log("Decades:", decades);
+    // console.log("Year labels:", yearLabels);
 
     return { decades, years: yearLabels, matrix: mat };
   }, [rawMeta, rawData, chartInfo.selectedIndices]);
