@@ -341,8 +341,9 @@ const rawCharts = {
           path_en: "Protected Areas of Georgia",
         },
         {
-          title_ge: "სანადიროდ პოპულარული ფრინველები",
-          title_en: "Popular birds for hunting",
+          title_ge: "როჭო, ხოხობი, კაკაბი - პოპულაციების ტენდენცია",
+          title_en:
+            "Caucasian grouse, Pheasant, Rock partridge - population trends",
           path_ge: "საქართველოს დაცული ტერიტორიები",
           path_en: "Protected Areas of Georgia",
         },
@@ -365,6 +366,18 @@ const rawCharts = {
                 "Volume of harvested timber, illegal logging and forest regeneration in Georgia (2013–2023)",
               path_ge: "ტყის რესურსები",
               path_en: "Forest Resources",
+            },
+            {
+              title_ge: "ტყის ფონდის შემადგენლობა",
+              title_en: "Composition of forest area",
+              path_ge: "საქართველოს დაცული ტერიტორიები",
+              path_en: "Protected Areas of Georgia",
+            },
+            {
+              title_ge: "მოჭრილი მერქანი ჭრის მიზნისა და ტყის ტიპის მიხედვით",
+              title_en: "Logged timber by cutting purpose and forest type",
+              path_ge: "საქართველოს დაცული ტერიტორიები",
+              path_en: "Protected Areas of Georgia",
             },
           ],
         },
@@ -567,7 +580,12 @@ const rawCharts = {
           path_ge: "სტიქიური მოვლენები საქართველოში",
           path_en: "Natural Disasters in Georgia",
         },
-        {},
+        {
+          title_ge: "ჰიდრომეტეოროლოგიური მოვლენების ყოველთვიური რუკა",
+          title_en: "Monthly map of hydrometeorological events",
+          path_ge: "სტიქიური მოვლენები საქართველოში",
+          path_en: "Natural Disasters in Georgia",
+        },
         {
           title_ge:
             "გეოლოგიური მოვლენები და მასთან დაკავშირებული სიკვდილიანობა",
