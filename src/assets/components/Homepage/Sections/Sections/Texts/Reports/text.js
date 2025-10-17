@@ -5,7 +5,7 @@ const text = {
   },
 
   en: {
-    header1: "Environmental economic reports",
+    header1: "Environmental economic accounts",
     header2: "Material flow accounts",
   },
 };

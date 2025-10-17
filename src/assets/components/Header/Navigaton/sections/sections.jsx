@@ -132,7 +132,7 @@ const sections = [
   },
   {
     name_ge: "გარემოს ეკონომიკური ანგარიშები",
-    name_en: "Environmental Economic Reports",
+    name_en: "Environmental Economic Accounts",
     id: 6,
     href: "reports",
   },
