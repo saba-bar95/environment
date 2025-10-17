@@ -1,58 +1,53 @@
 import { useEffect, useState } from "react";
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-  Brush,
-} from "recharts";
 import { useParams } from "react-router-dom";
+import ReactApexChart from "react-apexcharts";
 import commonData from "../../../../../../fetchFunctions/commonData";
 import Download from "./Download/Download";
 
 const HorizontalBarCharts = ({ chartInfo }) => {
   const { language } = useParams();
   const [chartData, setChartData] = useState([]);
-  const [selectedTexts, setSelectedTexts] = useState([]);
-  const [visibleBars, setVisibleBars] = useState({});
-  const [isLoading, setIsLoading] = useState(true); // Add loading state
-  const [error, setError] = useState(null); // Add error state
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   // Fetch and process data
   useEffect(() => {
     const getData = async () => {
-      setIsLoading(true); // Set loading to true when starting fetch
-      setError(null); // Reset error state
+      setIsLoading(true);
+      setError(null);
 
       try {
-        const dataResult = await commonData(chartInfo.id, chartInfo.types[0], language);
+        const dataResult = await commonData(
+          chartInfo.id,
+          chartInfo.types[0],
+          language
+        );
 
         // Define the regions and their min/max monthly precipitation indices
         const regions = [
           {
             name: language === "ge" ? "საქართველო" : "Georgia",
             minIndex: 4, // GEO - MIN_MONTHLY
-            maxIndex: 3  // GEO - MAX_MONTHLY
+            maxIndex: 3, // GEO - MAX_MONTHLY
           },
           {
-            name: language === "ge" ? "თბილისი" : "Tbilisi", 
-            minIndex: 9, // TBILISI - MIN_MONTHLY
-            maxIndex: 8  // TBILISI - MAX_MONTHLY
-          },
-          {
-            name: language === "ge" ? "სამეგრელო-ზემო სვანეთი" : "Samegrelo-Zemo Svaneti",
+            name:
+              language === "ge"
+                ? "სამეგრელო-ზემო სვანეთი"
+                : "Samegrelo-Zemo Svaneti",
             minIndex: 14, // SAMEGRELO - MIN_MONTHLY
-            maxIndex: 13  // SAMEGRELO - MAX_MONTHLY
+            maxIndex: 13, // SAMEGRELO - MAX_MONTHLY
           },
           {
             name: language === "ge" ? "ქვემო ქართლი" : "Kvemo Kartli",
             minIndex: 19, // KVEMO_KARTLI - MIN_MONTHLY
-            maxIndex: 18  // KVEMO_KARTLI - MAX_MONTHLY
-          }
+            maxIndex: 18, // KVEMO_KARTLI - MAX_MONTHLY
+          },
+          {
+            name: language === "ge" ? "თბილისი" : "Tbilisi",
+            minIndex: 9, // TBILISI - MIN_MONTHLY
+            maxIndex: 8, // TBILISI - MAX_MONTHLY
+          },
         ];
 
         const rawData = dataResult?.data?.data || [];
@@ -65,45 +60,33 @@ const HorizontalBarCharts = ({ chartInfo }) => {
           return;
         }
 
-        // Create data structure with regions on Y-axis and min/max as data series
-        const processedData = regions.map((region) => {
-          const regionData = {
-            region: region.name,
+        // Create ApexCharts RangeBar format
+        // Series should have one entry with data array containing {x: region, y: [min, max]}
+        const rangeData = regions.map((region) => {
+          const minValue = parseFloat(data2022[String(region.minIndex)]) || 0;
+          const maxValue = parseFloat(data2022[String(region.maxIndex)]) || 0;
+
+          return {
+            x: region.name,
+            y: [minValue, maxValue],
           };
-          
-          const minValue = data2022[String(region.minIndex)];
-          const maxValue = data2022[String(region.maxIndex)];
-          
-          // Add min and max monthly precipitation for 2022
-          regionData[language === "ge" ? "მინიმალური (2022)" : "Minimum (2022)"] = minValue;
-          regionData[language === "ge" ? "მაქსიმალური (2022)" : "Maximum (2022)"] = maxValue;
-          
-          return regionData;
         });
 
-        setChartData(processedData);
-        
-        // Update visible bars to show both min and max by default
-        const dataKeys = [
-          language === "ge" ? "მინიმალური (2022)" : "Minimum (2022)",
-          language === "ge" ? "მაქსიმალური (2022)" : "Maximum (2022)"
+        // ApexCharts format: series with single object containing data array
+        const apexData = [
+          {
+            name:
+              language === "ge" ? "დიაპაზონი 2022 წლისთვის" : "Range for 2022",
+            data: rangeData,
+          },
         ];
-        
-        const visibleBarsState = dataKeys.reduce((acc, key) => {
-          acc[key] = true;
-          return acc;
-        }, {});
-        
-        setVisibleBars(visibleBarsState);
 
-        // Update selectedTexts to represent min and max instead of regions
-        const selectedTextsData = dataKeys.map(key => ({ name: key, id: key }));
-        setSelectedTexts(selectedTextsData);
+        setChartData(apexData);
       } catch (error) {
         console.log("Error fetching data:", error);
         setError("Failed to load chart data. Please try again.");
       } finally {
-        setIsLoading(false); // Set loading to false when done
+        setIsLoading(false);
       }
     };
 
@@ -162,7 +145,8 @@ const HorizontalBarCharts = ({ chartInfo }) => {
           <div className="left">
             <button
               className="retry-btn"
-              onClick={() => window.location.reload()}>
+              onClick={() => window.location.reload()}
+            >
               {language === "ge" ? "ხელახლა ცდა" : "Retry"}
             </button>
           </div>
@@ -173,7 +157,8 @@ const HorizontalBarCharts = ({ chartInfo }) => {
             <p>{error}</p>
             <button
               className="retry-btn"
-              onClick={() => window.location.reload()}>
+              onClick={() => window.location.reload()}
+            >
               {language === "ge" ? "ხელახლა ჩატვირთვა" : "Reload Chart"}
             </button>
           </div>
@@ -182,85 +167,88 @@ const HorizontalBarCharts = ({ chartInfo }) => {
     );
   }
 
-  // Custom Legend Component
-  const CustomLegend = () => {
-    const visibleBarCount = Object.values(visibleBars).filter(Boolean).length;
+  // ApexCharts configuration
+  const chartOptions = {
+    chart: {
+      type: "rangeBar",
+      toolbar: {
+        show: false,
+      },
+    },
+    plotOptions: {
+      bar: {
+        horizontal: true,
+        borderRadius: 2,
+        barHeight: "70%",
+      },
+    },
+    colors: ["#f59e0b"],
+    dataLabels: {
+      enabled: false,
+    },
+    grid: {
+      borderColor: "#e7e7e7",
+      strokeDashArray: 3,
+    },
+    xaxis: {
+      type: "numeric",
+      labels: {
+        style: {
+          fontSize: "12px",
+        },
+      },
+    },
+    yaxis: {
+      labels: {
+        style: {
+          fontSize: "12px",
+        },
+      },
+    },
+    tooltip: {
+      custom: function ({ seriesIndex, dataPointIndex, w }) {
+        const data = w.config.series[seriesIndex].data[dataPointIndex];
+        const regionName = data.x;
+        const minValue = data.y[0];
+        const maxValue = data.y[1];
+        const unit = language === "ge" ? "მმ" : "mm";
 
-    return (
-      <ul className="recharts-default-legend">
-        {selectedTexts.map((text, index) => (
-          <li
-            key={`legend-item-${text.name}`}
-            className={`recharts-legend-item legend-item-${index}`}
-            onClick={() => {
-              // Prevent toggling if this is the last visible bar
-              if (visibleBars[text.name] && visibleBarCount === 1) {
-                return;
-              }
-              setVisibleBars((prev) => ({
-                ...prev,
-                [text.name]: !prev[text.name],
-              }));
-            }}
-            style={{
-              cursor: "pointer",
-              opacity: visibleBars[text.name] ? 1 : 0.5,
-            }}>
-            <span
-              className="recharts-legend-item-icon"
-              style={{
-                backgroundColor:
-                  chartInfo.colors[index % chartInfo.colors.length],
-                flexShrink: 0,
-                width: 12,
-                height: 12,
-                display: "inline-block",
-                marginRight: 8,
-              }}></span>
-            <span className="recharts-legend-item-text">{text.name}</span>
-          </li>
-        ))}
-      </ul>
-    );
-  };
-
-  // Custom Tooltip Component
-  const CustomTooltip = ({ active, payload, label }) => {
-    if (!active || !payload || !payload.length) return null;
-
-    return (
-      <div className="custom-tooltip">
-        <div className="tooltip-container">
-          <p className="tooltip-label">
-            {label}
-          </p>
-          {payload.map(({ value, fill, dataKey }) => {
-            return (
-              <p key={`item-${dataKey}`} className="text">
-                <span
-                  style={{
-                    backgroundColor: fill,
-                    flexShrink: 0,
-                    width: 12,
-                    height: 12,
-                    display: "inline-block",
-                    marginRight: 8,
-                  }}
-                  className="before-span"></span>
-                {dataKey} :
-                <span style={{ fontWeight: 900, marginLeft: "5px" }}>
-                  {value?.toFixed(0)} {language === "ge" ? "მმ" : "mm"}
-                </span>
+        return `
+          <div class="custom-tooltip">
+            <div class="tooltip-container">
+              <p class="tooltip-label">${regionName}</p>
+              <p class="text">
+                <span class="before-span" style="background-color: #f59e0b; width: 12px; height: 12px; display: inline-block; margin-right: 8px;"></span>
+                ${language === "ge" ? "მინიმალური (2022)" : "Minimum (2022)"}: 
+                <span style="font-weight: 900; margin-left: 5px;">${minValue.toFixed(
+                  0
+                )} ${unit}</span>
               </p>
-            );
-          })}
-        </div>
-      </div>
-    );
+              <p class="text">
+                <span class="before-span" style="background-color: #f59e0b; width: 12px; height: 12px; display: inline-block; margin-right: 8px;"></span>
+                ${language === "ge" ? "მაქსიმალური (2022)" : "Maximum (2022)"}: 
+                <span style="font-weight: 900; margin-left: 5px;">${maxValue.toFixed(
+                  0
+                )} ${unit}</span>
+              </p>
+            </div>
+          </div>
+        `;
+      },
+    },
+    legend: {
+      show: true,
+      position: "bottom",
+      horizontalAlign: "center",
+      markers: {
+        width: 12,
+        height: 12,
+      },
+    },
   };
 
   // Show empty state if no data
-  if (chartData.length === 0) {
+  if (!chartData || chartData.length === 0 || !chartData[0]?.data?.length) {
     return (
       <div className="chart-wrapper" id={chartInfo.chartID}>
         <div className="header">
@@ -311,44 +299,14 @@ const HorizontalBarCharts = ({ chartInfo }) => {
         </div>
       </div>
 
-      <ResponsiveContainer width="100%" height={460}>
-        <BarChart 
-          data={chartData}
-          layout="horizontal"
-          margin={{ top: 20, right: 30, left: 80, bottom: 5 }}
-          barCategoryGap="20%"
-          barGap={4}
-        >
-          <CartesianGrid strokeDasharray="3 3" horizontal={true} />
-          <XAxis type="number" tick={{ fontSize: 12 }} />
-          <YAxis 
-            type="category"
-            dataKey="region" 
-            tick={{ fontSize: 12 }} 
-            tickLine={false}
-            width={120}
-          />
-          <Tooltip content={<CustomTooltip />} />
-          <Legend
-            wrapperStyle={{ marginBottom: -20 }}
-            content={<CustomLegend />}
-            verticalAlign="bottom"
-            align="center"
-          />
-          {selectedTexts.map((text, index) =>
-            visibleBars[text.name] ? (
-              <Bar
-                key={`bar-${text.name}`}
-                dataKey={text.name}
-                fill={chartInfo.colors[index % chartInfo.colors.length]}
-                stroke={chartInfo.colors[index % chartInfo.colors.length]}
-                name={text.name}
-                radius={[0, 2, 2, 0]}
-              />
-            ) : null
-          )}
-        </BarChart>
-      </ResponsiveContainer>
+      <div style={{ marginTop: "20px" }}>
+        <ReactApexChart
+          options={chartOptions}
+          series={chartData}
+          type="rangeBar"
+          height={460}
+        />
+      </div>
     </div>
   );
 };
