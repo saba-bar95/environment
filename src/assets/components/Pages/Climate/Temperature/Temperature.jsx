@@ -1,10 +1,52 @@
 import { useParams } from "react-router-dom";
 import backgroundImg from "./Background/background.jpg";
+import Charts from "../../../../../Charts.jsx";
+import { useState, useEffect } from "react";
+
+
 
 const Temperature = () => {
-  const { language } = useParams();
+    const { language } = useParams();
 
-  return (
+    const info = Charts.climate[2].precipitation;
+    const [width, setWidth] = useState(window.innerWidth);
+
+    useEffect(() => {
+        const handleResize = () => {
+            const newWidth = window.innerWidth;
+            setWidth(newWidth);
+        };
+        window.addEventListener("resize", handleResize);
+        return () => {
+            window.removeEventListener("resize", handleResize);
+        };
+    }, []);
+
+    useEffect(() => {
+        if (location.hash) {
+            const chartId = location.hash.replace("#", "");
+            const element = document.getElementById(chartId);
+            if (element) {
+                element.scrollIntoView({ behavior: "smooth", block: "start" });
+            }
+        }
+    }, []);
+
+    const ChartInfo = [
+        {
+            title_ge: info[0].title_ge,
+            title_en: info[0].title_en,
+            colors: ["#1678e7ff"],
+            id: "air-temperature",
+            types: ["data", "metadata"],
+            selectedIndices: [1],
+            chartID: info[0].chartID,
+        },
+
+    ];
+
+
+    return (
     <div className="section-container">
       <div
         className="background-container"
@@ -21,6 +63,11 @@ const Temperature = () => {
             : "გეოლოგიური და ჰიდრომეტეოროლოგიური მოვლენების ტენდენციები"}
         </h2>
       </div>
+        <div className="charts-section">
+            <div className="chart-container" style={{ width: "100%" }}>
+                <AreaCharts chartInfo={ChartInfo[0]} />
+            </div>
+        </div>
     </div>
   );
 };
