@@ -176,7 +176,6 @@ const ScatterChart1 = ({ chartInfo }) => {
     if (!active || !payload || !payload.length) return null;
 
     const dataPoint = payload[0].payload;
-    const fillColor = chartInfo.colors[0];
 
     return (
       <div className="custom-tooltip">
@@ -196,7 +195,6 @@ const ScatterChart1 = ({ chartInfo }) => {
             <span>
               <span
                 style={{
-                  backgroundColor: "#1678e7ff",
                   width: 12,
                   height: 12,
                   display: "inline-block",
@@ -220,7 +218,6 @@ const ScatterChart1 = ({ chartInfo }) => {
             <span>
               <span
                 style={{
-                  backgroundColor: fillColor,
                   width: 12,
                   height: 12,
                   display: "inline-block",
@@ -244,7 +241,6 @@ const ScatterChart1 = ({ chartInfo }) => {
             <span>
               <span
                 style={{
-                  backgroundColor: "#f7a72fff",
                   width: 12,
                   height: 12,
                   display: "inline-block",

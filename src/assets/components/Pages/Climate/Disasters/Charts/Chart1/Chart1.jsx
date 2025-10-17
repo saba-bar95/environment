@@ -81,47 +81,6 @@ const BarCharts = ({ chartInfo }) => {
     getData();
   }, [language, chartInfo, barName]);
 
-  // Custom label renderer for specific years
-  const renderCustomizedLabel = (props) => {
-    const label1 =
-      language === "en"
-        ? "High mortality from mudslides"
-        : "მაღალი სიკვდიალიანობა ღვარცოფისგან";
-    const label2 = language === "en" ? "Shovi Landslide" : "შოვის მეწყერი";
-    const { x, width, index } = props;
-    const year = chartData[index]?.year;
-
-    const labels = [];
-    if (year === "2015") {
-      labels.push(label1);
-    }
-    if (year === "2023") {
-      labels.push(label2);
-    }
-
-    if (labels.length === 0) return null;
-
-    // Fixed y position at top of chart (adjust as needed)
-    const topY = 10; // You can tweak this value to suit your layout
-
-    return (
-      <>
-        {labels.map((labelText, i) => (
-          <text
-            key={i}
-            x={x + width / 2}
-            y={topY + i * 18} // stack labels vertically with spacing
-            fill="#666"
-            textAnchor="middle"
-            dominantBaseline="central"
-            fontSize={12}>
-            {labelText}
-          </text>
-        ))}
-      </>
-    );
-  };
-
   // Show loading state
   if (isLoading) {
     return (
@@ -316,7 +275,7 @@ const BarCharts = ({ chartInfo }) => {
           margin={{ top: 0, right: 70, left: 0, bottom: 0 }}>
           <CartesianGrid strokeDasharray="3 3" vertical={false} />
           <XAxis dataKey="year" tick={{ fontSize: 13 }} tickLine={false} />
-          <YAxis domain={[0, 1600]} tick={{ fontSize: 12 }} />
+          <YAxis domain={[0, "auto"]} tick={{ fontSize: 12 }} />
           <Tooltip content={<CustomTooltip />} />
           <Legend
             wrapperStyle={{ marginBottom: -20 }}
@@ -328,13 +287,7 @@ const BarCharts = ({ chartInfo }) => {
             dataKey={barName}
             fill={chartInfo.colors[0]}
             stroke={chartInfo.colors[0]}
-            name={barName}>
-            <LabelList
-              dataKey={barName}
-              content={renderCustomizedLabel}
-              position="top"
-            />
-          </Bar>
+            name={barName}></Bar>
           <Brush
             dataKey="year"
             height={20}

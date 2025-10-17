@@ -17,8 +17,8 @@ const Children = [
   {
     text: timberText,
     background: timberBackground,
-    link_ge: "",
-    link_en: "",
+    link_ge: "https://ex-trade.geostat.ge/",
+    link_en: "https://ex-trade.geostat.ge/",
   },
   {
     text: inventorizationText,

@@ -1,253 +1,325 @@
 import { useEffect, useState } from "react";
 import {
-    ScatterChart,
-    Scatter,
-    XAxis,
-    YAxis,
-    CartesianGrid,
-    Tooltip,
-    Legend,
-    ResponsiveContainer,
-    ZAxis,
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+  Brush,
 } from "recharts";
 import { useParams } from "react-router-dom";
 import commonData from "../../../../../../fetchFunctions/commonData";
 import Download from "./Download/Download";
 
-const ScatterChart9 = ({ chartInfo }) => {
-    const { language } = useParams();
-    const [chartData, setChartData] = useState([]);
-    const [selectedTexts, setSelectedTexts] = useState([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState(null);
+const ScatterCharts = ({ chartInfo }) => {
+  const { language } = useParams();
+  const [chartData, setChartData] = useState([]);
+  const [selectedTexts, setSelectedTexts] = useState([]);
+  const [visibleLines, setVisibleLines] = useState({});
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-    useEffect(() => {
-        const getData = async () => {
-            setIsLoading(true);
-            setError(null);
+  useEffect(() => {
+    const getData = async () => {
+      setIsLoading(true);
+      setError(null);
 
-            try {
-                const [metaDataResult, dataResult] = await Promise.all([
-                    commonData(chartInfo.id, chartInfo.types[1], language),
-                    commonData(chartInfo.id, chartInfo.types[0], language),
-                ]);
+      try {
+        const [metaDataResult, dataResult] = await Promise.all([
+          commonData(chartInfo.id, chartInfo.types[1], language),
+          commonData(chartInfo.id, chartInfo.types[0], language),
+        ]);
 
-                const fullSectorNames = metaDataResult?.data?.metadata?.variables[0]?.valueTexts || [];
-                const dataKeys = dataResult?.data?.categories || [];
+        const fullSectorNames =
+          metaDataResult?.data?.metadata?.variables[0]?.valueTexts || [];
+        const dataKeys = dataResult?.data?.categories || [];
 
-                const selected = chartInfo.selectedIndices
-                    .map((index) => {
-                        if (fullSectorNames[index] && dataKeys[index]) {
-                            return { name: fullSectorNames[index], key: dataKeys[index] };
-                        }
-                        return null;
-                    })
-                    .filter(Boolean);
-
-                setSelectedTexts(selected);
-
-                const rawData = dataResult.data.data || [];
-
-                // Single data series: Year vs Value
-                const processedData = rawData
-                    .map((item) => {
-                        const yValue = item[selected[0]?.key];
-
-                        return {
-                            year: Number(item.year),
-                            xValue: Number(item.year),
-                            yValue: yValue !== null && yValue !== undefined ? Number(yValue) : null
-                        };
-                    })
-                    .filter(item =>
-                        item.yValue !== null &&
-                        !isNaN(item.yValue) &&
-                        !isNaN(item.xValue)
-                    );
-
-                console.log("Processed Chart9 scatter data:", processedData);
-                setChartData(processedData);
-
-            } catch (error) {
-                console.log("Error fetching Chart9 data:", error);
-                setError("Failed to load chart data. Please try again.");
-            } finally {
-                setIsLoading(false);
+        const selected = chartInfo.selectedIndices
+          .map((index) => {
+            if (fullSectorNames[index] && dataKeys[index]) {
+              return { name: fullSectorNames[index], key: dataKeys[index] };
             }
-        };
+            return null;
+          })
+          .filter(Boolean);
 
-        getData();
-    }, [language, chartInfo]);
+        setSelectedTexts(selected);
 
-    const CustomLegend = () => {
-        return (
-            <ul className="recharts-default-legend">
-                <li className="recharts-legend-item legend-item-0">
-                    <span
-                        className="recharts-legend-item-icon"
-                        style={{
-                            backgroundColor: chartInfo.colors[0],
-                            flexShrink: 0,
-                            width: 12,
-                            height: 12,
-                            display: "inline-block",
-                            marginRight: 8,
-                        }}></span>
-                    <span className="recharts-legend-item-text">
-                        {selectedTexts[0]?.name}
-                    </span>
-                </li>
-            </ul>
+        setVisibleLines(
+          selected.reduce((acc, text) => ({ ...acc, [text.name]: true }), {})
         );
+
+        const rawData = dataResult.data.data || [];
+
+        const processedData = rawData.map((item) => {
+          const dataPoint = { year: String(item.year) };
+          selected.forEach((text) => {
+            dataPoint[text.name] = item[text.key] || 0;
+          });
+          return dataPoint;
+        });
+
+        setChartData(processedData);
+      } catch (error) {
+        console.log("Error fetching data:", error);
+        setError("Failed to load chart data. Please try again.");
+      } finally {
+        setIsLoading(false);
+      }
     };
 
-    const CustomTooltip = ({ active, payload }) => {
-        if (!active || !payload || !payload.length) return null;
+    getData();
+  }, [language, chartInfo]);
 
-        const data = payload[0].payload;
+  const CustomLegend = () => {
+    const visibleLineCount = Object.values(visibleLines).filter(Boolean).length;
+    return (
+      <ul className="recharts-default-legend">
+        {selectedTexts.map((text, index) => (
+          <li
+            key={`legend-item-${text.name}`}
+            className={`recharts-legend-item legend-item-${index}`}
+            onClick={() => {
+              if (visibleLines[text.name] && visibleLineCount === 1) return;
+              setVisibleLines((prev) => ({
+                ...prev,
+                [text.name]: !prev[text.name],
+              }));
+            }}
+            style={{
+              cursor: "pointer",
+              opacity: visibleLines[text.name] ? 1 : 0.5,
+            }}>
+            <span
+              className="recharts-legend-item-icon"
+              style={{
+                backgroundColor:
+                  chartInfo.colors[index % chartInfo.colors.length],
+                flexShrink: 0,
+                width: 12,
+                height: 12,
+                display: "inline-block",
+                marginRight: 8,
+              }}></span>
+            <span className="recharts-legend-item-text">{text.name}</span>
+          </li>
+        ))}
+      </ul>
+    );
+  };
 
-        return (
-            <div className="custom-tooltip">
-                <div className="tooltip-container">
-                    <p className="tooltip-label">
-                        {data.year} {language === "ge" ? "წელი" : "Year"}
-                    </p>
-                    <p className="text" style={{ display: "flex", justifyContent: "space-between", gap: "10px", alignItems: "center" }}>
-                        <span>
-                            <span
-                                style={{
-                                    backgroundColor: chartInfo.colors[0],
-                                    width: 12,
-                                    height: 12,
-                                    display: "inline-block",
-                                    marginRight: 8,
-                                }}
-                                className="before-span"></span>
-                            {selectedTexts[0]?.name}:
-                        </span>
-                        <span style={{ fontWeight: 900, marginLeft: "5px" }}>
-                            {data.yValue?.toFixed(2)}
-                        </span>
-                    </p>
-                </div>
-            </div>
-        );
-    };
+  const CustomTooltip = ({ active, label }) => {
+    if (!active || !chartData.length) return null;
 
-    if (isLoading) {
-        return (
-            <div className="chart-wrapper" id={chartInfo.chartID}>
-                <div className="header">
-                    <div className="right">
-                        <div className="ll"></div>
-                        <div className="rr">
-                            <h1>{language === "ge" ? chartInfo.title_ge : chartInfo.title_en}</h1>
-                            <p>{language === "ge" ? chartInfo.unit_ge : chartInfo.unit_en}</p>
-                        </div>
-                    </div>
-                </div>
-                <div className="loading-state">
-                    <p>Loading chart data...</p>
-                </div>
-            </div>
-        );
-    }
+    const point = chartData.find((p) => p.year === String(label));
+    if (!point) return null;
 
-    if (error) {
-        return (
-            <div className="chart-wrapper" id={chartInfo.chartID}>
-                <div className="header">
-                    <div className="right">
-                        <div className="ll"></div>
-                        <div className="rr">
-                            <h1>{language === "ge" ? chartInfo.title_ge : chartInfo.title_en}</h1>
-                            <p>{language === "ge" ? chartInfo.unit_ge : chartInfo.unit_en}</p>
-                        </div>
-                    </div>
-                </div>
-                <div className="error-state">
-                    <p>{error}</p>
-                </div>
-            </div>
-        );
-    }
+    const visiblePayload = selectedTexts
+      .filter((t) => visibleLines[t.name])
+      .map((t, index) => ({
+        value: point[t.name],
+        fill: chartInfo.colors[index % chartInfo.colors.length],
+        dataKey: t.name,
+      }));
 
-    if (chartData.length === 0) {
-        return (
-            <div className="chart-wrapper" id={chartInfo.chartID}>
-                <div className="header">
-                    <div className="right">
-                        <div className="ll"></div>
-                        <div className="rr">
-                            <h1>{language === "ge" ? chartInfo.title_ge : chartInfo.title_en}</h1>
-                            <p>{language === "ge" ? chartInfo.unit_ge : chartInfo.unit_en}</p>
-                        </div>
-                    </div>
-                </div>
-                <div className="empty-state">
-                    <p>No data available</p>
-                </div>
-            </div>
-        );
-    }
+    if (!visiblePayload.length) return null;
 
     return (
-        <div className="chart-wrapper" id={chartInfo.chartID}>
-            <div className="header">
-                <div className="right">
-                    <div className="ll"></div>
-                    <div className="rr">
-                        <h1>{language === "ge" ? chartInfo.title_ge : chartInfo.title_en}</h1>
-                        <p>{language === "ge" ? chartInfo.unit_ge : chartInfo.unit_en}</p>
-                    </div>
-                </div>
-                <div className="left">
-                    <Download
-                        data={chartData}
-                        filename={chartInfo[`title_${language}`]}
-                        unit={chartInfo[`unit_${language}`]}
-                    />
-                </div>
-            </div>
-
-            <ResponsiveContainer width="100%" height={460}>
-                <ScatterChart
-                    data={chartData}
-                    margin={{ top: 20, right: 30, left: 20, bottom: 50 }}
-                >
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                    <XAxis
-                        type="number"
-                        dataKey="xValue"
-                        name="Year"
-                        tick={{ fontSize: 12 }}
-                        tickLine={false}
-                        domain={['dataMin - 1', 'dataMax + 1']}
-                    />
-                    <YAxis
-                        type="number"
-                        dataKey="yValue"
-                        name={selectedTexts[0]?.name}
-                        tick={{ fontSize: 12 }}
-                        domain={['dataMin - 0.5', 'dataMax + 0.5']}
-                    />
-                    <ZAxis range={[64]} />
-                    <Tooltip content={<CustomTooltip />} />
-                    <Legend
-                        wrapperStyle={{ marginBottom: -20 }}
-                        content={<CustomLegend />}
-                        verticalAlign="bottom"
-                        align="center"
-                    />
-                    <Scatter
-                        name={selectedTexts[0]?.name}
-                        data={chartData}
-                        fill={chartInfo.colors[0]}
-                    />
-                </ScatterChart>
-            </ResponsiveContainer>
+      <div className="custom-tooltip">
+        <div className="tooltip-container">
+          <p className="tooltip-label">
+            {label} {language === "ge" ? "წელი" : "Year"}
+          </p>
+          {visiblePayload.map(({ value, fill, dataKey }) => (
+            <p
+              key={`item-${dataKey}`}
+              className="text"
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                gap: "10px",
+                alignItems: "center",
+              }}>
+              <span>
+                <span
+                  style={{
+                    backgroundColor: fill,
+                    width: 12,
+                    height: 12,
+                    display: "inline-block",
+                    marginRight: 8,
+                  }}
+                  className="before-span"></span>
+                {dataKey} :
+              </span>
+              <span style={{ fontWeight: 900, marginLeft: "5px" }}>
+                {value?.toFixed(1)}
+              </span>
+            </p>
+          ))}
         </div>
+      </div>
     );
+  };
+
+  // Show loading state
+  if (isLoading) {
+    return (
+      <div className="chart-wrapper" id={chartInfo.chartID}>
+        <div className="header">
+          <div className="right">
+            <div className="ll"></div>
+            <div className="rr">
+              <h1>
+                {language === "ge" ? chartInfo.title_ge : chartInfo.title_en}
+              </h1>
+              <p>{language === "ge" ? chartInfo.unit_ge : chartInfo.unit_en}</p>
+            </div>
+          </div>
+          <div className="left">
+            <div className="download-placeholder">
+              <span className="loading-spinner"></span>
+              <span>{language === "ge" ? "ჩატვირთვა..." : "Loading..."}</span>
+            </div>
+          </div>
+        </div>
+        <div className="loading-container">
+          <div className="loading-content">
+            <div className="spinner"></div>
+            <p>
+              {language === "ge"
+                ? "მონაცემების ჩატვირთვა..."
+                : "Loading data..."}
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <div className="chart-wrapper" id={chartInfo.chartID}>
+        <div className="header">
+          <div className="right">
+            <div className="ll"></div>
+            <div className="rr">
+              <h1>
+                {language === "ge" ? chartInfo.title_ge : chartInfo.title_en}
+              </h1>
+              <p>{language === "ge" ? chartInfo.unit_ge : chartInfo.unit_en}</p>
+            </div>
+          </div>
+          <div className="left">
+            <button
+              className="retry-btn"
+              onClick={() => window.location.reload()}>
+              {language === "ge" ? "ხელახლა ცდა" : "Retry"}
+            </button>
+          </div>
+        </div>
+        <div className="error-container">
+          <div className="error-content">
+            <div className="error-icon">⚠️</div>
+            <p>{error}</p>
+            <button
+              className="retry-btn"
+              onClick={() => window.location.reload()}>
+              {language === "ge" ? "ხელახლა ჩატვირთვა" : "Reload Chart"}
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (chartData.length === 0) {
+    return (
+      <div className="chart-wrapper" id={chartInfo.chartID}>
+        <div className="header">
+          <div className="right">
+            <div className="ll"></div>
+            <div className="rr">
+              <h1>
+                {language === "ge" ? chartInfo.title_ge : chartInfo.title_en}
+              </h1>
+              <p>{language === "ge" ? chartInfo.unit_ge : chartInfo.unit_en}</p>
+            </div>
+          </div>
+        </div>
+        <div className="empty-state">
+          <p>No data available</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="chart-wrapper" id={chartInfo.chartID}>
+      <div className="header">
+        <div className="right">
+          <div className="ll"></div>
+          <div className="rr">
+            <h1>
+              {language === "ge" ? chartInfo.title_ge : chartInfo.title_en}
+            </h1>
+            <p>{language === "ge" ? chartInfo.unit_ge : chartInfo.unit_en}</p>
+          </div>
+        </div>
+        <div className="left">
+          <Download
+            data={chartData}
+            filename={chartInfo[`title_${language}`]}
+            unit={chartInfo[`unit_${language}`]}
+          />
+        </div>
+      </div>
+
+      <ResponsiveContainer width="100%" height={460}>
+        <LineChart
+          data={chartData}
+          margin={{ top: 20, right: 30, left: 20, bottom: 50 }}>
+          <CartesianGrid strokeDasharray="3 3" vertical={false} />
+          <XAxis dataKey="year" tick={{ fontSize: 12 }} tickLine={false} />
+          <YAxis tick={{ fontSize: 12 }} />
+          <Tooltip content={<CustomTooltip />} />
+          <Legend
+            wrapperStyle={{ marginBottom: -20 }}
+            content={<CustomLegend />}
+            verticalAlign="bottom"
+            align="center"
+          />
+          {selectedTexts.map((text, index) =>
+            visibleLines[text.name] ? (
+              <Line
+                key={`line-${text.name}`}
+                type="monotone"
+                dataKey={text.name}
+                stroke={chartInfo.colors[index % chartInfo.colors.length]}
+                name={text.name}
+                strokeWidth={2}
+                dot={{
+                  fill: chartInfo.colors[index % chartInfo.colors.length],
+                  strokeWidth: 2,
+                  r: 4,
+                }}
+              />
+            ) : null
+          )}
+          <Brush
+            dataKey="year"
+            height={20}
+            stroke="#8884d8"
+            travellerWidth={5}
+          />
+        </LineChart>
+      </ResponsiveContainer>
+    </div>
+  );
 };
 
-export default ScatterChart9;
+export default ScatterCharts;

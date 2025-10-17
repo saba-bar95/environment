@@ -65,16 +65,18 @@ const HydroHazardsHeatmap = ({ chartInfo, columnWidth = 140 }) => {
 
     const years = yearVar?.valueTexts || [];
     const allMonths = monthVar?.valueTexts || [];
-    
+
     // Filter out "ადამიანთა მსხვერპლი" (human casualties) from months
     const monthsWithIndices = allMonths
       .map((label, index) => ({ label, originalIndex: index }))
       .filter(({ label }) => {
         const normalized = (label || "").toString().toLowerCase();
-        return !normalized.includes("მსხვერპ") && !normalized.includes("casual");
+        return (
+          !normalized.includes("მსხვერპ") && !normalized.includes("casual")
+        );
       });
-    
-    const months = monthsWithIndices.map(m => m.label);
+
+    const months = monthsWithIndices.map((m) => m.label);
 
     // Use the hazard index from chartInfo.selectedIndices
     const hazardIndex = chartInfo.selectedIndices?.[0];
@@ -100,7 +102,7 @@ const HydroHazardsHeatmap = ({ chartInfo, columnWidth = 140 }) => {
         // Format: "hazardIndex - monthIndex" (e.g., "6 - 0", "6 - 1", etc.)
         const key = `${hazardIndex} - ${monthIdx}`;
         const val = Number(yearRecord[key] ?? 0);
-        
+
         return Number.isFinite(val) ? val : 0;
       })
     );
@@ -113,14 +115,15 @@ const HydroHazardsHeatmap = ({ chartInfo, columnWidth = 140 }) => {
   // Prepare data for download (convert matrix to flat array format)
   const downloadData = useMemo(() => {
     if (!hasData) return [];
-    
+
     const data = [];
     months.forEach((monthLabel, rowIdx) => {
       years.forEach((yearLabel, colIdx) => {
         data.push({
           [language === "ge" ? "თვე" : "Month"]: monthLabel,
           [language === "ge" ? "წელი" : "Year"]: yearLabel,
-          [language === "ge" ? "მოვლენების რაოდენობა" : "Number of Events"]: matrix[rowIdx][colIdx]
+          [language === "ge" ? "მოვლენების რაოდენობა" : "Number of Events"]:
+            matrix[rowIdx][colIdx],
         });
       });
     });
@@ -179,8 +182,7 @@ const HydroHazardsHeatmap = ({ chartInfo, columnWidth = 140 }) => {
           <div className="left">
             <button
               className="retry-btn"
-              onClick={() => window.location.reload()}
-            >
+              onClick={() => window.location.reload()}>
               {language === "ge" ? "ხელახლა ცდა" : "Retry"}
             </button>
           </div>
@@ -191,8 +193,7 @@ const HydroHazardsHeatmap = ({ chartInfo, columnWidth = 140 }) => {
             <p>{error}</p>
             <button
               className="retry-btn"
-              onClick={() => window.location.reload()}
-            >
+              onClick={() => window.location.reload()}>
               {language === "ge" ? "ხელახლა ჩატვირთვა" : "Reload Chart"}
             </button>
           </div>
@@ -253,7 +254,9 @@ const HydroHazardsHeatmap = ({ chartInfo, columnWidth = 140 }) => {
         <div className="left">
           <Download
             data={downloadData}
-            filename={language === "ge" ? chartInfo.title_ge : chartInfo.title_en}
+            filename={
+              language === "ge" ? chartInfo.title_ge : chartInfo.title_en
+            }
           />
         </div>
       </div>
@@ -279,8 +282,7 @@ const HydroHazardsHeatmap = ({ chartInfo, columnWidth = 140 }) => {
             className="grid"
             style={{
               gridTemplateColumns: `180px repeat(${years.length}, ${columnWidth}px)`,
-            }}
-          >
+            }}>
             {months.map((mLabel, r) => (
               <div key={`row-${r}`} className="grid-row">
                 <div className="row-header">{mLabel}</div>
@@ -288,8 +290,7 @@ const HydroHazardsHeatmap = ({ chartInfo, columnWidth = 140 }) => {
                   <div
                     key={`cell-${r}-${c}`}
                     className="cell"
-                    style={{ background: getBucketColor(v) }}
-                  >
+                    style={{ background: getBucketColor(v) }}>
                     {v}
                   </div>
                 ))}
@@ -301,8 +302,7 @@ const HydroHazardsHeatmap = ({ chartInfo, columnWidth = 140 }) => {
             className="col-footer-row"
             style={{
               gridTemplateColumns: `180px repeat(${years.length}, ${columnWidth}px)`,
-            }}
-          >
+            }}>
             <div />
             {years.map((y, i) => (
               <div key={`footer-${i}`} className="col-footer">

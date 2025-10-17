@@ -256,14 +256,14 @@ const PercentAreaCharts = ({ chartInfo }) => {
                 <span class="before-span" style="background-color: #8b5cf6; width: 12px; height: 12px; display: inline-block; margin-right: 8px;"></span>
                 ${language === "ge" ? "მინიმალური" : "Minimum"}: 
                 <span style="font-weight: 900; margin-left: 5px;">${minValue.toFixed(
-                  2
+                  0
                 )} ${unit}</span>
               </p>
               <p class="text">
                 <span class="before-span" style="background-color: #8b5cf6; width: 12px; height: 12px; display: inline-block; margin-right: 8px;"></span>
                 ${language === "ge" ? "მაქსიმალური" : "Maximum"}: 
                 <span style="font-weight: 900; margin-left: 5px;">${maxValue.toFixed(
-                  2
+                  0
                 )} ${unit}</span>
               </p>
             </div>

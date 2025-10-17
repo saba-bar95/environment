@@ -10,7 +10,7 @@ import {
   ResponsiveContainer,
   Brush,
   Cell,
-  LabelList, 
+  LabelList,
 } from "recharts";
 import { useParams } from "react-router-dom";
 import commonData from "../../../../../../fetchFunctions/commonData";
@@ -231,7 +231,7 @@ const PositiveAndNegativeBarChart = ({ chartInfo }) => {
                   className="before-span"></span>
                 {text?.name} :
                 <span style={{ fontWeight: 900, marginLeft: "5px" }}>
-                  {value?.toFixed(2)}%
+                  {value}%
                 </span>
               </p>
             );
@@ -274,7 +274,7 @@ const PositiveAndNegativeBarChart = ({ chartInfo }) => {
 
   // Formatter for percentage labels
   const formatPercentage = (value) => {
-    return `${value.toFixed(2)}%`; // Format value as percentage
+    return `${value.toFixed(0)}%`; // Format value as percentage
   };
 
   return (

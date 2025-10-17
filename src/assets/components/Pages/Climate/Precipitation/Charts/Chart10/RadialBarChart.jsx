@@ -133,8 +133,7 @@ const RadialBarChartComponent = ({ chartInfo }) => {
           <div className="left">
             <button
               className="retry-btn"
-              onClick={() => window.location.reload()}
-            >
+              onClick={() => window.location.reload()}>
               {language === "ge" ? "ხელახლა ცდა" : "Retry"}
             </button>
           </div>
@@ -145,8 +144,7 @@ const RadialBarChartComponent = ({ chartInfo }) => {
             <p>{error}</p>
             <button
               className="retry-btn"
-              onClick={() => window.location.reload()}
-            >
+              onClick={() => window.location.reload()}>
               {language === "ge" ? "ხელახლა ჩატვირთვა" : "Reload Chart"}
             </button>
           </div>
@@ -172,8 +170,7 @@ const RadialBarChartComponent = ({ chartInfo }) => {
           justifyContent: "center",
           gap: "15px",
           flexWrap: "wrap",
-        }}
-      >
+        }}>
         {chartData.map((item, index) => {
           const isHidden = hiddenItems[item.name];
           return (
@@ -187,8 +184,7 @@ const RadialBarChartComponent = ({ chartInfo }) => {
                 gap: "5px",
                 cursor: "pointer",
                 opacity: isHidden ? 0.5 : 1,
-              }}
-            >
+              }}>
               <span
                 className="recharts-legend-item-icon"
                 style={{
@@ -196,8 +192,7 @@ const RadialBarChartComponent = ({ chartInfo }) => {
                   width: 12,
                   height: 12,
                   display: "inline-block",
-                }}
-              ></span>
+                }}></span>
               <span className="recharts-legend-item-text">{item.name}</span>
             </li>
           );
@@ -223,8 +218,7 @@ const RadialBarChartComponent = ({ chartInfo }) => {
               justifyContent: "space-between",
               gap: "10px",
               alignItems: "center",
-            }}
-          >
+            }}>
             <span>
               <span
                 style={{
@@ -234,8 +228,7 @@ const RadialBarChartComponent = ({ chartInfo }) => {
                   display: "inline-block",
                   marginRight: 8,
                 }}
-                className="before-span"
-              ></span>
+                className="before-span"></span>
               {language === "ge" ? "2022 წლის გადახრა" : "2022 Deviation"} :
             </span>
             <span style={{ fontWeight: 900, marginLeft: "5px" }}>
@@ -300,15 +293,14 @@ const RadialBarChartComponent = ({ chartInfo }) => {
           />
         </div>
       </div>
-      <ResponsiveContainer width="100%" height={500}>
+      <ResponsiveContainer width="100%" height={450}>
         <RadialBarChart
           cx="50%"
           cy="50%"
           innerRadius="20%"
           outerRadius="90%"
           barSize={30}
-          data={visibleData}
-        >
+          data={visibleData}>
           <PolarAngleAxis
             type="number"
             domain={[0, 100]}
@@ -336,31 +328,6 @@ const RadialBarChartComponent = ({ chartInfo }) => {
             content={<CustomLegend />}
           />
           <Tooltip content={<CustomTooltip />} />
-          <text
-            x="50%"
-            y="50%"
-            textAnchor="middle"
-            dominantBaseline="middle"
-            className="radial-chart-center-text"
-            style={{ fontSize: "16px", fontWeight: "bold" }}
-          >
-            {language === "ge" ? "საშ. გადახრა" : "Avg. Deviation"}
-          </text>
-          <text
-            x="50%"
-            y="54%"
-            textAnchor="middle"
-            dominantBaseline="middle"
-            className="radial-chart-center-value"
-            style={{ fontSize: "24px", fontWeight: "bold" }}
-          >
-            {visibleData.length > 0
-              ? `${(
-                  visibleData.reduce((sum, item) => sum + item.value, 0) /
-                  visibleData.length
-                ).toFixed(0)}.0%`
-              : "0%"}
-          </text>
         </RadialBarChart>
       </ResponsiveContainer>
     </div>

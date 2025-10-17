@@ -37,16 +37,19 @@ const LineChart1 = ({ chartInfo }) => {
         // Custom mapping for atmospheric-precipitation data indices to region names
         const regionMapping = {
           1: language === "ge" ? "საქართველო" : "Georgia",
-          6: language === "ge" ? "თბილისი" : "Tbilisi", 
-          11: language === "ge" ? "სამეგრელო-ზემო სვანეთი" : "Samegrelo-Zemo Svaneti",
-          16: language === "ge" ? "ქვემო ქართლი" : "Kvemo Kartli"
+          6: language === "ge" ? "თბილისი" : "Tbilisi",
+          11:
+            language === "ge"
+              ? "სამეგრელო-ზემო სვანეთი"
+              : "Samegrelo-Zemo Svaneti",
+          16: language === "ge" ? "ქვემო ქართლი" : "Kvemo Kartli",
         };
 
         // Select specific regions based on chartInfo.selectedIndices
         const selected = chartInfo.selectedIndices
-          .map((index) => ({ 
-            name: regionMapping[index] || `Region ${index}`, 
-            id: index 
+          .map((index) => ({
+            name: regionMapping[index] || `Region ${index}`,
+            id: index,
           }))
           .filter(Boolean);
 
@@ -239,7 +242,7 @@ const LineChart1 = ({ chartInfo }) => {
                   {text?.name} :
                 </span>
                 <span style={{ fontWeight: 900, marginLeft: "5px" }}>
-                  {value?.toFixed(2)}
+                  {value}
                 </span>
               </p>
             );

@@ -86,14 +86,14 @@ const rawCharts = {
   ],
   transport: [
     {
-      title_ge: "სამგზავრო გადაყვანების მოცულობა",
-      title_en: "Passenger Capacity",
+      title_ge: "მგზავრთბრუნვა",
+      title_en: "Passenger Transport Demand",
       path_ge: "ტრანსპორტის სტატისტიკა",
       path_en: "transport statistics",
     },
     {
-      title_ge: "სატვირთო გადაზიდვების მოცულობა",
-      title_en: "Freight Transportation Volume",
+      title_ge: "ტვირთბრუნვა",
+      title_en: "Freight Transport Demand",
       path_ge: "ტრანსპორტის სტატისტიკა",
       path_en: "transport statistics",
     },
@@ -283,8 +283,8 @@ const rawCharts = {
       path_en: "Material Flow Accounts",
     },
     {
-      title_ge: "წიაღისეული საწვავის წმინდა იმპორტი (ფსბ)",
-      title_en: "Net Import of Fossil Fuels (PTB)",
+      title_ge: "წიაღისეული საწვავის ფიზიკური სავაჭრო ბალანსი",
+      title_en: "Fossil Fuels (PTB)",
       path_ge: "მატერიალური ნაკადის ანგარიშები",
       path_en: "Material Flow Accounts",
     },
@@ -462,7 +462,8 @@ const rawCharts = {
         {
           title_ge:
             "წყალმომარაგების სისტემაში გაშვებული და აბონენტებისთვის მიწოდებული წყლის მოცულობა",
-          title_en: "Water supply released and delivered to the supply system",
+          title_en:
+            "Gross volume and net volume of water supplied by water supply industry",
           path_ge:
             "წყალმომარაგება, დანაკარგები და შინამეურნეობების მიერ წყლის მოხმარება",
           path_en: "Water supply, losses and household water consumption",

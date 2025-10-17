@@ -170,30 +170,40 @@ const Disasters = () => {
           <BarCharts chartInfo={ChartInfo[0]} />
           <DisastersHeatmapChart chartInfo={ChartInfo[1]} />
           <AreaChartsWithLine chartInfo={ChartInfo[2]} />
-          <StackedBarChartsWithNumbers chartInfo={ChartInfo[3]} />
           {width > 1200 ? (
             <div style={{ display: "flex", gap: "40px" }}>
+              <StackedBarChartsWithNumbers chartInfo={ChartInfo[3]} />
               <RadarChartComponent chartInfo={ChartInfo[4]} />
-              <BarChartComponent chartInfo={ChartInfo[5]} />
             </div>
           ) : (
             <>
-              <BarChartComponent chartInfo={ChartInfo[5]} />
+              <StackedBarChartsWithNumbers chartInfo={ChartInfo[3]} />
               <RadarChartComponent chartInfo={ChartInfo[4]} />
             </>
           )}
           {width > 1200 ? (
             <div style={{ display: "flex", gap: "40px" }}>
+              <BarChartComponent chartInfo={ChartInfo[5]} />
               <LineChartWithTwoApiCalls chartInfo={ChartInfo[6]} />
-              <ScatterChart chartInfo={ChartInfo[7]} />
             </div>
           ) : (
             <>
+              <BarChartComponent chartInfo={ChartInfo[5]} />
               <LineChartWithTwoApiCalls chartInfo={ChartInfo[6]} />
-              <ScatterChart chartInfo={ChartInfo[7]} />
             </>
           )}
-          <PieChartWithYears chartInfo={ChartInfo[8]} />
+
+          {width > 1200 ? (
+            <div style={{ display: "flex", gap: "40px" }}>
+              <ScatterChart chartInfo={ChartInfo[7]} />
+              <PieChartWithYears chartInfo={ChartInfo[8]} />
+            </div>
+          ) : (
+            <>
+              <ScatterChart chartInfo={ChartInfo[7]} />
+              <PieChartWithYears chartInfo={ChartInfo[8]} />
+            </>
+          )}
         </div>
       </div>
     </div>

@@ -1,10 +1,7 @@
 import { useParams, useLocation } from "react-router-dom";
 import backgroundImg from "./Background/background.jpg";
 import Charts from "../../../../../Charts";
-import {
-  useEffect,
-  // useState
-} from "react";
+import { useEffect } from "react";
 import AreaChartsWithLine from "./Charts/Chart1/AreaChartsWithLine";
 import BarCharts from "./Charts/Chart2/Chart1";
 import LineCharts from "./Charts/Chart3/LineCharts";
@@ -16,18 +13,6 @@ const Temperature = () => {
   const { language } = useParams();
   const location = useLocation();
   const info = Charts.climate[1].temperature;
-  // const [width, setWidth] = useState(window.innerWidth);
-
-  // useEffect(() => {
-  //   const handleResize = () => {
-  //     const newWidth = window.innerWidth;
-  //     setWidth(newWidth);
-  //   };
-  //   window.addEventListener("resize", handleResize);
-  //   return () => {
-  //     window.removeEventListener("resize", handleResize);
-  //   };
-  // }, []);
 
   useEffect(() => {
     if (location.hash) {

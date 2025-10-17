@@ -19,7 +19,18 @@ const PrecipitationHeatmapChart = ({ chartInfo, columnWidth = 140 }) => {
   const [error, setError] = useState(null);
   const [rawMeta, setRawMeta] = useState(null);
   const [rawData, setRawData] = useState(null);
+  const [width, setWidth] = useState(window.innerWidth);
 
+  useEffect(() => {
+    const handleResize = () => {
+      const newWidth = window.innerWidth;
+      setWidth(newWidth);
+    };
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, [width]);
   // Fetch and process data
   useEffect(() => {
     const getData = async () => {
@@ -58,7 +69,7 @@ const PrecipitationHeatmapChart = ({ chartInfo, columnWidth = 140 }) => {
     }
 
     const records = rawData?.data?.data || [];
-    
+
     // console.log("=== Heatmap Debug Info ===");
     // console.log("Total records:", records.length);
     // console.log("Sample record:", records[0]);
@@ -69,29 +80,40 @@ const PrecipitationHeatmapChart = ({ chartInfo, columnWidth = 140 }) => {
       "1990-იანები": [],
       "2000-იანები": [],
       "2010-იანები": [],
-      "2020-იანები": []
+      "2020-იანები": [],
     };
 
     // Process each record and group by decade
     records.forEach((record) => {
-      
       // Get the actual year value from the record
       const yearValue = parseInt(record?.year);
       if (!yearValue || isNaN(yearValue)) return;
-      
+
       // Get precipitation value
       const precipValue = Number(record?.[precipitationIndex] ?? 0);
       if (!Number.isFinite(precipValue) || precipValue <= 0) return;
-      
+
       // Group by decade
       if (yearValue >= 1990 && yearValue < 2000) {
-        decadeGroups["1990-იანები"].push({ year: yearValue, value: precipValue });
+        decadeGroups["1990-იანები"].push({
+          year: yearValue,
+          value: precipValue,
+        });
       } else if (yearValue >= 2000 && yearValue < 2010) {
-        decadeGroups["2000-იანები"].push({ year: yearValue, value: precipValue });
+        decadeGroups["2000-იანები"].push({
+          year: yearValue,
+          value: precipValue,
+        });
       } else if (yearValue >= 2010 && yearValue < 2020) {
-        decadeGroups["2010-იანები"].push({ year: yearValue, value: precipValue });
+        decadeGroups["2010-იანები"].push({
+          year: yearValue,
+          value: precipValue,
+        });
       } else if (yearValue >= 2020 && yearValue < 2030) {
-        decadeGroups["2020-იანები"].push({ year: yearValue, value: precipValue });
+        decadeGroups["2020-იანები"].push({
+          year: yearValue,
+          value: precipValue,
+        });
       }
     });
 
@@ -99,16 +121,16 @@ const PrecipitationHeatmapChart = ({ chartInfo, columnWidth = 140 }) => {
     const decades = Object.keys(decadeGroups);
     const mat = decades.map((decadeLabel) => {
       const decadeYears = decadeGroups[decadeLabel];
-      
+
       // Create array with 10 slots (for years ending in 0-9)
       const row = Array(10).fill(null);
-      
+
       // Place each value in the correct position based on last digit of year
       decadeYears.forEach(({ year, value }) => {
         const lastDigit = year % 10; // Get last digit (1995 -> 5, 2003 -> 3)
         row[lastDigit] = value;
       });
-      
+
       return row;
     });
 
@@ -128,7 +150,7 @@ const PrecipitationHeatmapChart = ({ chartInfo, columnWidth = 140 }) => {
   // Prepare data for download (convert matrix to flat array format)
   const downloadData = useMemo(() => {
     if (!hasData) return [];
-    
+
     const data = [];
     decades.forEach((decadeLabel, rowIdx) => {
       years.forEach((yearInDecade, colIdx) => {
@@ -136,8 +158,11 @@ const PrecipitationHeatmapChart = ({ chartInfo, columnWidth = 140 }) => {
         if (value !== null) {
           data.push({
             [language === "ge" ? "დეკადა" : "Decade"]: decadeLabel,
-            [language === "ge" ? "წელი დეკადაში" : "Year in Decade"]: yearInDecade,
-            [language === "ge" ? "წლიური ნალექი (მმ)" : "Annual Precipitation (mm)"]: value
+            [language === "ge" ? "წელი დეკადაში" : "Year in Decade"]:
+              yearInDecade,
+            [language === "ge"
+              ? "წლიური ნალექი (მმ)"
+              : "Annual Precipitation (mm)"]: value,
           });
         }
       });
@@ -197,8 +222,7 @@ const PrecipitationHeatmapChart = ({ chartInfo, columnWidth = 140 }) => {
           <div className="left">
             <button
               className="retry-btn"
-              onClick={() => window.location.reload()}
-            >
+              onClick={() => window.location.reload()}>
               {language === "ge" ? "ხელახლა ცდა" : "Retry"}
             </button>
           </div>
@@ -209,8 +233,7 @@ const PrecipitationHeatmapChart = ({ chartInfo, columnWidth = 140 }) => {
             <p>{error}</p>
             <button
               className="retry-btn"
-              onClick={() => window.location.reload()}
-            >
+              onClick={() => window.location.reload()}>
               {language === "ge" ? "ხელახლა ჩატვირთვა" : "Reload Chart"}
             </button>
           </div>
@@ -251,7 +274,10 @@ const PrecipitationHeatmapChart = ({ chartInfo, columnWidth = 140 }) => {
   }
 
   return (
-    <div className="chart-wrapper" id={chartInfo.chartID} style={chartInfo?.wrapperStyles}>
+    <div
+      className="chart-wrapper"
+      id={chartInfo.chartID}
+      style={width > 1200 ? chartInfo?.wrapperStyles : {}}>
       <div className="header" data-html2canvas-ignore="true">
         <div className="right">
           <div className="ll"></div>
@@ -271,7 +297,9 @@ const PrecipitationHeatmapChart = ({ chartInfo, columnWidth = 140 }) => {
         <div className="left">
           <Download
             data={downloadData}
-            filename={language === "ge" ? chartInfo.title_ge : chartInfo.title_en}
+            filename={
+              language === "ge" ? chartInfo.title_ge : chartInfo.title_en
+            }
           />
         </div>
       </div>
@@ -297,8 +325,7 @@ const PrecipitationHeatmapChart = ({ chartInfo, columnWidth = 140 }) => {
             className="grid"
             style={{
               gridTemplateColumns: `180px repeat(${years.length}, ${columnWidth}px)`,
-            }}
-          >
+            }}>
             {decades.map((decadeLabel, r) => (
               <div key={`row-${r}`} className="grid-row">
                 <div className="row-header">{decadeLabel}</div>
@@ -307,8 +334,13 @@ const PrecipitationHeatmapChart = ({ chartInfo, columnWidth = 140 }) => {
                     key={`cell-${r}-${c}`}
                     className="cell"
                     style={{ background: getBucketColor(v) }}
-                    title={v !== null ? `${v.toFixed(0)} mm` : language === "ge" ? "მონაცემები არ არის" : "No data"}
-                  >
+                    title={
+                      v !== null
+                        ? `${v.toFixed(0)} mm`
+                        : language === "ge"
+                        ? "მონაცემები არ არის"
+                        : "No data"
+                    }>
                     {v !== null ? v.toFixed(0) : ""}
                   </div>
                 ))}
@@ -320,8 +352,7 @@ const PrecipitationHeatmapChart = ({ chartInfo, columnWidth = 140 }) => {
             className="col-footer-row"
             style={{
               gridTemplateColumns: `180px repeat(${years.length}, ${columnWidth}px)`,
-            }}
-          >
+            }}>
             <div />
             {years.map((y, i) => (
               <div key={`footer-${i}`} className="col-footer">

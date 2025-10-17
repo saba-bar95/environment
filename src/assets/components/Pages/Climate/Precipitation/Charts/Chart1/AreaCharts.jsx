@@ -43,7 +43,9 @@ const AreaCharts = ({ chartInfo }) => {
 
         // Separate index 0 for Line and rest for Areas
         const lineIndex = 0;
-        const areaIndices = chartInfo.selectedIndices.filter(index => index !== lineIndex);
+        const areaIndices = chartInfo.selectedIndices.filter(
+          (index) => index !== lineIndex
+        );
 
         // Create entries for areas
         const areaEntries = areaIndices
@@ -51,15 +53,15 @@ const AreaCharts = ({ chartInfo }) => {
           .filter(Boolean);
 
         // Create entry for line (index 0)
-        const lineEntry = valueTexts[lineIndex] ? {
-          ...valueTexts[lineIndex],
-          isLine: true
-        } : null;
+        const lineEntry = valueTexts[lineIndex]
+          ? {
+              ...valueTexts[lineIndex],
+              isLine: true,
+            }
+          : null;
 
         // Combine with line entry at the end
-        const selected = lineEntry 
-          ? [...areaEntries, lineEntry]
-          : areaEntries;
+        const selected = lineEntry ? [...areaEntries, lineEntry] : areaEntries;
 
         setSelectedTexts(selected);
 
@@ -251,7 +253,7 @@ const AreaCharts = ({ chartInfo }) => {
                   {text?.name} :
                 </span>
                 <span style={{ fontWeight: 900, marginLeft: "5px" }}>
-                  {value?.toFixed(2)}
+                  {value}
                 </span>
               </p>
             );
@@ -315,9 +317,9 @@ const AreaCharts = ({ chartInfo }) => {
         <AreaChart data={chartData}>
           <CartesianGrid strokeDasharray="3 3" vertical={false} />
           <XAxis dataKey="year" tick={{ fontSize: 15 }} tickLine={false} />
-          
+
           {/* Left Y-axis for Area charts */}
-          <YAxis 
+          <YAxis
             yAxisId="left"
             domain={[800, "auto"]}
             tick={{ fontSize: 12 }}
@@ -326,9 +328,9 @@ const AreaCharts = ({ chartInfo }) => {
             width={60}
             allowDataOverflow={false}
           />
-          
+
           {/* Right Y-axis for Line chart */}
-          <YAxis 
+          <YAxis
             yAxisId="right"
             domain={[1000, 1100]}
             tick={{ fontSize: 12 }}
@@ -336,7 +338,7 @@ const AreaCharts = ({ chartInfo }) => {
             orientation="right"
             width={60}
           />
-          
+
           <Tooltip content={<CustomTooltip />} />
           <Legend
             wrapperStyle={{ marginBottom: -20 }}

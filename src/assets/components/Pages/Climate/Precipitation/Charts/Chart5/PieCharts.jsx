@@ -10,7 +10,6 @@ import {
 import { useParams } from "react-router-dom";
 import commonData from "../../../../../../fetchFunctions/commonData";
 import Download from "./Download/Download";
-import YearDropdown from "../../../../../YearDropdown/YearDropdown";
 
 const PieChartComponent = ({ chartInfo }) => {
   const { language } = useParams();
@@ -18,7 +17,7 @@ const PieChartComponent = ({ chartInfo }) => {
   const [pieData, setPieData] = useState([]);
   const [selectedTexts, setSelectedTexts] = useState([]);
   const [visibleSegments, setVisibleSegments] = useState({});
-  const [year, setYear] = useState(null); 
+  const [year, setYear] = useState(null);
   const [years, setYears] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -52,14 +51,17 @@ const PieChartComponent = ({ chartInfo }) => {
         const regionMapping = {
           0: language === "ge" ? "საქართველო" : "Georgia",
           5: language === "ge" ? "თბილისი" : "Tbilisi",
-          10: language === "ge" ? "სამეგრელო-ზემო სვანეთი" : "Samegrelo-Zemo Svaneti", 
-          15: language === "ge" ? "ქვემო ქართლი" : "Kvemo Kartli"
+          10:
+            language === "ge"
+              ? "სამეგრელო-ზემო სვანეთი"
+              : "Samegrelo-Zemo Svaneti",
+          15: language === "ge" ? "ქვემო ქართლი" : "Kvemo Kartli",
         };
 
         const selected = chartInfo.selectedIndices
-          .map((index) => ({ 
-            name: regionMapping[index] || `Region ${index}`, 
-            id: index 
+          .map((index) => ({
+            name: regionMapping[index] || `Region ${index}`,
+            id: index,
           }))
           .filter(Boolean);
 
@@ -212,16 +214,17 @@ const PieChartComponent = ({ chartInfo }) => {
   const CustomLegend = () => {
     const visibleLineCount =
       Object.values(visibleSegments).filter(Boolean).length;
-    const selectedYearData = chartData.find(
-      (item) => item.year === String(year)
-    );
 
     return (
       <ul className="recharts-default-legend" id="pie-chart-legend">
         {selectedTexts.map((text, index) => {
-          const value = selectedYearData
-            ? (selectedYearData[text.name] || 0).toFixed(1)
-            : "0.0";
+          const num = pieData.find((d) => d.name === text.name)?.value || 0; // Full value
+          const value = num
+            .toLocaleString("fr-FR", {
+              minimumFractionDigits: 0,
+              maximumFractionDigits: 1,
+            })
+            .replace(",", ".");
 
           return (
             <li
@@ -375,6 +378,8 @@ const PieChartComponent = ({ chartInfo }) => {
         ? adjustedAngle + 180
         : adjustedAngle;
 
+    const formattedValue = value.toLocaleString("fr-FR").replace(",", ".");
+
     return (
       <text
         x={xOffset}
@@ -388,7 +393,7 @@ const PieChartComponent = ({ chartInfo }) => {
           fontSize: "12px",
           fontWeight: "bold",
         }}>
-        {value.toLocaleString()}
+        {formattedValue}
       </text>
     );
   };

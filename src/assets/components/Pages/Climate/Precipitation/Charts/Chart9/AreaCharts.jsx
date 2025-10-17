@@ -140,8 +140,7 @@ const AreaCharts = ({ chartInfo }) => {
           <div className="left">
             <button
               className="retry-btn"
-              onClick={() => window.location.reload()}
-            >
+              onClick={() => window.location.reload()}>
               {language === "ge" ? "ხელახლა ცდა" : "Retry"}
             </button>
           </div>
@@ -152,8 +151,7 @@ const AreaCharts = ({ chartInfo }) => {
             <p>{error}</p>
             <button
               className="retry-btn"
-              onClick={() => window.location.reload()}
-            >
+              onClick={() => window.location.reload()}>
               {language === "ge" ? "ხელახლა ჩატვირთვა" : "Reload Chart"}
             </button>
           </div>
@@ -182,8 +180,7 @@ const AreaCharts = ({ chartInfo }) => {
             style={{
               cursor: "pointer",
               opacity: visibleLines[text.name] ? 1 : 0.5,
-            }}
-          >
+            }}>
             <span
               className="recharts-legend-item-icon"
               style={{
@@ -194,8 +191,7 @@ const AreaCharts = ({ chartInfo }) => {
                 height: 12,
                 display: "inline-block",
                 marginRight: 8,
-              }}
-            ></span>
+              }}></span>
             <span className="recharts-legend-item-text">{text.name}</span>
           </li>
         ))}
@@ -224,8 +220,7 @@ const AreaCharts = ({ chartInfo }) => {
                   justifyContent: "space-between",
                   gap: "10px",
                   alignItems: "center",
-                }}
-              >
+                }}>
                 <span>
                   <span
                     style={{
@@ -235,12 +230,11 @@ const AreaCharts = ({ chartInfo }) => {
                       display: "inline-block",
                       marginRight: 8,
                     }}
-                    className="before-span"
-                  ></span>
+                    className="before-span"></span>
                   {text?.name} :
                 </span>
                 <span style={{ fontWeight: 900, marginLeft: "5px" }}>
-                  {value?.toFixed(2)}
+                  {value?.toFixed(0)}
                 </span>
               </p>
             );
@@ -304,9 +298,9 @@ const AreaCharts = ({ chartInfo }) => {
         <AreaChart data={chartData}>
           <CartesianGrid strokeDasharray="3 3" vertical={false} />
           <XAxis dataKey="year" tick={{ fontSize: 15 }} tickLine={false} />
-          <YAxis 
-            tick={{ fontSize: 12 }} 
-            domain={[800, 'dataMax']}
+          <YAxis
+            tick={{ fontSize: 12 }}
+            domain={[800, "dataMax"]}
             allowDataOverflow={false}
           />
           <Tooltip content={<CustomTooltip />} />

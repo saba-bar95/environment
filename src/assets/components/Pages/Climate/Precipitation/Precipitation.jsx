@@ -154,9 +154,11 @@ const Precipitation = () => {
       unit_ge: "თითოეული უჯრა წარმოადგენს წელს",
       unit_en: "Each cell represents a year",
       wrapperStyles: {
-        gridColumn: "1/3",
-        width: "100%",
-        maxWidth: "100%",
+        // gridColumn: "1/3",
+        width: "auto",
+        height: "auto",
+        minHeight: "auto",
+        // maxWidth: "100%",
       },
     },
   ];
@@ -165,8 +167,7 @@ const Precipitation = () => {
     <div className="section-container supply-and-losses">
       <div
         className="background-container"
-        style={{ backgroundImage: `url(${backgroundImg})` }}
-      >
+        style={{ backgroundImage: `url(${backgroundImg})` }}>
         <div className="overlay"></div>
         <h1>
           {language === "en"
@@ -189,7 +190,7 @@ const Precipitation = () => {
           <PieCharts chartInfo={ChartInfo[4]} />
           <BarCharts chartInfo={ChartInfo[5]} />
           <HorizontalBarCharts chartInfo={ChartInfo[6]} />
-          <ScatterCharts chartInfo={ChartInfo[7]} />
+          {/* <ScatterCharts chartInfo={ChartInfo[7]} /> */}
           <AreaCharts9 chartInfo={ChartInfo[8]} />
           <RadialBarChart chartInfo={ChartInfo[9]} />
           <PrecipitationHeatmapChart chartInfo={ChartInfo[10]} />
