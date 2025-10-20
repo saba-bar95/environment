@@ -144,7 +144,7 @@ const GeorgiaMap = ({ selectedYear = 2023, selectedSubstance = null }) => {
 
       // Forest fires API region mapping for new structure
       const regionIdMapping = {
-        "GE-TB": 1,   // Tbilisi
+        "GE-TB": -1,   // Tbilisi (no data)
         "GE-AB": -2,  // Abkhazia (no data)
         "GE-AJ": 2,   // Adjara
         "GE-GU": 3,   // Guria
