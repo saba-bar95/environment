@@ -228,7 +228,8 @@ const Chart2 = ({ chartInfo }) => {
           <p className="text">
             {language === "en" ? "Volume" : "მოცულობა"} :
             <span style={{ fontWeight: 900, marginLeft: "5px" }}>
-              {formatNumber(data.volume)}
+              {formatNumber(data.volume)}{" "}
+              {language === "en" ? "mln m³" : "მლნ მ³"}
             </span>
           </p>
           <p className="text">

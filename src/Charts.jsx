@@ -576,7 +576,7 @@ const rawCharts = {
       disasters: [
         {
           title_ge:
-            "სიკვდიალიანობის წლიური დინამიკა (ყველა სტიქიური მოვლენის დროს)",
+            "სიკვდილიანობის წლიური დინამიკა (ყველა სტიქიური მოვლენის დროს)",
           title_en: "Annual mortality dynamics (during all natural events)",
           path_ge: "სტიქიური მოვლენები საქართველოში",
           path_en: "Natural Disasters in Georgia",

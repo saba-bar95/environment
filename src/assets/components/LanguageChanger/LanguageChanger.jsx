@@ -35,6 +35,7 @@ const LanguageChanger = () => {
     // Preserve current path and update only the language
     const currentPath = location.pathname.split("/").slice(2).join("/");
     navigate(`/${newLanguage}/${currentPath}`);
+    window.location.reload();
   };
 
   useEffect(() => {

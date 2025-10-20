@@ -289,7 +289,7 @@ const SupplyAndLosses = () => {
                 <h1>
                   {language === "en"
                     ? "Connection to wastewater collection system and wastewater treatment facilities"
-                    : "წყალანირებაზე და ჩამდინარე წყლის გამწმენდ ნაგებობებთან მიერთება"}
+                    : "წყალარინება და ჩამდინარე წყლის გამწმენდ ნაგებობებთან მიერთება"}
                 </h1>
                 <p>
                   {language === "en"

@@ -293,7 +293,7 @@ const GeoMapContainer = ({ chartInfo }) => {
               }:</b> ${
               area > 1000000
                 ? (area / 1000000).toFixed(2) + " კმ²"
-                : area.toFixed(2) + `${language === "en" ? " m²" : " მ²"}`
+                : area.toFixed(2) + `${language === "en" ? " ha" : " ჰა"}`
             }</p>
             </div>
           `;
