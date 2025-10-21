@@ -576,8 +576,8 @@ const rawCharts = {
       disasters: [
         {
           title_ge:
-            "სიკვდილიანობის წლიური დინამიკა (ყველა სტიქიური მოვლენის დროს)",
-          title_en: "Annual mortality dynamics (during all natural events)",
+            "გეოლოგიური მოვლენების (მეწყერი, ღვარცოფი) რაოდენობა",
+          title_en: "Number of occurred geological phenomena (landslides, mudflows)",
           path_ge: "სტიქიური მოვლენები საქართველოში",
           path_en: "Natural Disasters in Georgia",
         },

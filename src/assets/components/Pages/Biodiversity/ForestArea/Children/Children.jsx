@@ -24,7 +24,7 @@ const Children = [
     text: inventorizationText,
     background: inventorizationBackground,
     link_ge: "https://mepa.gov.ge/ge/Page/NFI/",
-    link_en: "https://mepa.gov.ge/en/Page/NFI/",
+    link_en: "https://mepa.gov.ge/En/Page/NFI/",
   },
 ];
 
