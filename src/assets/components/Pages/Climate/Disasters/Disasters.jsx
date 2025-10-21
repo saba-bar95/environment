@@ -46,7 +46,7 @@ const Disasters = () => {
       colors: ["#e94d74ff"],
       id: "geological-phenomena",
       types: ["data", "metadata"],
-      selectedIndices: [0, 1],
+      selectedIndices: [0, 2],
       chartID: info[0].chartID,
       unit_ge: "რაოდენობა",
       unit_en: "Quantity",

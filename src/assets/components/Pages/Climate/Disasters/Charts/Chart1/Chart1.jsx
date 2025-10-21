@@ -22,7 +22,7 @@ const BarCharts = ({ chartInfo }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const barName = language === "ge" ? "სულ გარდაცვლილი" : "Total casualties";
+  const barName = language === "ge" ? "შემთხვევების რაოდენობა" : "Number of Cases";
 
   // Fetch and process data
   useEffect(() => {
