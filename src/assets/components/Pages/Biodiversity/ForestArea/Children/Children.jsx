@@ -23,10 +23,8 @@ const Children = [
   {
     text: inventorizationText,
     background: inventorizationBackground,
-    link_ge:
-      "https://app.powerbi.com/view?r=eyJrIjoiNGM3M2ZmOTktYmY1ZS00MTMzLThlOWMtOTA3YzBmNzkwZjE3IiwidCI6ImI5OTlhZTA2LTc3OGItNGEwMi1hMWNiLTBiNWU2ZTg1N2I2ZCIsImMiOjEwfQ%3D%3D",
-    link_en:
-      "https://app.powerbi.com/view?r=eyJrIjoiMmI2NWIyYjMtYWJmNi00NTIwLTkxOWItNTY2ZGI2N2QxYmViIiwidCI6ImI5OTlhZTA2LTc3OGItNGEwMi1hMWNiLTBiNWU2ZTg1N2I2ZCIsImMiOjEwfQ%3D%3D",
+    link_ge: "https://mepa.gov.ge/ge/Page/NFI/",
+    link_en: "https://mepa.gov.ge/en/Page/NFI/",
   },
 ];
 
