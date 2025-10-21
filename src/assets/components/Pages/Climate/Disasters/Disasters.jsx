@@ -48,8 +48,8 @@ const Disasters = () => {
       types: ["data", "metadata"],
       selectedIndices: [0, 1],
       chartID: info[0].chartID,
-      unit_ge: "გარდაცვლილთა რაოდენობა",
-      unit_en: "Number of casualties",
+      unit_ge: "რაოდენობა",
+      unit_en: "Quantity",
     },
     {
       title_ge: info[1].title_ge,
