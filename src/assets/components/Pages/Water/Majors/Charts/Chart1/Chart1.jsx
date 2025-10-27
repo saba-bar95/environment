@@ -253,7 +253,7 @@ const Chart1 = ({ chartInfo }) => {
     <div
       className="chart-wrapper"
       id={chartInfo.chartID}
-      style={{ height: "700px", width: "100%", margin: "auto" }}>
+      style={{ height: "900px", width: "100%", margin: "auto" }}>
       <div className="header">
         <div className="right">
           <div className="ll">
@@ -274,14 +274,14 @@ const Chart1 = ({ chartInfo }) => {
           />
         </div>
       </div>
-      <ResponsiveContainer width="100%" height="90%">
+      <ResponsiveContainer width="100%" height="100%">
         <BarChart data={sortedData} layout="vertical" barCategoryGap="15%">
           <CartesianGrid strokeDasharray="3 3" vertical={false} />
           <XAxis type="number" tick={{ fontSize: 14 }} tickLine={false} />
           <YAxis
             dataKey="name"
             type="category"
-            tick={{ fontSize: 13 }}
+            tick={{ fontSize: 11 }}
             tickLine={false}
             width={100}
           />
