@@ -17,16 +17,12 @@ import Download from "../Download/Download";
 
 const Chart3 = ({ chartInfo }) => {
   const { language } = useParams();
-  const [mobileData, setMobileData] = useState(null);
-  const [stationaryData, setStationaryData] = useState(null);
-  const [mobileSubstances, setMobileSubstances] = useState([]);
-  const [stationarySources, setStationarySources] = useState([]);
-  const [selectedMobileSubstance, setSelectedMobileSubstance] = useState(null);
-  const [selectedStationarySource, setSelectedStationarySource] =
-    useState(null);
+  const [chartData, setChartData] = useState([]);
   const [activeLines, setActiveLines] = useState(["mobile", "stationary"]);
-  const [isLoading, setIsLoading] = useState(true); // Add loading state
-  const [error, setError] = useState(null); // Add error state
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [selectedTexts, setSelectedTexts] = useState([]);
+  const [selectedPollutant, setSelectedPollutant] = useState(null); // New state for selected pollutant
 
   const mobileLabel =
     language === "ge" ? "მობილური წყაროები" : "Mobile Sources";
@@ -44,189 +40,85 @@ const Chart3 = ({ chartInfo }) => {
       mobileId: "transport-emissions",
       stationaryId: "stationary-source-pollution",
       types: ["data", "metadata"],
+      apiID: "atmospheric-emissions",
     }),
     [chartInfo]
   );
 
-  // Fetch mobile data (transport-emissions)
+  // Function to normalize pollutant names to match rawData keys
+  const normalizePollutantKey = (pollutantName) => {
+    const nameMap = {
+      "Sulphur dioxide (SO2)": "SULPHUR",
+      "გოგირდის დიოქსიდი (SO2)": "SULPHUR",
+      "Nitrogen oxides (NOX)": "NITROGEN",
+      "აზოტის ოქსიდები (NOX)": "NITROGEN",
+      "Non-methane volatile organic compounds (NMVOC)": "nmvoc",
+      "არამეთანური აქროლადი ორგანული ნაერთები (NMVOC)": "nmvoc",
+      "Ammonia (NH3)": "AMMONIA",
+      "ამიაკი (NH3)": "AMMONIA",
+      "Carbon monCoxide (CO)": "CARBON",
+      "ნახშირბადის მონოოქსიდი (CO)": "CARBON",
+      "Total suspended particulates (TSP)": "tsp",
+      "მტვრის ნაწილაკები (TSP)": "tsp",
+      "Patriculate matters (PM10)": "pm10",
+      "მყარი ნაწილაკები (PM10)": "pm10",
+      "Patriculate matters (PM2.5)": "pm2.5",
+      "მყარი ნაწილაკები (PM2.5)": "pm2.5",
+    };
+    return nameMap[pollutantName] || pollutantName;
+  };
+
   useEffect(() => {
-    const fetchMobileData = async () => {
+    const getData = async () => {
+      setIsLoading(true);
+      setError(null);
+
       try {
         const [dataResult, metaDataResult] = await Promise.all([
-          commonData(info.mobileId, info.types[0], language),
-          commonData(info.mobileId, info.types[1], language),
+          commonData(info.apiID, info.types[0], language),
+          commonData(info.apiID, info.types[1], language),
         ]);
 
-        const substanceList =
-          metaDataResult.data.metadata.variables[0].valueTexts
-            .map((name, id) => ({ name, id }))
-            .filter((_, i) => [0, 1, 2, 7].includes(i));
+        const valueTexts =
+          metaDataResult?.data?.metadata?.variables[0].valueTexts.map(
+            (region, i) => ({ name: region, id: i })
+          ) || [];
 
-        const yearList =
-          metaDataResult.data.metadata.variables[1].valueTexts.map(
-            (year, id) => ({ year, id })
-          );
+        setSelectedTexts(valueTexts);
+        setSelectedPollutant(valueTexts[0]?.name); // Default to first pollutant
 
-        const transformed = [];
+        const yearData =
+          metaDataResult?.data?.metadata?.variables[1].valueTexts.map(
+            (year, i) => ({ year: year, id: i })
+          ) || [];
 
-        dataResult.data.data.forEach((yearObj) => {
-          const yearId = parseInt(yearObj.year);
-          const yearName =
-            yearList.find((y) => y.id === yearId)?.year || yearId;
+        const rawData = dataResult?.data?.data || [];
 
-          Object.keys(yearObj).forEach((key) => {
-            if (key === "year") return;
+        // Process data for the chart
+        const processedData = yearData
+          .map(({ year }) => {
+            const dataItem = rawData.find((item) => item.year == year);
+            if (!dataItem) return null;
+            return { year, ...dataItem }; // Include all data for flexibility
+          })
+          .filter(Boolean);
 
-            const substanceId = parseInt(key);
-            if (isNaN(substanceId) || ![0, 1, 2, 7].includes(substanceId))
-              return;
-
-            const substanceName =
-              substanceList.find((s) => s.id === substanceId)?.name ||
-              `Substance ${substanceId}`;
-
-            transformed.push({
-              substance: substanceName,
-              year: parseInt(yearName),
-              value: parseFloat(yearObj[key]) || 0,
-              type: "mobile",
-            });
-          });
-        });
-
-        setMobileSubstances(substanceList);
-        setSelectedMobileSubstance(substanceList[0]?.name || null);
-        setMobileData(transformed);
+        setChartData(processedData);
       } catch (error) {
-        console.log("Error fetching mobile data:", error);
-        setError("Failed to load mobile data. Please try again.");
+        console.log("Error fetching data:", error);
+        setError("Failed to load chart data. Please try again.");
+      } finally {
+        setIsLoading(false);
       }
     };
 
-    fetchMobileData();
-  }, [info.mobileId, language, info.types]);
+    getData();
+  }, [language, info]);
 
-  // Fetch stationary data (stationary-source-pollution)
-  useEffect(() => {
-    const fetchStationaryData = async () => {
-      try {
-        const [dataResult, metaDataResult] = await Promise.all([
-          commonData(info.stationaryId, info.types[0], language),
-          commonData(info.stationaryId, info.types[1], language),
-        ]);
-
-        const sourceListUnordered =
-          metaDataResult.data.metadata.variables[0].valueTexts
-            .map((name, id) => ({ name, id }))
-            .filter((s) => [4, 5, 6, 3].includes(s.id));
-
-        // Reorder sourceList to ensure id: 3 is last
-        const desiredOrder = [4, 5, 6, 3];
-        const sourceList = desiredOrder
-          .map((id) => sourceListUnordered.find((s) => s.id === id))
-          .filter((item) => item !== undefined);
-
-        const yearList =
-          metaDataResult.data.metadata.variables[1].valueTexts.map(
-            (year, id) => ({ year, id })
-          );
-
-        const transformed = [];
-
-        dataResult.data.data.forEach((yearObj) => {
-          const yearId = parseInt(yearObj.year);
-          const yearName =
-            yearList.find((y) => y.id === yearId)?.year || yearId;
-
-          Object.keys(yearObj).forEach((key) => {
-            if (key === "year") return;
-
-            const sourceId = parseInt(key);
-            if (isNaN(sourceId) || ![4, 5, 6, 3].includes(sourceId)) return;
-
-            const sourceName =
-              sourceList.find((s) => s.id === sourceId)?.name ||
-              `Source ${sourceId}`;
-
-            transformed.push({
-              source: sourceName,
-              year: parseInt(yearName),
-              value: parseFloat(yearObj[key]) || 0,
-              type: "stationary",
-            });
-          });
-        });
-
-        setStationarySources(sourceList);
-        setSelectedStationarySource(sourceList[0]?.name || null);
-        setStationaryData(transformed);
-      } catch (error) {
-        console.log("Error fetching stationary data:", error);
-        setError("Failed to load stationary data. Please try again.");
-      }
-    };
-
-    fetchStationaryData();
-  }, [info.stationaryId, language, info.types]);
-
-  // Handle loading state management
-  useEffect(() => {
-    if (mobileData !== null && stationaryData !== null) {
-      setIsLoading(false);
-    }
-  }, [mobileData, stationaryData]);
-
-  // Initialize activeLines when data is loaded
-  useEffect(() => {
-    if (mobileData && stationaryData) {
-      setActiveLines(["mobile", "stationary"]);
-    }
-  }, [mobileData, stationaryData]);
-
-  // Combined and filtered data for chart
-  const chartData = useMemo(() => {
-    if (
-      !mobileData ||
-      !stationaryData ||
-      !selectedMobileSubstance ||
-      !selectedStationarySource
-    )
-      return [];
-
-    const mobileFiltered = mobileData
-      .filter(
-        (d) => d.substance === selectedMobileSubstance && d.type === "mobile"
-      )
-      .map((d) => ({ ...d, key: "mobile" }));
-
-    const stationaryFiltered = stationaryData
-      .filter(
-        (d) => d.source === selectedStationarySource && d.type === "stationary"
-      )
-      .map((d) => ({ ...d, key: "stationary", substance: d.source }));
-
-    const years = [
-      ...new Set([
-        ...mobileFiltered.map((d) => d.year),
-        ...stationaryFiltered.map((d) => d.year),
-      ]),
-    ]
-      .filter((year) => year >= 2010 && year <= 2022)
-      .sort((a, b) => a - b);
-
-    const merged = years.map((year) => ({
-      year,
-      mobile: mobileFiltered.find((d) => d.year === year)?.value || 0,
-      stationary: stationaryFiltered.find((d) => d.year === year)?.value || 0,
-    }));
-
-    return merged;
-  }, [
-    mobileData,
-    stationaryData,
-    selectedMobileSubstance,
-    selectedStationarySource,
-  ]);
+  // Handle pollutant selection
+  const handlePollutantSelection = (pollutantName) => {
+    setSelectedPollutant(pollutantName);
+  };
 
   // Toggle line visibility
   const toggleLine = (dataKey) => {
@@ -312,57 +204,6 @@ const Chart3 = ({ chartInfo }) => {
     );
   }
 
-  // Show empty state if no data or no substances/sources
-  if (
-    !mobileData ||
-    mobileData.length === 0 ||
-    !stationaryData ||
-    stationaryData.length === 0 ||
-    mobileSubstances.length === 0 ||
-    stationarySources.length === 0 ||
-    chartData.length === 0
-  ) {
-    return (
-      <div className="chart-wrapper" id={chartInfo.chartID}>
-        <div className="header">
-          <div className="right">
-            <div className="ll">
-              <Svg />
-            </div>
-            <div className="rr">
-              <h1>{language === "ge" ? info.title_ge : info.title_en}</h1>
-              <p>{language === "ge" ? info.unit_ge : info.unit_en}</p>
-            </div>
-          </div>
-          <div className="left">
-            <div className="download-placeholder">
-              {language === "ge"
-                ? "მონაცემები არ მოიძებნა"
-                : "No data to download"}
-            </div>
-          </div>
-        </div>
-        <div className="city-list">
-          {mobileSubstances.map((s) => (
-            <span
-              key={`mobile-${s.id}`}
-              className={`city-item ${
-                selectedMobileSubstance === s.name ? "active" : ""
-              }`}
-              onClick={() => handleMobileSelection(s.name)}>
-              {s.name}
-            </span>
-          ))}
-        </div>
-        <div className="empty-state">
-          <p>
-            {language === "ge" ? "მონაცემები არ მოიძებნა" : "No data available"}
-          </p>
-        </div>
-      </div>
-    );
-  }
-
   const CustomLegend = ({ payload }) => (
     <ul className="recharts-default-legend">
       {payload.map((entry, index) => (
@@ -424,19 +265,15 @@ const Chart3 = ({ chartInfo }) => {
     );
   };
 
-  // Handle mobile substance selection and auto-select corresponding stationary source
-  const handleMobileSelection = (substanceName) => {
-    setSelectedMobileSubstance(substanceName);
-    const selectedMobileIndex = mobileSubstances.find(
-      (s) => s.name === substanceName
-    )?.id;
-    const indexMapping = { 0: 4, 1: 5, 2: 6, 7: 3 };
-    const stationaryIndex = indexMapping[selectedMobileIndex];
-    const stationaryName = stationarySources.find(
-      (s) => s.id === stationaryIndex
-    )?.name;
-    setSelectedStationarySource(stationaryName || null);
-  };
+  // Prepare data for the selected pollutant
+  const pollutantKey = selectedPollutant
+    ? normalizePollutantKey(selectedPollutant)
+    : null;
+  const chartDisplayData = chartData.map((item) => ({
+    year: item.year,
+    mobile: item[`${pollutantKey} - MOBILE`],
+    stationary: item[`${pollutantKey} - STATIONARY`],
+  }));
 
   return (
     <div className="chart-wrapper" id={chartInfo.chartID}>
@@ -452,33 +289,30 @@ const Chart3 = ({ chartInfo }) => {
         </div>
         <div className="left">
           <Download
-            data={chartData}
+            data={chartDisplayData}
             unit={info[`unit_${language}`]}
-            filename={info[`title_${language}`]}
+            filename={`${info[`title_${language}`]}_${selectedPollutant}`}
             isChart3={true}
-            source={selectedStationarySource}
           />
         </div>
       </div>
 
-      {/* Mobile Sources Selector */}
+      {/* Pollutant Selector */}
       <div className="city-list">
-        {mobileSubstances.map((s) => (
+        {selectedTexts.map((s) => (
           <span
-            key={`mobile-${s.id}`}
+            key={`pollutant-${s.id}`}
             className={`city-item ${
-              selectedMobileSubstance === s.name ? "active" : ""
+              selectedPollutant === s.name ? "active" : ""
             }`}
-            onClick={() => handleMobileSelection(s.name)}>
+            onClick={() => handlePollutantSelection(s.name)}>
             {s.name}
           </span>
         ))}
       </div>
 
-      {/* Stationary Sources - Hidden selector, auto-selected based on mobile selection */}
-
       <ResponsiveContainer width="100%" height={460}>
-        <LineChart data={chartData}>
+        <LineChart data={chartDisplayData}>
           <CartesianGrid strokeDasharray="3 3" vertical={false} />
           <XAxis dataKey="year" tick={{ fontSize: 15 }} tickLine={false} />
           <YAxis tick={{ fontSize: 12 }} />
