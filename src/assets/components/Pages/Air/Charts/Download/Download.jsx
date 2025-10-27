@@ -19,7 +19,6 @@ const Download = ({
   isChart1,
   isChart2,
   isChart3,
-  source,
 }) => {
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef(null); // Create a ref for the dropdown
@@ -74,8 +73,7 @@ const Download = ({
                   language,
                   isChart1,
                   isChart2,
-                  isChart3,
-                  source
+                  isChart3
                 );
                 setOpen(false); // Close dropdown
               }}>
@@ -93,8 +91,7 @@ const Download = ({
                   language,
                   isChart1,
                   isChart2,
-                  isChart3,
-                  source
+                  isChart3
                 );
                 setOpen(false); // Close dropdown
               }}>

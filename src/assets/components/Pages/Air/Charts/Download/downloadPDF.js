@@ -10,8 +10,7 @@ const downloadPDF = (
   language,
   isChart1,
   isChart2,
-  isChart3,
-  source
+  isChart3
 ) => {
   const isGeorgian = language === "ge";
 
@@ -57,7 +56,7 @@ const downloadPDF = (
     });
 
     const finalFilename = isGeorgian
-      ? `${filename} (${unit}) (${year}toLowerCase() ${yearHeader}).pdf`
+      ? `${filename} (${unit}) (${year} ${yearHeader}).pdf`
       : `${filename} (${unit.toLowerCase()}) (${year} ${yearHeader.toLowerCase()}).pdf`;
 
     doc.save(finalFilename);
@@ -94,7 +93,7 @@ const downloadPDF = (
 
     const finalFilename = isGeorgian
       ? `${filename} (${unit}) (${data[0].region}).pdf`
-      : `${filename} (${unit.toLowerCase()}) (${data[0]}).pdf`;
+      : `${filename} (${unit.toLowerCase()}) (${data[0].region}).pdf`;
 
     doc.save(finalFilename);
 
@@ -126,8 +125,8 @@ const downloadPDF = (
     });
 
     const finalFilename = isGeorgian
-      ? `${filename} (${source}).pdf`
-      : `${filename} (${unit.toLowerCase()}) (${source.toLowerCase()}).pdf`;
+      ? `${filename}.pdf`
+      : `${filename} (${unit.toLowerCase()}).pdf`;
 
     doc.save(finalFilename);
   }

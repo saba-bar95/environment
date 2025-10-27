@@ -8,8 +8,7 @@ const downloadExcel = (
   language,
   isChart1,
   isChart2,
-  isChart3,
-  source
+  isChart3
 ) => {
   const isGeorgian = language === "ge";
 
@@ -64,7 +63,7 @@ const downloadExcel = (
 
     const finalFilename = isGeorgian
       ? `${filename} (${unit}) (${data[0].region}).xlsx`
-      : `${filename} (${unit.toLowerCase()}) (${data[0]}).xlsx`;
+      : `${filename} (${unit.toLowerCase()}) (${data[0].region}).xlsx`;
 
     // Generate the Excel file and trigger the download
     XLSX.writeFile(workbook, `${finalFilename}`);
@@ -88,8 +87,8 @@ const downloadExcel = (
     XLSX.utils.book_append_sheet(workbook, worksheet, "Data");
 
     const finalFilename = isGeorgian
-      ? `${filename} (${unit}) (${source}).xlsx`
-      : `${filename} (${unit.toLowerCase()}) (${source.toLowerCase()}).xlsx`;
+      ? `${filename} (${unit}).xlsx`
+      : `${filename} (${unit.toLowerCase()}).xlsx`;
 
     XLSX.writeFile(workbook, `${finalFilename}`);
     return;
