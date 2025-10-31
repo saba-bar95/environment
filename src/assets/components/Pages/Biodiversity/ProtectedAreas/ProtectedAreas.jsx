@@ -8,6 +8,7 @@ import Footer from "./Footer/Footer";
 import LineChart1 from "./Charts/LineCharts";
 import VerticalBarCharts from "./Charts/VerticalBarCharts";
 import { useState } from "react";
+import LineChartKurtsik from "./Charts/LineChartKurtsik";
 
 const ProtectedAreas = () => {
   const { language } = useParams();
@@ -170,7 +171,7 @@ const ProtectedAreas = () => {
           </div>
           <LineChart1 chartInfo={ChartInfo[1]} />
           <LineChart1 chartInfo={ChartInfo[2]} />
-          <LineChart1 chartInfo={ChartInfo[3]} />
+          <LineChartKurtsik chartInfo={ChartInfo[3]} />
           <VerticalBarCharts chartInfo={ChartInfo[4]} />
           <div
             className="header-container1"
