@@ -26,13 +26,24 @@ const Header = () => {
   const isEnglish = language === "en";
 
   useEffect(() => {
+    const SCROLL_THRESHOLD = 25; // Change this value to adjust sensitivity (e.g., 80, 120)
+    let scrollBuffer = 0;
+
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
 
       if (currentScrollY < lastScrollY) {
-        setIsSticky(true); // scrolling up
+        // Scrolling UP
+        const scrolledUp = lastScrollY - currentScrollY;
+        scrollBuffer += scrolledUp;
+
+        if (scrollBuffer >= SCROLL_THRESHOLD) {
+          setIsSticky(true);
+        }
       } else {
-        setIsSticky(false); // scrolling down
+        // Scrolling DOWN
+        setIsSticky(false);
+        scrollBuffer = 0; // Reset buffer when going down
       }
 
       setLastScrollY(currentScrollY);
