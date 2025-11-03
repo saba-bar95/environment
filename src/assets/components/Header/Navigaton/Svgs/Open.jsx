@@ -1,4 +1,4 @@
-const Open = () => {
+const Open = ({ color }) => {
   return (
     <svg
       width="8"
@@ -8,7 +8,7 @@ const Open = () => {
       xmlns="http://www.w3.org/2000/svg">
       <path
         d="M7 1L4 4L1 1"
-        stroke="white"
+        stroke={color}
         strokeLinecap="round"
         strokeLinejoin="round"
       />

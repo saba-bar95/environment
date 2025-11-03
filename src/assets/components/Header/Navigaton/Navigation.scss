@@ -13,6 +13,7 @@
     margin: 0;
     padding: 0;
     justify-content: center;
+    flex-wrap: wrap;
 
     li {
       position: relative;
@@ -219,68 +220,9 @@
   }
 }
 
-// Mobile screens (0–767px)
-@media only screen and (min-width: 0) and (max-width: calc($mobile - 1px)) {
+@media only screen and (min-width: 0) and (max-width: 920px) {
   .navigation-container {
-    ul {
-      gap: 5px;
-      overflow-x: scroll;
-      justify-content: initial;
-      max-width: 90%;
-      margin: auto;
-      padding-bottom: 5px;
-
-      &::-webkit-scrollbar {
-        height: 6px; // Horizontal scrollbar thickness
-      }
-
-      &::-webkit-scrollbar-thumb {
-        background: #084e99;
-        border-radius: 10px;
-        cursor: pointer;
-      }
-
-      &::-webkit-scrollbar-track {
-        background: #b9c3c9; // Track color
-        border-radius: 10px;
-        cursor: pointer;
-      }
-
-      li {
-        font-size: 11px;
-
-        .icon-wrapper {
-          padding-right: 3px;
-        }
-
-        .link-span {
-          padding: 12px 6px;
-        }
-        a.link {
-          padding: 12px 5px;
-        }
-
-        .dropdown-container {
-          .dropdown-content {
-            padding: 10px;
-            grid-template-columns: 1fr;
-
-            a {
-              .links-wrapper {
-                min-width: 140px;
-                font-size: 11px;
-                padding: 3px 6px;
-                gap: 8px;
-
-                svg {
-                  width: 25px;
-                }
-              }
-            }
-          }
-        }
-      }
-    }
+    padding: 10px;
   }
 }
 
