@@ -1,12 +1,64 @@
-# React + Vite
+## ⚡ Project: Energy Statistics Portal
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A **modern, open-source web platform** that aggregates and visualizes **Georgia’s key environmental indicators** in real time. Explore trends in **air quality, biodiversity, water, climate, transport emissions, energy, waste**, and more — through interactive dashboards and intuitive charts.
 
-Currently, two official plugins are available:
+Built for **policymakers, researchers, and the public**, it delivers **data-driven insights** into Georgia’s environmental performance in a clean, accessible format.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## Expanding the ESLint configuration
+## ✨ Features
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- 🔍 **Smart search** – find any indicator instantly
+- 📊 **Interactive visualizations** powered by [Recharts](https://recharts.org/)
+- 🗂️ **Thematic dashboards**: Air, Water, Climate, Energy, Waste, Biodiversity, Economic Accounts
+- 📈 **Deep breakdowns**: by resource, time-series, balance tables
+- 💾 **Export options**: PDF, Excel, JPG, PNG
+- 🌐 **Bilingual interface**: Georgian (`/ge`) | English (`/en`)
+- 📱 **Fully responsive** – seamless on mobile, tablet, desktop
+
+---
+
+## 🖼️ Screenshot
+
+![Dashboard Overview](./assets/overview.png)
+
+---
+
+## 🚀 Live Demo
+
+🔗 **[environment-statistics-portal.vercel.app](https://environment-statistics-portal.vercel.app/)**  
+_(Toggle language in the top-right corner)_
+
+---
+
+## 📊 Data Sources
+
+All data is sourced from **official Georgian institutions**, including:
+
+- [National Statistics Office of Georgia (Geostat)](https://www.geostat.ge/en)
+- [Ministry of Environmental Protection and Agriculture of Georgia](https://mepa.gov.ge/En)
+- Other government agencies
+
+---
+
+## 🛠️ Tech Stack
+
+- ⚛️ **Frontend:** [React](https://reactjs.org/)
+- 📈 **Charts & Visualization:** [Recharts](https://recharts.org/)
+- 🎨 **Styling:** [SCSS](https://sass-lang.com/)
+- 🚀 **Deployment:** [Vercel](https://vercel.com/)
+
+---
+
+## 🔧 Getting Started Locally
+
+```bash
+git clone https://github.com/saba-bar95/environment.git
+cd environment
+npm install
+npm run dev
+```
+
+### 👨‍💻 Author
+
+[Saba Barbakadze – GitHub Profile](https://github.com/saba-bar95)
