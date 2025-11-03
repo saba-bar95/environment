@@ -20,7 +20,7 @@ Built for **policymakers, researchers, and the public**, it delivers **data-driv
 
 ## 🖼️ Screenshot
 
-![Dashboard Overview](./assets/overview.png)
+![Dashboard Overview](overview.png)
 
 ---
 
