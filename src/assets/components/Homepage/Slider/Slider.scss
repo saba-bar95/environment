@@ -212,7 +212,7 @@
 
         .navigation {
           display: flex;
-          gap: 10px;
+          gap: 5px;
 
           button {
             display: flex;
@@ -734,8 +734,8 @@
     margin: 0 10px;
 
     .slider-container {
-      padding: 10px 15px;
-      gap: 15px;
+      padding: 5px;
+      gap: 40px;
       border-radius: 15px;
 
       &.slide-right::before {
@@ -827,7 +827,7 @@
       }
 
       .bot-side {
-        gap: 15px;
+        gap: 10px;
         align-items: center;
 
         .right {

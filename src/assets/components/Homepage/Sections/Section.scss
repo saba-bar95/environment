@@ -14,9 +14,9 @@
       display: flex;
       align-items: center;
       background-color: #f3f5f7;
-      padding: 20px 30px;
+      padding: 15px 20px;
       border-radius: 15px;
-      gap: 10px;
+      gap: 20px;
       cursor: pointer;
       transition: background-color 0.4s ease, box-shadow 0.4s ease,
         transform 0.4s ease;
@@ -34,6 +34,7 @@
           font-size: 16px;
           text-transform: capitalize;
           font-family: FiraGORegular;
+          word-break: break-word; /* Better for hyphenation fallback */
         }
 
         p {
@@ -116,7 +117,7 @@
     .section-wrapper {
       padding: 15px;
       min-height: 250px; /* Adjusted for mobile content stacking */
-      max-width: 400px;
+      max-width: 350px;
       margin: auto;
       gap: 15px;
 
@@ -148,6 +149,8 @@
     .section-wrapper {
       padding: 15px 20px;
       min-height: 160px;
+      max-width: 400px;
+      margin: auto;
 
       .left {
         gap: 15px;

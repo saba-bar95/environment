@@ -215,6 +215,7 @@
 
     .recharts-default-legend {
       gap: 15px;
+      flex-wrap: wrap;
 
       .recharts-legend-item {
         .recharts-legend-item-text {
