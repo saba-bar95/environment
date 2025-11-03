@@ -91,7 +91,7 @@ const Slider = () => {
     <div className="slider">
       <div
         className={`slider-container ${
-          currentIndex === 3 ? "third-slide" : ""
+          currentIndex === 4 ? "third-slide" : ""
         }`}
         style={{ "--background-image": `url(${currentSlide.background1})` }}>
         <div className="dark-layer" />
