@@ -101,7 +101,11 @@ const Navigation = () => {
                             ? "close-icon"
                             : "open-icon"
                         }`}>
-                        {hoveredSectionId === section.id ? <Close /> : <Open />}
+                        {hoveredSectionId === section.id ? (
+                          <Close color="#ffffff" />
+                        ) : (
+                          <Open color="#ffffff" />
+                        )}
                       </span>
                     </div>
                   )}
