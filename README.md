@@ -1,6 +1,6 @@
-## ⚡ Project: Energy Statistics Portal
+## ⚡ Project: Environmental Statistics Portal
 
-A **modern, open-source web platform** that aggregates and visualizes **Georgia’s key environmental indicators** in real time. Explore trends in **air quality, biodiversity, water, climate, transport emissions, energy, waste**, and more — through interactive dashboards and intuitive charts.
+**Environmental Statistics Portal – Georgia Edition** is a web-based platform that aggregates and visualizes **Georgia’s key environmental indicators** in real time. Explore trends in **air quality, biodiversity, water, climate, transport emissions, energy, waste**, and more — through interactive dashboards and intuitive charts.
 
 Built for **policymakers, researchers, and the public**, it delivers **data-driven insights** into Georgia’s environmental performance in a clean, accessible format.
 
