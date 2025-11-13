@@ -53,10 +53,10 @@ const HorizontalBarCharts = ({ chartInfo }) => {
 
         const rawData = dataResult?.data?.data || [];
 
-        // Get data for 2022
-        const data2022 = rawData.find((item) => item.year === 2022);
+        // Get data for 2024
+        const data2024 = rawData.find((item) => item.year === 2024);
 
-        if (!data2022) {
+        if (!data2024) {
           setChartData([]);
           setDownloadData([]);
           return;
@@ -65,8 +65,8 @@ const HorizontalBarCharts = ({ chartInfo }) => {
         // Create ApexCharts RangeBar format
         // Series should have one entry with data array containing {x: region, y: [min, max]}
         const rangeData = regions.map((region) => {
-          const minValue = parseFloat(data2022[String(region.minIndex)]) || 0;
-          const maxValue = parseFloat(data2022[String(region.maxIndex)]) || 0;
+          const minValue = parseFloat(data2024[String(region.minIndex)]) || 0;
+          const maxValue = parseFloat(data2024[String(region.maxIndex)]) || 0;
 
           return {
             x: region.name,
@@ -78,7 +78,7 @@ const HorizontalBarCharts = ({ chartInfo }) => {
         const apexData = [
           {
             name:
-              language === "ge" ? "დიაპაზონი 2022 წლისთვის" : "Range for 2022",
+              language === "ge" ? "დიაპაზონი 2024 წლისთვის" : "Range for 2024",
             data: rangeData,
           },
         ];
@@ -87,11 +87,11 @@ const HorizontalBarCharts = ({ chartInfo }) => {
 
         // Create flat format for Download component (Excel/PDF)
         const flatData = regions.map((region) => {
-          const minValue = parseFloat(data2022[String(region.minIndex)]) || 0;
-          const maxValue = parseFloat(data2022[String(region.maxIndex)]) || 0;
+          const minValue = parseFloat(data2024[String(region.minIndex)]) || 0;
+          const maxValue = parseFloat(data2024[String(region.maxIndex)]) || 0;
 
           return {
-            year: 2022, // Add year for Excel/PDF download
+            year: 2024, // Add year for Excel/PDF download
             [language === "ge" ? "რეგიონი" : "Region"]: region.name,
             [language === "ge" ? "მინიმალური" : "Minimum"]: minValue,
             [language === "ge" ? "მაქსიმალური" : "Maximum"]: maxValue,
@@ -163,8 +163,7 @@ const HorizontalBarCharts = ({ chartInfo }) => {
           <div className="left">
             <button
               className="retry-btn"
-              onClick={() => window.location.reload()}
-            >
+              onClick={() => window.location.reload()}>
               {language === "ge" ? "ხელახლა ცდა" : "Retry"}
             </button>
           </div>
@@ -175,8 +174,7 @@ const HorizontalBarCharts = ({ chartInfo }) => {
             <p>{error}</p>
             <button
               className="retry-btn"
-              onClick={() => window.location.reload()}
-            >
+              onClick={() => window.location.reload()}>
               {language === "ge" ? "ხელახლა ჩატვირთვა" : "Reload Chart"}
             </button>
           </div>
@@ -244,14 +242,14 @@ const HorizontalBarCharts = ({ chartInfo }) => {
               <p class="tooltip-label">${regionName}</p>
               <p class="text">
                 <span class="before-span" style="background-color: #f59e0b; width: 12px; height: 12px; display: inline-block; margin-right: 8px;"></span>
-                ${language === "ge" ? "მინიმალური (2022)" : "Minimum (2022)"}: 
+                ${language === "ge" ? "მინიმალური (2024)" : "Minimum (2024)"}: 
                 <span style="font-weight: 900; margin-left: 5px;">${minValue.toFixed(
                   0
                 )} ${unit}</span>
               </p>
               <p class="text">
                 <span class="before-span" style="background-color: #f59e0b; width: 12px; height: 12px; display: inline-block; margin-right: 8px;"></span>
-                ${language === "ge" ? "მაქსიმალური (2022)" : "Maximum (2022)"}: 
+                ${language === "ge" ? "მაქსიმალური (2024)" : "Maximum (2024)"}: 
                 <span style="font-weight: 900; margin-left: 5px;">${maxValue.toFixed(
                   0
                 )} ${unit}</span>

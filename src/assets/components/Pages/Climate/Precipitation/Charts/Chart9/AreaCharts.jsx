@@ -297,7 +297,7 @@ const AreaCharts = ({ chartInfo }) => {
       <ResponsiveContainer width="100%" height={460}>
         <AreaChart data={chartData}>
           <CartesianGrid strokeDasharray="3 3" vertical={false} />
-          <XAxis dataKey="year" tick={{ fontSize: 15 }} tickLine={false} />
+          <XAxis dataKey="year" tick={{ fontSize: 13 }} tickLine={false} />
           <YAxis
             tick={{ fontSize: 12 }}
             domain={[800, "dataMax"]}

@@ -77,11 +77,11 @@ const RadarCharts = ({ chartInfo }) => {
       language === "ge"
         ? [
             { key: "1990", name: "1990 წელი" },
-            { key: "2022", name: "2022 წელი" },
+            { key: "2024", name: "2024 წელი" },
           ]
         : [
             { key: "1990", name: "1990" },
-            { key: "2022", name: "2022" },
+            { key: "2024", name: "2024" },
           ],
     [language]
   );
@@ -109,9 +109,9 @@ const RadarCharts = ({ chartInfo }) => {
 
         const rawData = dataResult.data.data || [];
 
-        // Filter data for 1990 and 2022
+        // Filter data for 1990 and 2024
         const filteredData = rawData.filter(
-          (item) => item.year === 1990 || item.year === 2022
+          (item) => item.year === 1990 || item.year === 2024
         );
 
         // Process data for the radar chart

@@ -308,7 +308,7 @@ const LineChart1 = ({ chartInfo }) => {
       <ResponsiveContainer width="100%" height={460}>
         <LineChart data={chartData}>
           <CartesianGrid strokeDasharray="3 3" vertical={false} />
-          <XAxis dataKey="year" tick={{ fontSize: 15 }} tickLine={false} />
+          <XAxis dataKey="year" tick={{ fontSize: 13 }} tickLine={false} />
           <YAxis tick={{ fontSize: 12 }} />
           <Tooltip content={<CustomTooltip />} />
           <Legend

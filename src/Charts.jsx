@@ -575,9 +575,9 @@ const rawCharts = {
     {
       disasters: [
         {
-          title_ge:
-            "გეოლოგიური მოვლენების (მეწყერი, ღვარცოფი) რაოდენობა",
-          title_en: "Number of occurred geological phenomena (landslides, mudflows)",
+          title_ge: "გეოლოგიური მოვლენების (მეწყერი, ღვარცოფი) რაოდენობა",
+          title_en:
+            "Number of occurred geological phenomena (landslides, mudflows)",
           path_ge: "სტიქიური მოვლენები საქართველოში",
           path_en: "Natural Disasters in Georgia",
         },
@@ -667,8 +667,8 @@ const rawCharts = {
           path_en: "Air Temperature",
         },
         {
-          title_ge: "გურიის პროფილი (2022 წ. საბაზისოსთან შედარებით)",
-          title_en: "Guria Profile (Compared to 2022 Baseline)",
+          title_ge: "გურიის პროფილი (საბაზისოსთან შედარებით)",
+          title_en: "Guria Profile (Compared to Baseline)",
           path_ge: "ჰაერის ტემპერატურა",
           path_en: "Air Temperature",
         },
@@ -724,8 +724,8 @@ const rawCharts = {
           path_en: "Atmospheric Precipitation",
         },
         {
-          title_ge: "თვიური ნალექების დიაპაზონი რეგიონების მიხედვით (2022)",
-          title_en: "Monthly precipitation range by region (2022)",
+          title_ge: "თვიური ნალექების დიაპაზონი რეგიონების მიხედვით",
+          title_en: "Monthly precipitation range by region",
           path_ge: "ატმოსფერული ნალექები",
           path_en: "Atmospheric Precipitation",
         },
@@ -742,8 +742,8 @@ const rawCharts = {
           path_en: "Atmospheric Precipitation",
         },
         {
-          title_ge: "2022 წლის ნალექები ისტორიულ საშუალოსთან შედარებით",
-          title_en: "2022 precipitation compared to historical average",
+          title_ge: "მიმდინარე წლის ნალექები ისტორიულ საშუალოსთან შედარებით",
+          title_en: "Current year precipitation compared to historical average",
           path_ge: "ატმოსფერული ნალექები",
           path_en: "Atmospheric Precipitation",
         },

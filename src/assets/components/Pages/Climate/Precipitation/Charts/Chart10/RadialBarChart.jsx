@@ -34,7 +34,7 @@ const RadialBarChartComponent = ({ chartInfo }) => {
 
         // Custom mapping for atmospheric-precipitation data indices to region names
         // Variable: ნალექის წლიური გადახრა ნალექის ისტორიული საშუალო რაოდენობიდან (%)
-        // Based on API data for 2022:
+        // Based on API data for 2024:
         // Index 2: საქართველო = 0.93
         // Index 7: თბილისი = 0.94
         // Index 12: სამეგრელო-ზემო სვანეთი = 0.93
@@ -49,22 +49,24 @@ const RadialBarChartComponent = ({ chartInfo }) => {
           17: language === "ge" ? "ქვემო ქართლი" : "Kvemo Kartli",
         };
 
-        // Get 2022 year data specifically
-        const data2022 = rawData.find((item) => item.year === 2022);
+        // Get 2024 year data specifically
+        const data2024 = rawData.find((item) => item.year === 2024);
 
-        if (!data2022) {
-          throw new Error("No data available for 2022");
+        if (!data2024) {
+          throw new Error("No data available for 2024");
         }
 
         // Process data for radial bar chart
         const processedData = chartInfo.selectedIndices.map((index, i) => {
-          const value = parseFloat(data2022[String(index)]) || 0;
-          // Convert to percentage (0.93 -> 93)
+          const value = parseFloat(data2024[String(index)]) || 0;
           const percentValue = value * 100;
+
+          // Format to 1 decimal place AND convert to number
+          const formattedValue = Number(percentValue.toFixed(1));
 
           return {
             name: regionMapping[index],
-            value: percentValue,
+            value: formattedValue,
             fill: chartInfo.colors[i % chartInfo.colors.length],
           };
         });
@@ -229,7 +231,7 @@ const RadialBarChartComponent = ({ chartInfo }) => {
                   marginRight: 8,
                 }}
                 className="before-span"></span>
-              {language === "ge" ? "2022 წლის გადახრა" : "2022 Deviation"} :
+              {language === "ge" ? "2024 წლის გადახრა" : "2024 Deviation"} :
             </span>
             <span style={{ fontWeight: 900, marginLeft: "5px" }}>
               {data.value?.toFixed(0)}%
