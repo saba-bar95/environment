@@ -157,8 +157,33 @@ const GeoMapContainer = ({ chartInfo }) => {
 
   // Map initialization
   useEffect(() => {
-    // Initialize map
-    mapInstanceRef.current = L.map(mapRef.current).setView([42.1, 43.5], 7.6);
+    // Initialize map with scroll zoom disabled by default
+    mapInstanceRef.current = L.map(mapRef.current, {
+      scrollWheelZoom: false, // Disabled by default
+    }).setView([42.1, 43.5], 7.6);
+
+    const map = mapInstanceRef.current;
+
+    // === CTRL + SCROLL ZOOM ONLY ===
+    const enableScrollZoom = (e) => {
+      if (e.ctrlKey || e.metaKey) {
+        map.scrollWheelZoom.enable();
+      }
+    };
+
+    const disableScrollZoom = (e) => {
+      if (!e.ctrlKey && !e.metaKey) {
+        map.scrollWheelZoom.disable();
+      }
+    };
+
+    // Listen for Ctrl/Cmd key
+    document.addEventListener("keydown", enableScrollZoom);
+    document.addEventListener("keyup", disableScrollZoom);
+    // Also handle mouse leave to be safe
+    map
+      .getContainer()
+      .addEventListener("mouseleave", () => map.scrollWheelZoom.disable());
 
     // Add municipalities layer
     const layerOptions = {
@@ -179,7 +204,7 @@ const GeoMapContainer = ({ chartInfo }) => {
 
     L.tileLayer
       .wms("https://census-map.geostat.ge/geoserver/wms", layerOptions)
-      .addTo(mapInstanceRef.current);
+      .addTo(map);
 
     protectedAreasLayerRef.current = L.tileLayer
       .wms("https://census-map.geostat.ge/geoserver/wms", {
@@ -192,16 +217,13 @@ const GeoMapContainer = ({ chartInfo }) => {
         tiled: true,
         styles: "census:polygon-daculi",
       })
-      .addTo(mapInstanceRef.current);
+      .addTo(map);
 
     // Add scale control
-    L.control
-      .scale({ position: "bottomleft", imperial: false })
-      .addTo(mapInstanceRef.current);
+    L.control.scale({ position: "bottomleft", imperial: false }).addTo(map);
 
     // Add legend control
     const legend = L.control({ position: "bottomright" });
-
     legend.onAdd = () => {
       const div = L.DomUtil.create("div", "info legend");
       legendRef.current = div;
@@ -216,7 +238,7 @@ const GeoMapContainer = ({ chartInfo }) => {
       L.DomEvent.disableClickPropagation(div);
       return div;
     };
-    legend.addTo(mapInstanceRef.current);
+    legend.addTo(map);
 
     // Set global toggleCategory for legend clicks
     window.toggleCategory = toggleCategory;
@@ -224,11 +246,11 @@ const GeoMapContainer = ({ chartInfo }) => {
     // Initial update of CQL filter
     updateCQLFilter();
 
-    // Map click handler
-    mapInstanceRef.current.on("click", async (e) => {
-      const point = mapInstanceRef.current.latLngToContainerPoint(e.latlng);
-      const size = mapInstanceRef.current.getSize();
-      const bounds = mapInstanceRef.current.getBounds();
+    // Map click handler (unchanged)
+    map.on("click", async (e) => {
+      const point = map.latLngToContainerPoint(e.latlng);
+      const size = map.getSize();
+      const bounds = map.getBounds();
       const sw = bounds.getSouthWest();
       const ne = bounds.getNorthEast();
 
@@ -266,7 +288,6 @@ const GeoMapContainer = ({ chartInfo }) => {
           if (props.kategoria) {
             const name =
               language === "en" ? props.NameENG : props.NameGEO || "N/A";
-
             const category =
               language === "en" ? props.Type : props.kategoria || "N/A";
             const area = parseFloat(props.Area) || 0;
@@ -303,7 +324,7 @@ const GeoMapContainer = ({ chartInfo }) => {
 
             popupContent = `
             <div class="popup-header">
-              🏛️ ${language === "en" ? "Municipality" : "მუნიციპალიტეტი"}
+              Municipality
             </div>
             <div style="padding: 10px;">
               <p style="margin: 8px 0;"><b>${
@@ -313,18 +334,21 @@ const GeoMapContainer = ({ chartInfo }) => {
           `;
           }
 
-          L.popup()
-            .setLatLng(e.latlng)
-            .setContent(popupContent)
-            .openOn(mapInstanceRef.current);
+          L.popup().setLatLng(e.latlng).setContent(popupContent).openOn(map);
         }
       } catch (error) {
         console.error("GetFeatureInfo Error:", error);
       }
     });
 
+    // === CLEANUP ===
     return () => {
-      mapInstanceRef.current.remove();
+      document.removeEventListener("keydown", enableScrollZoom);
+      document.removeEventListener("keyup", disableScrollZoom);
+      map
+        .getContainer()
+        .removeEventListener("mouseleave", () => map.scrollWheelZoom.disable());
+      map.remove();
     };
   }, [
     categoryColors,
