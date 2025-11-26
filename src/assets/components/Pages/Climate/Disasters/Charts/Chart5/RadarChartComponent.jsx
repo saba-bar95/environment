@@ -97,13 +97,13 @@ const RadarChartComponent = ({ chartInfo }) => {
 
         // If no specific year is selected, show yearly totals (current behavior)
         if (!year) {
+          // Yearly totals (all years)
           const processedData = yearData
             .map(({ year: yearStr, id: yearId }) => {
-              const dataItem = rawData.find((item) => {
-                return Number(item.year) === yearId;
-              });
+              const dataItem = rawData[yearId]; // ← Use index, not find!
 
               if (!dataItem) return null;
+
               const dataPoint = { year: yearStr };
               selected.forEach((text) => {
                 let total = 0;
@@ -118,37 +118,32 @@ const RadarChartComponent = ({ chartInfo }) => {
             .filter(Boolean);
 
           setChartData(processedData);
-        }
-        // If a year is selected, show monthly data for that year
-        else {
-          const selectedYearId = yearData.find(
+        } else {
+          // Monthly view for selected year
+          const selectedYearObj = yearData.find(
             (item) => item.year === year.toString()
-          )?.id;
+          );
+          const yearId = selectedYearObj?.id;
 
-          if (selectedYearId !== undefined) {
-            const dataItem = rawData.find(
-              (item) => Number(item.year) === selectedYearId
-            );
-
-            if (dataItem) {
-              const processedData = actualMonthNames
-                .slice(0, 12)
-                .map((monthName, monthIndex) => {
-                  const dataPoint = { month: monthName };
-                  selected.forEach((text) => {
-                    const key = `${text.id} - ${monthIndex}`;
-                    dataPoint[text.name] = Number(dataItem[key] || 0);
-                  });
-                  return dataPoint;
-                });
-
-              setChartData(processedData);
-            } else {
-              setChartData([]);
-            }
-          } else {
+          if (yearId === undefined || !rawData[yearId]) {
             setChartData([]);
+            return;
           }
+
+          const dataItem = rawData[yearId]; // ← Direct access by index
+
+          const processedData = actualMonthNames
+            .slice(0, 12)
+            .map((monthName, monthIndex) => {
+              const dataPoint = { month: monthName };
+              selected.forEach((text) => {
+                const key = `${text.id} - ${monthIndex}`;
+                dataPoint[text.name] = Number(dataItem[key] || 0);
+              });
+              return dataPoint;
+            });
+
+          setChartData(processedData);
         }
       } catch (error) {
         console.log("Error fetching data:", error);

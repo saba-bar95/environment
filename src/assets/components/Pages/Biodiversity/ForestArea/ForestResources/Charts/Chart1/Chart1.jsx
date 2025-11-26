@@ -12,7 +12,7 @@ const Chart1 = ({ chartInfo }) => {
   const [forestData, setForestData] = useState(null);
   const [substanceList, setSubstanceList] = useState([]);
   const [selectedSubstance, setSelectedSubstance] = useState(null);
-  const [year, setYear] = useState(2023);
+  const [year, setYear] = useState(2024);
   const [years, setYears] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);

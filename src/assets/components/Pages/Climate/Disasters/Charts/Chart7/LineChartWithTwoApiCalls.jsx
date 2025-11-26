@@ -67,37 +67,27 @@ const LineChartWithTwoApiCalls = ({ chartInfo }) => {
           // Get raw disaster data
           const disasterRawData = disasterDataResult?.data?.data || [];
 
-          // Create year mapping for natural disasters
-          const yearMapping = disasterYearData.reduce((acc, item) => {
-            acc[item.id] = item.year;
-            return acc;
-          }, {});
-
           // Process natural disaster data (excluding December - month 12)
-          disasterProcessedData = disasterRawData
-            .map((yearEntry, yearIndex) => {
-              const yearId =
-                typeof yearEntry.year === "string"
-                  ? parseInt(yearEntry.year)
-                  : yearEntry.year;
-              const actualYear = yearMapping[yearId] || `Year ${yearIndex}`;
+          // BEST & SAFEST WAY: Use the metadata order directly
+          disasterProcessedData = disasterYearData
+            .map(({ year, id: yearIndex }) => {
+              if (Number(year) < 2013) return null;
 
-              if (Number(actualYear) < 2013) return null;
+              const yearEntry = disasterRawData[yearIndex]; // ← Direct index access!
+
+              if (!yearEntry) return null;
 
               let total = 0;
 
-              // Iterate through each disaster type (0-5) and each month (0-11 only)
               disasterValueTexts.forEach((disaster) => {
                 for (let month = 0; month < 12; month++) {
-                  // Only months 0-11 (January to November)
+                  // Jan–Nov only
                   const key = `${disaster.id} - ${month}`;
-                  if (Object.prototype.hasOwnProperty.call(yearEntry, key)) {
-                    total += yearEntry[key] || 0;
-                  }
+                  total += Number(yearEntry[key] || 0);
                 }
               });
 
-              return { year: actualYear, total };
+              return { year, total };
             })
             .filter(Boolean);
 
@@ -106,6 +96,7 @@ const LineChartWithTwoApiCalls = ({ chartInfo }) => {
             yearData: disasterYearData,
           };
         }
+        console.log("DisasterData", disasterData);
 
         // Define names based on language
         const geoName =
@@ -412,7 +403,7 @@ const LineChartWithTwoApiCalls = ({ chartInfo }) => {
       <ResponsiveContainer width="100%" height={460}>
         <LineChart data={chartData}>
           <CartesianGrid strokeDasharray="3 3" vertical={false} />
-          <XAxis dataKey="year" tick={{ fontSize: 15 }} tickLine={false} />
+          <XAxis dataKey="year" tick={{ fontSize: 13 }} tickLine={false} />
           <YAxis tick={{ fontSize: 12 }} />
           <Tooltip content={<CustomTooltip />} />
           <Legend

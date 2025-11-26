@@ -63,9 +63,7 @@ const StackedBarChartsWithNumbers = ({ chartInfo }) => {
 
         const processedData = yearData
           .map(({ year: yearStr, id: yearId }) => {
-            const dataItem = rawData.find((item) => {
-              return Number(item.year) === yearId;
-            });
+            const dataItem = rawData[yearId]; // ← Direct access by index
 
             if (!dataItem) return null;
             const dataPoint = { year: yearStr };

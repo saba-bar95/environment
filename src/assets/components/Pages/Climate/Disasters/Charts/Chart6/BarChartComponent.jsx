@@ -97,19 +97,15 @@ const BarChartComponent = ({ chartInfo }) => {
     }
 
     // Find the selected year's raw data
-    const selectedYearId = yearDataState.find(
-      (item) => +item.year === year
-    )?.id;
+    const selectedYearObj = yearDataState.find((item) => +item.year === year);
 
-    if (selectedYearId === undefined) {
+    if (selectedYearObj === undefined) {
       setFullData([]);
       setChartData([]);
       return;
     }
 
-    const dataItem = rawData.find(
-      (item) => Number(item.year) === selectedYearId
-    );
+    const dataItem = rawData[selectedYearObj.id];
 
     if (!dataItem) {
       setFullData([]);
