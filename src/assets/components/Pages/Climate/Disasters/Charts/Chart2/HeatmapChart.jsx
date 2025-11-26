@@ -90,10 +90,10 @@ const HydroHazardsHeatmap = ({ chartInfo, columnWidth = 140 }) => {
 
     // Create matrix: rows = months (filtered), columns = years
     const mat = monthsWithIndices.map(({ originalIndex: monthIdx }) =>
-      years.map((yearLabel, yearIdx) => {
+      years.map((yearLabel) => {
         // The year field in records contains the index (0, 1, 2...),
         // while years array contains the labels (2013, 2014, 2015...)
-        const yearRecord = records.find((r) => r?.year === yearIdx);
+        const yearRecord = records.find((r) => r?.year === +yearLabel);
         if (!yearRecord) {
           return 0;
         }
@@ -127,6 +127,7 @@ const HydroHazardsHeatmap = ({ chartInfo, columnWidth = 140 }) => {
         });
       });
     });
+    // console.log(data);
     return data;
   }, [hasData, months, years, matrix, language]);
 

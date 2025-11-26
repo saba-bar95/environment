@@ -51,6 +51,7 @@ const PieChartWithYears = ({ chartInfo }) => {
           commonData(chartInfo.id, chartInfo.types[1], language),
         ]);
 
+        // Variables[1] = Regions (we select some), Variables[0] = Years
         const valueTexts =
           metaDataResult?.data?.metadata?.variables[1].valueTexts.map(
             (region, i) => ({ name: region, id: i })
@@ -62,72 +63,88 @@ const PieChartWithYears = ({ chartInfo }) => {
 
         const yearData =
           metaDataResult?.data?.metadata?.variables[0].valueTexts.map(
-            (year, i) => ({ year: year, id: i })
+            (year, i) => ({ year, id: i })
           ) || [];
 
-        const rawData = dataResult.data.data || [];
+        const rawData = dataResult?.data?.data || [];
 
-        // Define decades with language-specific names
-        const decadeNames =
-          language === "ge"
-            ? [
-                "1990-1999 წლები",
-                "2000-2009 წლები",
-                "2010-2019 წლები",
-                "2020-2023 წლები",
-              ]
-            : ["1990-1999", "2000-2009", "2010-2019", "2020-2023"];
+        // Extract all available years as numbers
+        const availableYears = yearData
+          .map((item) => Number(item.year))
+          .filter((y) => !isNaN(y))
+          .sort((a, b) => a - b);
 
-        const decadeRanges = [
-          { start: 1990, end: 1999 },
-          { start: 2000, end: 2009 },
-          { start: 2010, end: 2019 },
-          { start: 2020, end: 2023 },
-        ];
+        if (availableYears.length === 0) {
+          setPieData([]);
+          setIsLoading(false);
+          return;
+        }
 
-        const processedData = decadeRanges
-          .map((range, index) => {
-            const { start, end } = range;
+        const maxYear = Math.max(...availableYears);
+
+        // Helper to create decade label
+        const getLabel = (start, end) =>
+          language === "ge" ? `${start}-${end} წლები` : `${start}-${end}`;
+
+        // Build dynamic decades (only if data exists in that range)
+        const decades = [];
+
+        if (availableYears.some((y) => y >= 1990 && y <= 1999))
+          decades.push({ start: 1990, end: 1999, label: getLabel(1990, 1999) });
+
+        if (availableYears.some((y) => y >= 2000 && y <= 2009))
+          decades.push({ start: 2000, end: 2009, label: getLabel(2000, 2009) });
+
+        if (availableYears.some((y) => y >= 2010 && y <= 2019))
+          decades.push({ start: 2010, end: 2019, label: getLabel(2010, 2019) });
+
+        if (availableYears.some((y) => y >= 2020))
+          decades.push({
+            start: 2020,
+            end: maxYear,
+            label: getLabel(2020, maxYear),
+          });
+
+        // Process data for each decade
+        const processedData = decades
+          .map(({ start, end, label }) => {
             let sum = 0;
 
-            yearData.forEach(({ year: y }) => {
-              const yNum = Number(y);
-              if (yNum >= start && yNum <= end) {
-                const dataItem = rawData.find((item) => item.year === yNum);
+            yearData.forEach(({ year: y, id: yearIndex }) => {
+              const yearNum = Number(y);
+              if (yearNum >= start && yearNum <= end) {
+                const dataItem = rawData[yearIndex]; // Direct index access → correct & fast
                 if (dataItem) {
-                  // Sum for selected indices
                   selected.forEach((text) => {
-                    sum += dataItem[String(text.id)] || 0;
+                    sum += Number(dataItem[String(text.id)] || 0);
                   });
                 }
               }
             });
 
-            return {
-              name: decadeNames[index],
-              value: sum,
-            };
+            return { name: label, value: sum };
           })
-          .filter((d) => d.value > 0);
+          .filter((d) => d.value > 0); // Remove empty decades
 
         setPieData(processedData);
-
         setSelectedTexts(processedData.map((d) => ({ name: d.name })));
 
-        const newColorMap = processedData.reduce((acc, data, index) => {
-          acc[data.name] = chartInfo.colors[index % chartInfo.colors.length];
+        // Color mapping
+        const newColorMap = processedData.reduce((acc, item, i) => {
+          acc[item.name] = chartInfo.colors[i % chartInfo.colors.length];
           return acc;
         }, {});
         setColorMap(newColorMap);
 
+        // Visibility
         setVisibleSegments(
-          processedData.reduce((acc, data) => {
-            acc[data.name] = true;
+          processedData.reduce((acc, item) => {
+            acc[item.name] = true;
             return acc;
           }, {})
         );
-      } catch (error) {
-        console.error("Error fetching data:", error);
+      } catch (err) {
+        console.error("Error loading pie chart data:", err);
         setError("Failed to load chart data. Please try again.");
       } finally {
         setIsLoading(false);

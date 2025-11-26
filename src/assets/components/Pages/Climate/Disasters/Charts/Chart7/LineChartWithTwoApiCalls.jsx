@@ -96,7 +96,6 @@ const LineChartWithTwoApiCalls = ({ chartInfo }) => {
             yearData: disasterYearData,
           };
         }
-        console.log("DisasterData", disasterData);
 
         // Define names based on language
         const geoName =
