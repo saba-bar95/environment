@@ -11,7 +11,7 @@ const Header = () => {
     {
       title_ge: "დაცული ტერიტორიების წილი",
       title_en: "Share of protected areas",
-      number: "13.1%",
+      number: "13.3%",
       backgroundColor: "#006370",
       svg: Svg1, // Reference the component directly, don't call it
     },
