@@ -25,7 +25,7 @@ const Header = () => {
     {
       title_ge: "დაცული ტერიტორიების ფართობი",
       title_en: "Area of ​​protected areas",
-      number: 912884,
+      number: 927751,
       backgroundColor: "#494E70",
       unit_ge: "ჰა",
       unit_en: "ha",
